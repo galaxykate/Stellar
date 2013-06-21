@@ -11,7 +11,7 @@ function(LayoutManager) {
   // creation.
   var app = {
     // The root path to run the application.
-    root: "/"
+    root: "/Users/kate/Dropbox/Code/JavascriptProjects/Stellar/"
   };
 
   // Localize or create a new JavaScript Template object.
