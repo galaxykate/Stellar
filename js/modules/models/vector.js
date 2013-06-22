@@ -62,12 +62,51 @@ define([], function() {
 
             //===========================================================
             //===========================================================
+            // Add and sub and mult and div functions
+
+            add : function(v) {
+                this.x += v.x;
+                this.y += v.y;
+                this.z += v.z;
+
+            },
+
+            sub : function(v) {
+                this.x -= v.x;
+                this.y -= v.y;
+                this.z -= v.z;
+            },
+
+            mult : function(m) {
+                this.x *= m;
+                this.y *= m;
+                this.z *= m;
+            },
+
+            div : function(m) {
+                this.x /= m;
+                this.y /= m;
+                this.z /= m;
+            },
+
+            //===========================================================
+            //===========================================================
 
             bezierWithRelativeControlPoints : function(g, p, c0, c1) {
                 g.bezierVertex(p.x + c0.x, p.y + c0.y, x + c1.x, y + c1.y, x, y);
             },
-            
-            
+
+            vertex : function(g) {
+                g.vertex(this.x, this.y);
+            },
+
+            drawCircle : function(g, radius) {
+                g.ellipse(this.x, this.y, radius, radius);
+            },
+
+            drawLineTo : function(g, v) {
+                g.line(this.x, this.y, v.x, v.y);
+            },
 
             //===========================================================
             //===========================================================
