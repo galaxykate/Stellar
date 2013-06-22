@@ -30,7 +30,7 @@ define(["modules/models/star"], function(Star) {
             starsToAdd = [];
         };
 
-        generateStars(3);
+        generateStars(4);
         update(1);
 
         return {
