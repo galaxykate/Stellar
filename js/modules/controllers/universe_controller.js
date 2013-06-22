@@ -46,7 +46,7 @@ define([], function() {
         var getOffset = function(p0, p1) {
             return [p0[0] - p1[0], p0[1] - p1[1]];
         };
-        
+
         //=======================================================
         // Initialize the universe controller
 
@@ -63,11 +63,7 @@ define([], function() {
         return {
 
             // public interface
-            publicMethod1 : function() {
-                // all private members are accesible here
-            },
-            publicMethod2 : function() {
-            }
+
         };
     })();
 

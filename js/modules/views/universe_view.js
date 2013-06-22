@@ -4,7 +4,7 @@
 
 // Display the Universe
 // It's using a singleton pattern
-define(["processing"], function(PROCESSING) {
+define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
     console.log("Init universe view");
 
     return (function() {
@@ -39,17 +39,38 @@ define(["processing"], function(PROCESSING) {
             g.pushMatrix();
             g.translate(g.width / 2, g.height / 2);
 
+            drawLayer(g, {
+                layer : "bg",
+            });
+
+            drawLayer(g, {
+                layer : "main",
+            });
+
+            drawLayer(g, {
+                layer : "overlay",
+            });
+
+            g.popMatrix();
+        };
+
+        var drawLayer = function(g, options) {
+            var p = new Vector.Vector(0, 0);
             $.each(drawables, function(index, drawable) {
 
                 // Get all the drawable objects from this *thing*
                 var drawableObjects = drawable.getDrawableObjects();
                 $.each(drawableObjects, function(index, obj) {
                     // figure out where this object is, and translate appropriately
-
-                    obj.draw(g);
+                    p.setTo(obj.position);
+                   // console.log(p);
+                    
+                    g.pushMatrix();
+                    g.translate(p.x, p.y);
+                    obj.draw(g, options);
+                    g.popMatrix();
                 });
             });
-            g.popMatrix();
         };
 
         // attaching the sketchProc function to the canvas

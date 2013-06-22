@@ -44,13 +44,20 @@ define([], function() {
                 this.y = v.y * m;
                 this.z = v.z * m;
             },
-            
-            setTo : function(x, y, z) {
 
-                this.x = x;
-                this.y = y;
-                if (z !== undefined)
-                    this.z = z;
+            setTo : function(x, y, z) {
+                // Just in case this was passed a vector
+                if (x.x !== undefined) {
+                    this.x = x.x;
+                    this.y = x.y;
+                    this.z = x.z;
+
+                } else {
+                    this.x = x;
+                    this.y = y;
+                    if (z !== undefined)
+                        this.z = z;
+                }
             },
 
             toString : function() {
