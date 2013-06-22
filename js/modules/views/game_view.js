@@ -2,19 +2,19 @@
  * @author Kate Compton
  */
 
-// Create the way that the game will render on-screen
+// It's using a singleton pattern
 
-define(["processing", "modules/views/universe_view"], function(PROCESSING, UNIVERSE_VIEW) {
-    var init = function() {
-        console.log("START GAME VIEW");
+define(["modules/views/universe_view"], function(universeView) {
+    return (function() {
 
-        // Make the playfield into a Processing sketch
+        console.log("Init game view");
+        // Private functions
 
-        UNIVERSE_VIEW.init();
-    };
-
-    return {
-        init : init,
-    };
+        return {
+            // public interface: these attributes are visible in the returned object
+            universeView : universeView,
+        };
+    })();
 
 });
+

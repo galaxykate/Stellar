@@ -6,7 +6,8 @@ require.config({
     paths : {
         'jQuery' : 'libs/jquery-1.10.1',
         'underscore' : 'libs/underscore',
-        'processing' : 'libs/processing-1.4.1'
+        'processing' : 'libs/processing-1.4.1',
+        'inheritance' : 'libs/inheritance'
     },
     shim : {
         'jQuery' : {
@@ -17,11 +18,14 @@ require.config({
         },
         'processing' : {
             exports : 'Processing'
+        },
+        'inheritance' : {
+            exports : 'Inheritance'
         }
     }
 });
 
-require(['game', 'jQuery'], function(GAME, $) {
+require(['modules/models/game', 'jQuery'], function(GAME, $) {
 
     GAME.startGame();
 
