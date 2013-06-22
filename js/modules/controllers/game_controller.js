@@ -5,13 +5,25 @@
 // Create the way that the game will render on-screen
 
 define(['modules/controllers/universe_controller'], function(UNIVERSE_CONTROLLER) {
-    var init = function() {
-        console.log("START GAME CONTROLLER");
-        UNIVERSE_CONTROLLER.init();
-    };
+    // Return the singleton here:
+    return (function() {
 
-    return {
-        init : init,
-    };
+        console.log("Init singleton game controller");
+        var privateVar = '';
+
+        function privateMethod() {
+            // ...
+        }
+
+        return {
+
+            // public interface
+            publicMethod1 : function() {
+                // all private members are accesible here
+            },
+            publicMethod2 : function() {
+            }
+        };
+    })();
 
 });
