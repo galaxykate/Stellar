@@ -51,9 +51,11 @@ define(["inheritance", "modules/models/vector", "modules/models/face"], function
         };
         
         function initGraphics(p) {
-        	p.h = (this.idNumber * .212 + .3) % 1;
-        	p.width = 50;
-        	p.height = 50;
+            
+        	p.hue = (p.idNumber * .212 + .3) % 1;
+        	
+        	p.width = p.radius;
+        	p.height = p.radius;
         };
         
         function initFace(p) {
@@ -77,8 +79,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face"], function
 
                 case "main":
 
-                    var h = (this.idNumber * .212 + .3) % 1;
-                    g.fill(h, 1, 1);
+                  
+                    g.fill(this.hue, 1, 1);
                     g.noStroke();
                     g.ellipse(0, 0, this.radius, this.radius);
                     
