@@ -10,12 +10,30 @@ define(["inheritance", "modules/models/vector", "modules/models/face"], function
         var states = [{
             name : "dust",
             idNumber : 0,
+            draw : function(g, star, options) {
+
+            }
         }, {
             name : "star",
             idNumber : 1,
+            draw : function(g, star, options) {
+
+            }
         }, {
             name : "nova",
             idNumber : 2,
+            draw : function(g, star, options) {
+                var segments = 16;
+                var theta;
+                var r;
+                g.beginShape();
+                for (var i = 0; i < segments; i++) {
+                    theta = i * 2 * Math.PI / segments;
+                    r = (Math.random() * Math.random() + 1) * this.radius;
+                    g.vertex(r * Math.cos(theta), r * Math.sin(theta));
+                }
+                g.endShape();
+            }
         }];
 
         var randomState = function() {
@@ -52,18 +70,21 @@ define(["inheritance", "modules/models/vector", "modules/models/face"], function
         };
 
         function drawLayer(g, options) {
-            
+
             switch(options.layer) {
                 case "bg":
                     break;
 
                 case "main":
+
                     var h = (this.idNumber * .212 + .3) % 1;
                     g.fill(h, 1, 1);
                     g.noStroke();
                     g.ellipse(0, 0, this.radius, this.radius);
                     
                     this.face.draw(g, this.radius *.8, this.radius *.8)
+                    this.state.draw(g, this, options);
+
                     break;
 
                 case "overlay":
@@ -73,7 +94,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face"], function
                     g.ellipse(0, 0, this.radius + 10, this.radius + 10);
 
                     g.fill(this.hue, 1, 1);
-                    g.text(this.state.name, this.radius, this.radius);
+                    g.text(this.state.name, this.radius*.5 + 5, this.radius*.4 + 5);
                     
                     break;
             }

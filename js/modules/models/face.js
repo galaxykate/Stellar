@@ -14,6 +14,8 @@ define(["inheritance", "modules/models/vector"], function(Inheritance, Vector) {
             g.noStroke();
             g.fill(0.621, .1, 1);
             g.ellipse(0, 0, faceWidth, faceHeight);
+            
+            
         };
 
         // Make the Face class
