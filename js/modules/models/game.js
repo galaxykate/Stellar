@@ -4,7 +4,7 @@
 
 // Organize the game
 // Singleton pattern from here: http://stackoverflow.com/questions/1479319/simplest-cleanest-way-to-implement-singleton-in-javascript
-var stellarGame;
+
 
 define(['modules/views/game_view', 'modules/controllers/game_controller', 'modules/models/universe'], function(gameView, gameController, universe) {
     var startGame = function() {
@@ -18,6 +18,7 @@ define(['modules/views/game_view', 'modules/controllers/game_controller', 'modul
 
         gameView.universeView.onUpdate(function(time) {
             universe.update(time);
+
         });
     };
 
