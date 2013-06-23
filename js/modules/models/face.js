@@ -19,7 +19,7 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
             g.ellipse(0, 0, this.faceWidth, this.faceHeight);
             
             //console.log(faceWidth/2);
-            centerEye.draw(g);
+            this.centerEye.draw(g);
         };
         
         function drawHalfFace(g, leftFace){
@@ -27,8 +27,8 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
         }
         
         
-        function updateFace(time, width, height){
-        	centerEye.update(time, width/2, height/2);
+        function updateFace(time, width, height, faceClass){
+        	faceClass.centerEye.update(time, width/2, height/2);
         }
         
         
@@ -37,7 +37,7 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
         var Face = Class.extend({
             init : function() {
             	// Any defaults we need
-            	centerEye = new Eye.Eye();
+            	this.centerEye = new Eye.Eye();
             },
 
             update : function(time, width, height) {
@@ -46,7 +46,7 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
 				this.faceHeight = height;
 				this.eyeRadius = width/2;
 				
-				updateFace(time, this.faceWidth, this.faceHeight);
+				updateFace(time, this.faceWidth, this.faceHeight, this);
             },
 
             draw : drawFace,
