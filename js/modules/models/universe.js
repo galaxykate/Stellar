@@ -18,6 +18,7 @@ define(["modules/models/star"], function(Star) {
                 starsToAdd.push(s);
             }
         };
+    
 
         function update(time) {
             stellarGame.time = time;

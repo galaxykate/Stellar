@@ -7,7 +7,7 @@
 define(["inheritance", "modules/models/vector", "modules/models/face", "noise"], function(Inheritance, Vector, Face, Noise) {
     return (function() {
 
-        var noise = new Noise(Math.random);
+        var noise = new Noise();
 
         var states = [{
             name : "dust",
@@ -31,14 +31,14 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "noise"],
                 var layers = 3;
                 g.noFill();
                 g.stroke(star.hue, 1, 1, 1);
-               
+
                 g.beginShape();
                 var t = stellarGame.time.total;
-            
+
                 for (var j = 0; j < layers; j++) {
                     for (var i = 0; i < segments; i++) {
                         theta = i * 2 * Math.PI / segments;
-                        r = 50 * (1 + noise.noise2D(theta,  t * 2 + j * 100)) + star.radius;
+                        r = 50 * (1 + noise.noise2D(theta, t * 2 + j * 100)) + star.radius;
                         g.vertex(r * Math.cos(theta), r * Math.sin(theta));
                     }
                 }
