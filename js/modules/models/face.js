@@ -32,6 +32,11 @@ define(["inheritance", "modules/models/vector", "processing"], function(Inherita
             g.noStroke();
             g.fill(0.621, .1, 1);
             g.ellipse(0, 0, faceWidth, faceHeight);
+            
+            g.noStroke();
+            g.fill(1);
+            var w = outer.x - inner.y;
+            drawEyeBall(g);
         };
         
         function drawEyeBall(g){
@@ -76,6 +81,7 @@ define(["inheritance", "modules/models/vector", "processing"], function(Inherita
     		outerUpperSlant.setToPolar(20+15*outerLift, outerUpperTheta);
     		
     		eyeLine = outer.sub(inner);
+    		//eyeCenter = 
         }
         
         
