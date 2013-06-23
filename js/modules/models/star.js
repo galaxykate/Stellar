@@ -63,9 +63,6 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "noise"],
         function initGraphics(p) {
 
             p.hue = (p.idNumber * .212 + .3) % 1;
-
-            p.width = p.radius;
-            p.height = p.radius;
         };
 
         function initFace(p) {
@@ -93,7 +90,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "noise"],
                     g.noStroke();
                     g.ellipse(0, 0, this.radius, this.radius);
 
-                    this.face.draw(g, this.radius * .8, this.radius * .8)
+                    this.face.draw(g)
                     this.state.draw(g, this, options);
 
                     break;
@@ -121,6 +118,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "noise"],
                 this.idNumber = starCount;
                 this.state = randomState();
                 this.radius = Math.random() * 100 + 10;
+                console.log("setting radius: " + this.radius);
                 starCount++;
                 initAsParticle(this);
                 // idNumber must be set before initting graphics (moved hue stuff there)
@@ -146,7 +144,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "noise"],
                 this.position.addMultiple(this.velocity, time.ellapsed);
                 //   console.log(this.velocity);
 
-                this.face.update(time);
+                this.face.update(time, this.radius * .8, this.radius * .8);
+                //console.log("radius for face on update: " + this.radius * .8)
             },
 
             draw : drawLayer,
