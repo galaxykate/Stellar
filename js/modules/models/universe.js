@@ -5,8 +5,7 @@
 // Its the Universe!
 
 define(["modules/models/star"], function(Star) {
-    
-   
+
     return (function() {
         var stars = [];
         var starsToAdd = [];
@@ -14,13 +13,14 @@ define(["modules/models/star"], function(Star) {
         function generateStars(count) {
 
             for (var i = 0; i < count; i++) {
-                var s = new Star.Star();
+                var s = new Star.Star(this);
 
                 starsToAdd.push(s);
             }
         };
 
         function update(time) {
+            stellarGame.time = time;
 
             $.each(stars, function(index, star) {
                 star.update(time);

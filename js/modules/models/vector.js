@@ -60,6 +60,10 @@ define([], function() {
                 }
             },
 
+            magnitude : function() {
+                return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+            },
+
             //===========================================================
             //===========================================================
             // Add and sub and mult and div functions

@@ -2,6 +2,7 @@
  * @author Kate Compton
  */
 
+var stellarGame = {};
 var utilities = {
 	// put noise in here too?
 	
@@ -22,7 +23,8 @@ require.config({
         'jQuery' : 'libs/jquery-1.10.1',
         'underscore' : 'libs/underscore',
         'processing' : 'libs/processing-1.4.1',
-        'inheritance' : 'libs/inheritance'
+        'inheritance' : 'libs/inheritance',
+        'noise' : 'libs/simplex_noise'
     },
     shim : {
         'jQuery' : {
@@ -36,7 +38,8 @@ require.config({
         },
         'inheritance' : {
             exports : 'Inheritance'
-        }
+        },
+
     }
 });
 
