@@ -127,7 +127,7 @@ color.fill(g, 0, -.8);
             // public interface
 
             getDrawableObjects : function() {
-                return this;
+                return stars.concat([this]);
             },
             draw : draw,
             gestureUpdate : gestureUpdate,
