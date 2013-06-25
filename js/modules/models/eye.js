@@ -30,13 +30,13 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
             g.beginShape();
             //console.log("Lower Slants: " + this.innerLowerSlant + " //// " + this.outerLowerSlant);
             drawLashLine(g, this.innerLowerSlant, this.outerLowerSlant, 1, this);
-            drawCrease(g, 1, this);
-            g.endShape();
+            drawCrease(g, 1.4, this);
 
+			g.fill(this.starHue, 1, .5);
             // Upper Lid
             g.beginShape();
             drawLashLine(g, this.innerUpperSlant, this.outerUpperSlant, 1, this);
-            drawCrease(g, -1.4, this);
+            drawCrease(g, -1.8, this);
             g.endShape();
      		
      		// Lower lash
@@ -108,8 +108,10 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
         	// gives proper cheekWidth
         	this.cheekHeight = height;
         	
-        	var innerScale = this.cheekWidth * 0.3;
-        	var outerScale = this.cheekWidth * 0.6;
+        	//var innerScale = this.cheekWidth * 0.3; // mustache eyelids
+        	//var outerScale = this.cheekWidth * 0.6;
+        	var innerScale = this.cheekWidth * 0.03;
+        	var outerScale = this.cheekWidth * 0.06;
         	this.inner = new Vector.Vector(this.innerPct*this.cheekWidth, innerScale);
             this.outer = new Vector.Vector(this.outerPct*this.cheekWidth, outerScale);
             
@@ -128,10 +130,10 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
     		this.outerUpperTheta = this.outerLowerTheta + 2.6*this.outerLift;
     		this.innerUpperTheta = utilities.constrain(this.innerUpperTheta, -Math.PI/2, Math.PI/2);
     		
-    		var innerLowerSlantScale = this.cheekWidth * .2;
-    		var outerLowerSlantScale = this.cheekWidth * .15;
-    		var innerUpperSlantScale = outerLowerSlantScale;
-    		var outerUpperSlantScale = this.cheekWidth * .1;
+    		var innerLowerSlantScale = this.cheekWidth * .6; // default : .2
+    		var outerLowerSlantScale = this.cheekWidth * .45; // default: .15
+    		var innerUpperSlantScale = outerLowerSlantScale; // default: same as outerLowerSlantScale
+    		var outerUpperSlantScale = this.cheekWidth * .3; // default: .1
     		var additionalUpperSlantScale = this.cheekWidth * 0.075;
     		
     		this.innerLowerSlant.setToPolar(innerLowerSlantScale, this.innerLowerTheta);

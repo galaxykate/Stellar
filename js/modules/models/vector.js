@@ -95,20 +95,18 @@ define([], function() {
 
             //===========================================================
             //===========================================================
-            
+
             // Lerp a vector!
             lerp : function(otherVector, percent) {
-            	var lerpVect = new Vector(utilities.lerp(this.x, otherVector.x, percent),
-            							 utilities.lerp(this.y, otherVector.y, percent),
-            							 utilities.lerp(this.z, otherVector.z, percent));
-            	return lerpVect;
+                var lerpVect = new Vector(utilities.lerp(this.x, otherVector.x, percent), utilities.lerp(this.y, otherVector.y, percent), utilities.lerp(this.z, otherVector.z, percent));
+                return lerpVect;
             },
-            
+
             //===========================================================
             //===========================================================
 
             bezierWithRelativeControlPoints : function(g, p, c0, c1) {
-            	// "x" and "y" were not defined, so I added "this." in front. Hopefully that's the intended action (April)
+                // "x" and "y" were not defined, so I added "this." in front. Hopefully that's the intended action (April)
                 g.bezierVertex(p.x + c0.x, p.y + c0.y, this.x + c1.x, this.y + c1.y, this.x, this.y);
             },
 

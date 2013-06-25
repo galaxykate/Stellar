@@ -41,7 +41,6 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
         		faceClass.rightEye.draw(g);
         	g.popMatrix();
         	
-        	//console.log("drawing (left)face: " + leftFace);
         }
         
         

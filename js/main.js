@@ -4,18 +4,26 @@
 
 var stellarGame = {};
 var utilities = {
-	// put noise in here too?
-	
-	constrain : function (val, lowerBound, upperBound){
-    	if(Math.max(val, upperBound) === val)
-    		return upperBound;
-    	if(Math.min(val, lowerBound) === val)
-    		return lowerBound;
-    	return val;
-   },
-    
-    lerp : function (start, end, percent) {
-    	return (start + percent*(end-start));
+    // put noise in here too?
+
+    constrain : function(val, lowerBound, upperBound) {
+        if (Math.max(val, upperBound) === val)
+            return upperBound;
+        if (Math.min(val, lowerBound) === val)
+            return lowerBound;
+        return val;
+    },
+
+    lerp : function(start, end, percent) {
+        return (start + percent * (end - start));
+    },
+
+    debugOutput : function(output) {
+        $("#debug_output").append(output + "<br>");
+    },
+
+    clearDebugOutput : function() {
+        $("#debug_output").html("");
     }
 };
 

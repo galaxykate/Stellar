@@ -1,10 +1,26 @@
 body {
 
 }
+#universe_canvas {
+	float: left;
+	width: 600px;
+	height: 400px;
+	background-color: rgba(50, 255, 90, 1);
+}
 
-.universe_canvas {
-	width:500px;
-	height:400px;
-	background-color:rgba(50, 255, 90);
-	
+
+#universe_canvas {
+	width: 600px;
+	height: 400px;
+	background-color: rgba(50, 255, 90, 1);
+}
+
+#debug_output {
+	background-color: rgba(155, 155, 155, 1);
+	width: 300px;
+	height: 400px;
+	float: left;
+	padding: 10px;
+	margin: 2px;
+	overflow: auto;
 }

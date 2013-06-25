@@ -26,6 +26,8 @@ define(['modules/views/game_view', 'modules/controllers/game_controller', 'modul
         });
     };
 
+
+
     return {
         startGame : startGame,
     };
