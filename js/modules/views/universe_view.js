@@ -21,10 +21,13 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
         };
 
         var update = function(currentTime) {
+                      utilities.clearDebugOutput();
             //   console.log("update " + currentTime);
             time.ellapsed = currentTime - time.total;
             time.total = currentTime;
-
+   utilities.debugOutput("Update " + time.total.toFixed(2) + " fps: " + (1/time.ellapsed).toFixed(2));
+         
+         
             $.each(updateFunctions, function(index, f) {
                 f.call(undefined, time);
             });
@@ -33,16 +36,18 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
         var draw = function(g) {
 
             var view = this;
+
+            // do update stuff
+            update(g.millis() * .001);
+
             // Compile a list of all the drawable objects
             view.currentDrawables = [];
             $.each(drawables, function(index, drawable) {
                 //  console.log("add " + drawable);
                 view.currentDrawables = view.currentDrawables.concat(drawable.getDrawableObjects());
             });
-        g.colorMode(g.HSB, 1);
+            g.colorMode(g.HSB, 1);
             g.ellipseMode(g.CENTER_RADIUS);
-            // do update stuff
-            update(g.millis() * .001);
 
             g.background(.55, .8, .1);
 
@@ -69,14 +74,14 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
             var p = new Vector.Vector(0, 0);
             $.each(this.currentDrawables, function(index, obj) {
                 // figure out where this object is, and translate appropriately
-                  g.pushMatrix();
-                  if (obj.position !== undefined) {
+                g.pushMatrix();
+                if (obj.position !== undefined) {
                     p.setTo(obj.position);
                     g.translate(p.x, p.y);
 
                 }
                 obj.draw(g, options);
-                     g.popMatrix();
+                g.popMatrix();
             });
 
         };
@@ -90,6 +95,7 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
             g.background(.45, 1, 1);
 
             g.draw = function() {
+
                 draw(g);
             };
         };

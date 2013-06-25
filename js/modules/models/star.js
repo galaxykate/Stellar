@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(["inheritance", "modules/models/vector", "modules/models/face", "noise"], function(Inheritance, Vector, Face, Noise) {
+define(["inheritance", "modules/models/vector", "modules/models/face","modules/models/elementSet", "noise"], function(Inheritance, Vector, Face, ElementSet, Noise) {
     return (function() {
 
         var noise = new Noise();
@@ -52,6 +52,13 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "noise"],
 
         // Private functions
         var starCount = 0;
+
+        // Give this object a bunch of elements
+        function initAsElementContainer(p) {
+            p.elements = {
+             
+            };
+        }
 
         function initAsParticle(p) {
             p.position = new Vector.Vector(0, 0);
