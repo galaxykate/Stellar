@@ -8,9 +8,10 @@ var utilities = {
 	
 	constrain : function (val, lowerBound, upperBound){
     	if(Math.max(val, upperBound) === val)
-    		val = upperBound;
+    		return upperBound;
     	if(Math.min(val, lowerBound) === val)
-    		val = lowerBound;
+    		return lowerBound;
+    	return val;
    },
     
     lerp : function (start, end, percent) {
