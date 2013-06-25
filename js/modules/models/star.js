@@ -66,16 +66,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "noise"],
         };
 
         function initFace(p) {
-            //console.log(Face);
-            p.face = new Face.Face();
-            // probably setting some other facial variables here
-        };
-
-        function testDraw(g) {
-            var h = (this.idNumber * .212 + .3) % 1;
-            g.fill(h, 1, 1);
-
-            g.ellipse(this.position.y, this.position.x, 50, 50);
+            p.face = new Face.Face(p.hue);
         };
 
         function drawLayer(g, options) {
@@ -118,13 +109,13 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "noise"],
                 this.idNumber = starCount;
                 this.state = randomState();
                 this.radius = Math.random() * 100 + 10;
-                console.log("setting radius: " + this.radius);
                 starCount++;
                 initAsParticle(this);
                 // idNumber must be set before initting graphics (moved hue stuff there)
                 initGraphics(this);
                 this.position.setToPolar(Math.random() * 100, Math.random() * 100);
                 this.velocity.addPolar(Math.random() * 100, Math.random() * 100);
+                console.log("star's actual hue: " + this.hue);
                 initFace(this);
             },
 

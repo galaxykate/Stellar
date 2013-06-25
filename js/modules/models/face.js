@@ -35,9 +35,11 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
 
         // Make the Face class
         var Face = Class.extend({
-            init : function() {
+            init : function(hue) {
             	// Any defaults we need
-            	this.centerEye = new Eye.Eye();
+            	this.centerEye = new Eye.Eye(hue);
+            	console.log("setting star hue in face: " + hue);
+            	this.starHue = hue;
             },
 
             update : function(time, width, height) {
