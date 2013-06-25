@@ -103,10 +103,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                     var textX = this.radius * .85 + 5;
                     var textY = this.radius * .74 + 5;
                     g.text(this.state.name, textX, textY);
-                    g.text("DebugLines: " + this.debugOutputLines, textX, textY + 12);
                     $.each(this.debugOutputLines, function(index, line) {
                         g.text(line, textX, textY + 12 * (index + 1));
-
                     })
                     break;
 
@@ -134,17 +132,18 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             },
 
             debugOutput : function(d) {
-                debugOutputLines.push(d);
+             
+                this.debugOutputLines.push(d);
+          
             },
             clearDebugOutput : function() {
-                debugOutputLines = [];
+                this.debugOutputLines = [];
             },
 
             update : function(time) {
                 // Clear the output
                 this.clearDebugOutput();
-                this.debugOutput("dfasd");
-
+            
                 var d = this.position.magnitude();
                 var outside = Math.max(0, d - 200);
                 this.totalForce.setToMultiple(this.position, -Math.pow(outside, 3) / d);
@@ -154,8 +153,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 var ny = this.position.y * noiseScale;
                 var theta = noise.noise2D(nx, ny);
                 this.totalForce.addPolar(10, theta);
-                this.debugOutput(this.totalForce);
-
+            
                 this.velocity.addMultiple(this.totalForce, time.ellapsed);
                 //  console.log("Update star " + time.ellapsed);
                 this.position.addMultiple(this.velocity, time.ellapsed);
