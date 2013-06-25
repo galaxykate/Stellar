@@ -34,14 +34,14 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
         	g.pushMatrix();
         	//g.translate(0, faceClass.faceWidth/4);
         	g.translate(faceClass.faceWidth/2, 0);
-        	console.log("translating...? " + faceClass.faceWidth/4)
+        	//console.log("translating...? " + faceClass.faceWidth/4)
         	if(leftFace)
         		faceClass.leftEye.draw(g);
         	else
         		faceClass.rightEye.draw(g);
         	g.popMatrix();
         	
-        	console.log("drawing (left)face: " + leftFace);
+        	//console.log("drawing (left)face: " + leftFace);
         }
         
         
