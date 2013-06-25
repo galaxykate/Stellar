@@ -98,9 +98,9 @@ define([], function() {
             
             // Lerp a vector!
             lerp : function(otherVector, percent) {
-            	var lerpVect = new Vector(utilities.lerp(this.x, otherVector.x),
-            							 utilities.lerp(this.y, otherVector.y),
-            							 utilities.lerp(this.z, otherVector.z));
+            	var lerpVect = new Vector(utilities.lerp(this.x, otherVector.x, percent),
+            							 utilities.lerp(this.y, otherVector.y, percent),
+            							 utilities.lerp(this.z, otherVector.z, percent));
             	return lerpVect;
             },
             
