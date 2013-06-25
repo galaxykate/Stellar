@@ -30,13 +30,13 @@ define([], function() {
             },
 
             addPolar : function(r, theta) {
-                this.x += r * Math.sin(theta);
-                this.y += r * Math.cos(theta);
+                this.x += r * Math.cos(theta);
+                this.y += r * Math.sin(theta);
             },
 
             setToPolar : function(r, theta) {
-                this.x = r * Math.sin(theta);
-                this.y = r * Math.cos(theta);
+                this.x = r * Math.cos(theta);
+                this.y = r * Math.sin(theta);
             },
 
             setToMultiple : function(v, m) {

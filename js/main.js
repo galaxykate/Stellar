@@ -24,6 +24,10 @@ var utilities = {
 
     clearDebugOutput : function() {
         $("#debug_output").html("");
+    },
+    
+    pnoise : function() {
+    	
     }
 };
 

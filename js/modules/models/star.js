@@ -129,6 +129,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 initFace(this);
 
                 this.debugOutputLines = [];
+                
+        		
             },
 
             debugOutput : function(d) {
@@ -161,6 +163,9 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
                 this.face.update(time, this.radius * .8, this.radius * .8);
                 //console.log("radius for face on update: " + this.radius * .8)
+                
+                this.debugOutput("ID number: " + this.idNumber);
+                
             },
             draw : drawLayer,
         });

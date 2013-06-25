@@ -26,11 +26,11 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
             // head.skinColor.setFill(g, -.3, 1);
             g.fill(this.starHue, 1, 1);
             g.noStroke();
-            
             g.beginShape();
             //console.log("Lower Slants: " + this.innerLowerSlant + " //// " + this.outerLowerSlant);
             drawLashLine(g, this.innerLowerSlant, this.outerLowerSlant, 1, this);
             drawCrease(g, 1.4, this);
+            g.endShape();
 
 			g.fill(this.starHue, 1, .5);
             // Upper Lid
@@ -44,11 +44,16 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
      		g.noFill();
      		g.beginShape();
      		//console.log("LashLine: " + this.innerUpperSlant + " //// " + this.outerUpperSlant);
-            
+     		//
+     		//drawLashLine(g, this.innerLowerSlant, this.outerLowerSlant, 1, this);
+     		g.endShape();
+     		
+     		g.beginShape();
      		drawLashLine(g, this.innerUpperSlant, this.outerUpperSlant, 1, this);
      		g.endShape();
      		
      		drawLashControlPoints(g, this.innerUpperSlant, this.outerUpperSlant, 1, this);
+     		//drawLashControlPoints(g, this.innerLowerSlant, this.outerLowerSlant, 1, this);
             
         };
         
@@ -121,19 +126,34 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
             //var testNoise = this.noise.noise2D(Math.random(), Math.random());
             //var testNoise = this.noise.noise2D(time.total * 0.1, time.total * 0.2);
             //console.log("Test noise: " + testNoise);
-        	this.innerLowerTheta = -.1 - 3.5*(-.5 + this.noise.noise2D(200+time.total, 150+time.total)); //+ Processing.noise(200 + time));
-            this.outerLowerTheta = -.4 + Math.PI + -1.5*(-.5 + this.noise.noise2D(time.total, time.total)); // + Processing.noise(time));
+        	this.innerLowerTheta = -.1 - 3.5*(-.05 + this.noise.noise2D(200+time.total, 150+time.total)); //+ Processing.noise(200 + time));
+            this.outerLowerTheta = -.4 + Math.PI + -1.5*(-.05 + this.noise.noise2D(time.total, time.total)); // + Processing.noise(time));
             var liftScale = this.cheekWidth * .25;
-            this.innerLift = 1.2*Math.abs(Math.sin(liftScale*this.noise.noise2D(.2*time.total + 150))); //*Processing.noise(.2*time + 150)));
+            
+            
+            //this.innerLowerTheta = -1;
+            //this.outerLowerTheta = -1;
+            //this.innerLift = 1;
+            this.innerLift = 1.2*Math.abs(Math.sin(liftScale*this.noise.noise2D(.02*time.total + 150, .02*time.total + 150))); //*Processing.noise(.2*time + 150)));
     		this.outerLift = this.innerLift;
-    		this.innerUpperTheta = this.innerLowerTheta + -2.6*this.innerLift;
-    		this.outerUpperTheta = this.outerLowerTheta + 2.6*this.outerLift;
+    		this.innerUpperTheta = this.innerLowerTheta + -1.6*this.innerLift;
+    		this.outerUpperTheta = this.outerLowerTheta + 1.6*this.outerLift;
+    		/*if(this.starID === 1){
+    			
+    			utilities.debugOutput("innerUpperTheta: " + this.innerUpperTheta);
+    			utilities.debugOutput(-Math.PI/2 + " <= /// >= " + Math.PI/2);
+    			this.innerUpperTheta = utilities.constrain(this.innerUpperTheta, -Math.PI/2, Math.PI/2);
+    			utilities.debugOutput("innerUpperThetaCONSTRAINED: " + this.innerUpperTheta);
+    		} else {
+    		}*/
     		this.innerUpperTheta = utilities.constrain(this.innerUpperTheta, -Math.PI/2, Math.PI/2);
     		
-    		var innerLowerSlantScale = this.cheekWidth * .6; // default : .2
-    		var outerLowerSlantScale = this.cheekWidth * .45; // default: .15
+    		//this.innerUpperTheta = -Math.PI/2;
+    		
+    		var innerLowerSlantScale = this.cheekWidth * .2; // default : .2
+    		var outerLowerSlantScale = this.cheekWidth * .15; // default: .15
     		var innerUpperSlantScale = outerLowerSlantScale; // default: same as outerLowerSlantScale
-    		var outerUpperSlantScale = this.cheekWidth * .3; // default: .1
+    		var outerUpperSlantScale = this.cheekWidth * .1; // default: .1
     		var additionalUpperSlantScale = this.cheekWidth * 0.075;
     		
     		this.innerLowerSlant.setToPolar(innerLowerSlantScale, this.innerLowerTheta);
@@ -148,6 +168,28 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
     		this.eyeCenter = this.inner.lerp(this.outer, .5);
     		this.eyePos = this.inner.lerp(this.outer, .05 + .9 * this.eyeFocus.x);
     		this.eyePos.y -= 5;
+    		
+    		//console.log("1this.starID: " + this.starID);
+    		/*
+    		if(this.starID === 1){
+    			//console.log("2this.starID: " + this.starID);
+    			utilities.clearDebugOutput();
+    			utilities.debugOutput("inner: " + this.inner);
+    			utilities.debugOutput("outer: " + this.outer);
+    			utilities.debugOutput("innerLowerTheta: " + this.innerLowerTheta);
+    			utilities.debugOutput("outerLowerTheta: " + this.outerLowerTheta);
+    			utilities.debugOutput("innerLift: " + this.innerLift);
+    			utilities.debugOutput("outerLift: " + this.outerLift);
+    			utilities.debugOutput("innerUpperTheta: " + this.innerUpperTheta);
+    			utilities.debugOutput("outerUpperTheta: " + this.outerUpperTheta);
+    			utilities.debugOutput("innerLowerSlant: " + this.innerLowerSlant);
+    			utilities.debugOutput("outerLowerSlant: " + this.outerLowerSlant);
+    			utilities.debugOutput("innerUpperSlant: " + this.innerUpperSlant);
+    			utilities.debugOutput("outerUpperSlant: " + this.outerUpperSlant);
+    			utilities.debugOutput("eyeLine: " + this.eyeLine);
+    			utilities.debugOutput("eyeCenter: " + this.eyeCenter);
+    			utilities.debugOutput("eyePos: " + this.eyePos);
+    		}*/
     		
     		//console.log("2 Inner, outer: " + this.inner + " /// " + this.outer);
     		//console.log("eyeCenter: " + this.eyeCenter);
