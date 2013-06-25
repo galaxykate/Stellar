@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(["inheritance", "modules/models/vector", "modules/models/face","modules/models/elementSet", "noise"], function(Inheritance, Vector, Face, ElementSet, Noise) {
+define(["inheritance", "modules/models/vector", "modules/models/face", "modules/models/elementSet", "noise"], function(Inheritance, Vector, Face, ElementSet, Noise) {
     return (function() {
 
         var noise = new Noise();
@@ -56,7 +56,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face","modules/m
         // Give this object a bunch of elements
         function initAsElementContainer(p) {
             p.elements = {
-             
+
             };
         }
 
@@ -100,11 +100,16 @@ define(["inheritance", "modules/models/vector", "modules/models/face","modules/m
                     g.ellipse(0, 0, this.radius + 10, this.radius + 10);
 
                     g.fill(this.hue, 1, 1);
-                    var textX = this.radius * .5 + 5;
-                    var textY = this.radius * .4 + 5;
+                    var textX = this.radius * .85 + 5;
+                    var textY = this.radius * .74 + 5;
                     g.text(this.state.name, textX, textY);
+                    g.text("DebugLines: " + this.debugOutputLines, textX, textY + 12);
+                    $.each(this.debugOutputLines, function(index, line) {
+                        g.text(line, textX, textY + 12 * (index + 1));
 
+                    })
                     break;
+
             }
         };
 
@@ -124,9 +129,21 @@ define(["inheritance", "modules/models/vector", "modules/models/face","modules/m
                 this.velocity.addPolar(Math.random() * 100, Math.random() * 100);
                 console.log("star's actual hue: " + this.hue);
                 initFace(this);
+
+                this.debugOutputLines = [];
+            },
+
+            debugOutput : function(d) {
+                debugOutputLines.push(d);
+            },
+            clearDebugOutput : function() {
+                debugOutputLines = [];
             },
 
             update : function(time) {
+                // Clear the output
+                this.clearDebugOutput();
+                this.debugOutput("dfasd");
 
                 var d = this.position.magnitude();
                 var outside = Math.max(0, d - 200);
@@ -137,6 +154,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face","modules/m
                 var ny = this.position.y * noiseScale;
                 var theta = noise.noise2D(nx, ny);
                 this.totalForce.addPolar(10, theta);
+                this.debugOutput(this.totalForce);
+
                 this.velocity.addMultiple(this.totalForce, time.ellapsed);
                 //  console.log("Update star " + time.ellapsed);
                 this.position.addMultiple(this.velocity, time.ellapsed);
@@ -145,7 +164,6 @@ define(["inheritance", "modules/models/vector", "modules/models/face","modules/m
                 this.face.update(time, this.radius * .8, this.radius * .8);
                 //console.log("radius for face on update: " + this.radius * .8)
             },
-
             draw : drawLayer,
         });
 
