@@ -7,6 +7,10 @@
 define([], function() {
 
     return (function() {
+        var controlUpdateFunction = [];
+        var onControl = function(f) {
+            controlUpdateFunction.push(f);
+        };
 
         var initMouseFunctions = function() {
             universeDiv.click(function(e) {
@@ -16,21 +20,33 @@ define([], function() {
 
             universeDiv.mousemove(function(e) {
                 var p = toRelative(this, e);
+                if (mouse.pressed) {
+                    mouse.dragOffset = getOffset(p, mouse.lastPressed);
+                    console.log(mouse.dragOffset);
+                }
+                controlUpdated();
 
             });
 
             universeDiv.mouseup(function(e) {
+                mouse.pressed = false;
                 var p = toRelative(this, e);
-                mouse.dragOffset = getOffset(p, mouse.lastPressed);
-                console.log(mouse.dragOffset);
+                mouse.dragOffset = [0, 0];
 
             });
 
             universeDiv.mousedown(function(e) {
+                mouse.pressed = true;
                 var p = toRelative(this, e);
                 mouse.lastPressed[0] = p[0];
                 mouse.lastPressed[1] = p[1];
                 console.log(mouse.lastPressed);
+            });
+        };
+
+        var controlUpdated = function() {
+            $.each(controlUpdateFunction, function(index, f) {
+                f.call(undefined, mouse);
             });
         };
 
@@ -57,12 +73,12 @@ define([], function() {
         var mouse = {
             lastPressed : [0, 0],
             dragOffset : [0, 0],
+            pressed : false,
         };
         initMouseFunctions();
 
         return {
-
-            // public interface
+            onControl : onControl,
 
         };
     })();

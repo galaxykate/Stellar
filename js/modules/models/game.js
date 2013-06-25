@@ -19,6 +19,11 @@ define(['modules/views/game_view', 'modules/controllers/game_controller', 'modul
             universe.update(time);
 
         });
+
+        gameController.universeController.onControl(function(mouse) {
+            universe.gestureUpdate(mouse);
+
+        });
     };
 
     return {
