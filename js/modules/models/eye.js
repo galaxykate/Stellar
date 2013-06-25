@@ -126,15 +126,15 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
             //var testNoise = this.noise.noise2D(Math.random(), Math.random());
             //var testNoise = this.noise.noise2D(time.total * 0.1, time.total * 0.2);
             //console.log("Test noise: " + testNoise);
-        	this.innerLowerTheta = -.1 - 3.5*(-.05 + this.noise.noise2D(200+time.total, 150+time.total)); //+ Processing.noise(200 + time));
-            this.outerLowerTheta = -.4 + Math.PI + -1.5*(-.05 + this.noise.noise2D(time.total, time.total)); // + Processing.noise(time));
+        	this.innerLowerTheta = -.1 - 3.5*(-.05 + utilities.pnoise(200+time.total)); //+ Processing.noise(200 + time));
+            this.outerLowerTheta = -.4 + Math.PI + -1.5*(-.05 + utilities.pnoise(time.total)); // + Processing.noise(time));
             var liftScale = this.cheekWidth * .25;
             
             
             //this.innerLowerTheta = -1;
             //this.outerLowerTheta = -1;
             //this.innerLift = 1;
-            this.innerLift = 1.2*Math.abs(Math.sin(liftScale*this.noise.noise2D(.02*time.total + 150, .02*time.total + 150))); //*Processing.noise(.2*time + 150)));
+            this.innerLift = 1.2*Math.abs(Math.sin(liftScale*utilities.pnoise(.02*time.total + 150))); //*Processing.noise(.2*time + 150)));
     		this.outerLift = this.innerLift;
     		this.innerUpperTheta = this.innerLowerTheta + -1.6*this.innerLift;
     		this.outerUpperTheta = this.outerLowerTheta + 1.6*this.outerLift;
