@@ -73,7 +73,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         };
 
         function initFace(p) {
-            p.face = new Face.Face(p.hue);
+            p.face = new Face.Face(p.hue, p.idNumber);
         };
 
         function drawLayer(g, options) {

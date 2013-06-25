@@ -158,7 +158,7 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
 
         // Make the Face class
         var Eye = Class.extend({
-            init : function(hue) {
+            init : function(hue, id) {
             	// functions from Kate's example
 		        this.innerPct = -.52; // used to be on a 0 - 1 scale
 		        this.outerPct = .46; // now is on a -1 to 1 scale (centered on 0!)
@@ -188,6 +188,9 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
             	this.starHue = hue;
             	
             	this.noise = new Noise();
+            	
+            	// debug info for eyes
+            	this.starID = id;
             },
 
             update : updateEye,
