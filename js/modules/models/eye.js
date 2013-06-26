@@ -14,17 +14,18 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
             g.noStroke();
             g.fill(1);
             var w = this.outer.x - this.inner.y;
-            g.ellipse(this.eyeCenter.x, this.eyeCenter.y, w*.65, w*.65);
+            g.ellipse(this.eyeCenter.x, this.eyeCenter.y, w, w*.70);
             
             // Eyeball
             g.pushMatrix();
-            //this.eyePos.translateTo(g, false);
+            this.eyePos.translateTo(g); // had an aditional parameter: false. Probably for 3D
             drawEyeBall(g, this);
             g.popMatrix();
             
             // Lower Lid
             // head.skinColor.setFill(g, -.3, 1);
-            g.fill(this.starHue, 1, 1);
+            //g.fill(this.starHue, 1, 1);
+            g.fill(this.starHue, 1, .5);
             g.noStroke();
             g.beginShape();
             //console.log("Lower Slants: " + this.innerLowerSlant + " //// " + this.outerLowerSlant);
@@ -40,7 +41,8 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
             g.endShape();
      		
      		// Lower lash
-     		g.stroke(0.3, 1, 1);
+     		//g.stroke(0.3, 1, 1);
+     		g.stroke(0);
      		g.noFill();
      		g.beginShape();
      		//console.log("LashLine: " + this.innerUpperSlant + " //// " + this.outerUpperSlant);
@@ -52,7 +54,7 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
      		drawLashLine(g, this.innerUpperSlant, this.outerUpperSlant, 1, this);
      		g.endShape();
      		
-     		drawLashControlPoints(g, this.innerUpperSlant, this.outerUpperSlant, 1, this);
+     		//drawLashControlPoints(g, this.innerUpperSlant, this.outerUpperSlant, 1, this);
      		//drawLashControlPoints(g, this.innerLowerSlant, this.outerLowerSlant, 1, this);
             
         };
@@ -107,7 +109,7 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
         	eyeClass.inner.drawLineTo(g, false, test);
         }
 
-        function updateEye(time, width, height){
+        function updateEye(time, width, height, eyeFocusVector){
         	this.cheekWidth = width;
         	//console.log("this.cheekWidth = width " + this.cheekWidth + " /// " + cheekWidth2);
         	// gives proper cheekWidth
@@ -126,15 +128,21 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
             //var testNoise = this.noise.noise2D(Math.random(), Math.random());
             //var testNoise = this.noise.noise2D(time.total * 0.1, time.total * 0.2);
             //console.log("Test noise: " + testNoise);
-        	this.innerLowerTheta = -.1 - 3.5*(-.05 + utilities.pnoise(200+time.total)); //+ Processing.noise(200 + time));
-            this.outerLowerTheta = -.4 + Math.PI + -1.5*(-.05 + utilities.pnoise(time.total)); // + Processing.noise(time));
+        	//this.innerLowerTheta = -.1 - 4.5*(-.05 + utilities.pnoise(200+.5*time.total)); //+ Processing.noise(200 + time));
+            //this.outerLowerTheta = -.5 + Math.PI + -3.5*(-.05 + utilities.pnoise(.5*time.total)); // + Processing.noise(time));
+            //this.innerLowerTheta = 1.5;
+            this.innerLowerTheta = - 1+ 2.5*utilities.pnoise(.5*time.total + 400);
+            //this.outerLowerTheta = 1.5;
+            this.outerLowerTheta = - .1+ 2.5*utilities.pnoise(.5*time.total + 500);
+            
             var liftScale = this.cheekWidth * .25;
             
             
             //this.innerLowerTheta = -1;
             //this.outerLowerTheta = -1;
             //this.innerLift = 1;
-            this.innerLift = 1.2*Math.abs(Math.sin(liftScale*utilities.pnoise(.02*time.total + 150))); //*Processing.noise(.2*time + 150)));
+            //this.innerLift = 1.2*Math.abs(Math.sin(liftScale*utilities.pnoise(.05*time.total + 150))); //*Processing.noise(.2*time + 150)));
+    		this.innerLift = 2;
     		this.outerLift = this.innerLift;
     		this.innerUpperTheta = this.innerLowerTheta + -1.6*this.innerLift;
     		this.outerUpperTheta = this.outerLowerTheta + 1.6*this.outerLift;
@@ -166,8 +174,15 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
     		this.eyeLine.sub(this.inner);
     		//console.log("2 eyeLine: " + this.eyeLine);
     		this.eyeCenter = this.inner.lerp(this.outer, .5);
+    		this.eyeFocus = eyeFocusVector;
     		this.eyePos = this.inner.lerp(this.outer, .05 + .9 * this.eyeFocus.x);
-    		this.eyePos.y -= 5;
+    		var eyeOffsetScalar = this.cheekWidth * 0.025;
+    		this.eyePos.y -= eyeOffsetScalar;
+    		
+    		
+    		//utilities.debugOutput("focus for star " + this.starID + ": " + this.eyeFocus);
+    		//utilities.debugOutput("eyePos for star " + this.starID + ": " + this.eyePos);
+    		//utilities.debugOutput(" ");
     		
     		//console.log("1this.starID: " + this.starID);
     		/*
@@ -202,8 +217,8 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
         var Eye = Class.extend({
             init : function(hue, id) {
             	// functions from Kate's example
-		        this.innerPct = -.52; // used to be on a 0 - 1 scale
-		        this.outerPct = .46; // now is on a -1 to 1 scale (centered on 0!)
+		        this.innerPct = -.42; // .52 used to be on a 0 - 1 scale
+		        this.outerPct = .40; // .46 now is on a -1 to 1 scale (centered on 0!)
 				this.cheekHeight = 50; // irrelevant
 				this.cheekWidth = 200; // overriden by the size of the star
 				this.cheekCurve = 90; // what is this for? 90 degrees?
