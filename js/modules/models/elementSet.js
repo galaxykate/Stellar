@@ -8,6 +8,10 @@ define(["modules/models/elements"], function(Elements) {
     return (function() {
 
         // Private functions
+
+        // Which elements are actually active in this game?
+        // We may not want all of them.
+
         var activeElementNames = ["Hydrogen", "Helium", "Carbon", "Oxygen", "Silicon", "Iron", "Gold", "Uranium"];
         var activeElements = [];
         $.each(activeElementNames, function(index, elementName) {
@@ -21,16 +25,27 @@ define(["modules/models/elements"], function(Elements) {
 
         console.log(activeElements);
 
+        // Draw an arc around some radius: used to show proportion of elements
         var segmentsPerCircle = 50;
         function drawArc(g, innerRadius, outerRadius, startTheta, endTheta) {
             var thetaRange = endTheta - startTheta;
             var segments = Math.ceil(segmentsPerCircle * thetaRange / (2 * Math.PI));
-            g.beginShape(g.TRIANGLE_STRIP);
-            for (var i = 0; i < segments; i++) {
-                var theta = (i / (segments - 1)) * thetaRange + startTheta;
-                g.vertex(innerRadius * Math.cos(theta), innerRadius * Math.sin(theta));
-                g.vertex(outerRadius * Math.cos(theta), outerRadius * Math.sin(theta));
+            g.noStroke();
+            g.beginShape();
+            // Go back and forth around the shape
+            for (var i = 0; i < segments + 1; i++) {
+                var theta = (i / (segments) * thetaRange + startTheta);
+                g.polarVertex(innerRadius, theta);
+                g.polarVertex(outerRadius, theta);
+
             }
+
+            for (var i = segments; i >= 0; i--) {
+                var theta = (i / (segments) * thetaRange + startTheta);
+                g.polarVertex(innerRadius, theta);
+                g.polarVertex(outerRadius, theta);
+            }
+            
             g.endShape();
         };
 
@@ -38,8 +53,15 @@ define(["modules/models/elements"], function(Elements) {
         function ElementSet() {
             console.log("Create element set");
             this.elementQuantity = [];
+
+            // How many elements does this start with?
+            var maxElements = 1 + Math.floor(Math.random() * Math.random() * activeElements.length);
+            var previousElement = Math.random() * 1000;
             for (var i = 0; i < activeElements.length; i++) {
-                this.elementQuantity[i] = Math.random() * 1000 / (i + 1);
+
+                // Each element should be a little less frequent then the element before
+                this.elementQuantity[i] = previousElement * (.3 + .4 * Math.random());
+                previousElement = this.elementQuantity[i];
             }
             this.setTotalMass();
 
@@ -54,7 +76,7 @@ define(["modules/models/elements"], function(Elements) {
         };
 
         ElementSet.prototype.draw = function(g, radius) {
-var totalRange = 6;
+            var totalRange = 6;
             var innerRadius = radius + 20;
             var outerRadius = innerRadius + 20;
             var endTheta = 0;

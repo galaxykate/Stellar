@@ -21,17 +21,22 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
         };
 
         var update = function(currentTime) {
-                      utilities.clearDebugOutput();
+            utilities.clearDebugOutput();
             //   console.log("update " + currentTime);
             time.ellapsed = currentTime - time.total;
             time.total = currentTime;
-   utilities.debugOutput("Update " + time.total.toFixed(2) + " fps: " + (1/time.ellapsed).toFixed(2));
-         
-         
+            utilities.debugOutput("Update " + time.total.toFixed(2) + " fps: " + (1 / time.ellapsed).toFixed(2));
+
             $.each(updateFunctions, function(index, f) {
                 f.call(undefined, time);
             });
         };
+
+        var addDrawingUtilities = function(g) {
+            g.polarVertex = function(r, theta) {
+                this.vertex(r * Math.cos(theta), r * Math.sin(theta));
+            }
+        }; 
 
         var draw = function(g) {
 
@@ -90,6 +95,7 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
         console.log("START UNIVERSE VIEW");
         canvas = document.getElementById("universe_canvas");
         var initProcessing = function(g) {
+            addDrawingUtilities(g);
             g.size(600, 400);
             g.colorMode(g.HSB, 1);
             g.background(.45, 1, 1);

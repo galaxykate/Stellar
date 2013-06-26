@@ -104,20 +104,23 @@ define([], function() {
 
             //===========================================================
             //===========================================================
+            translateTo : function(g) {
+                g.translate(this.x, this.y);
+            },
+
+            //===========================================================
+            //===========================================================
 
             bezierWithRelativeControlPoints : function(g, p, c0, c1) {
                 // "x" and "y" were not defined, so I added "this." in front. Hopefully that's the intended action (April)
                 g.bezierVertex(p.x + c0.x, p.y + c0.y, this.x + c1.x, this.y + c1.y, this.x, this.y);
             },
-
             vertex : function(g) {
                 g.vertex(this.x, this.y);
             },
-
             drawCircle : function(g, radius) {
                 g.ellipse(this.x, this.y, radius, radius);
             },
-
             drawLineTo : function(g, v) {
                 g.line(this.x, this.y, v.x, v.y);
             },
