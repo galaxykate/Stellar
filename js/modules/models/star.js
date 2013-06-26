@@ -71,7 +71,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         };
 
         function initFace(p) {
-            p.face = new Face.Face(p.hue);
+            p.face = new Face.Face(p.hue, p.idNumber);
         };
 
         function drawLayer(g, options) {
@@ -130,6 +130,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 initFace(this);
                 initAsElementContainer(this);
                 this.debugOutputLines = [];
+                
+        		
             },
 
             debugOutput : function(d) {
@@ -162,6 +164,9 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
                 this.face.update(time, this.radius * .8, this.radius * .8);
                 //console.log("radius for face on update: " + this.radius * .8)
+                
+                this.debugOutput("ID number: " + this.idNumber);
+                
             },
             draw : drawLayer,
         });

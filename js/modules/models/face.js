@@ -41,7 +41,6 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
         		faceClass.rightEye.draw(g);
         	g.popMatrix();
         	
-        //	console.log("drawing (left)face: " + leftFace);
         }
         
         
@@ -56,11 +55,11 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
 
         // Make the Face class
         var Face = Class.extend({
-            init : function(hue) {
+            init : function(hue, id) {
             	// Any defaults we need
-            	this.centerEye = new Eye.Eye(hue);
-            	this.rightEye = new Eye.Eye(hue);
-            	this.leftEye = new Eye.Eye(hue);
+            	this.centerEye = new Eye.Eye(hue, id);
+            	this.rightEye = new Eye.Eye(hue, id);
+            	this.leftEye = new Eye.Eye(hue, id);
             	//console.log("setting star hue in face: " + hue);
             	this.starHue = hue;
             },
