@@ -10,6 +10,13 @@ define(["modules/views/universe_view"], function(universeView) {
         console.log("Init game view");
         // Private functions
 
+        function initializeUI() {
+
+            $("#show_faces").button();
+            $("#show_elements").button();
+        };
+        initializeUI();
+
         return {
             // public interface: these attributes are visible in the returned object
             universeView : universeView,

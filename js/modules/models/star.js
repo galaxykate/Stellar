@@ -56,6 +56,10 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         // Give this object a bunch of elements
         function initAsElementContainer(p) {
             p.elements = new ElementSet();
+            p.elements.setTotalMass();
+            p.mass = p.elements.totalMass;
+            p.radius = Math.pow(p.mass, .5)*1;
+            
         }
 
         function initAsParticle(p) {
@@ -63,6 +67,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             p.velocity = new Vector.Vector(0, 0);
             p.forces = [];
             p.totalForce = new Vector.Vector(0, 0);
+            p.mass = 1;
         };
 
         function initGraphics(p) {
@@ -130,8 +135,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 initFace(this);
                 initAsElementContainer(this);
                 this.debugOutputLines = [];
-                
-        		
+
             },
 
             debugOutput : function(d) {
@@ -164,9 +168,9 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
                 this.face.update(time, this.radius * .8, this.radius * .8);
                 //console.log("radius for face on update: " + this.radius * .8)
-                
+
                 this.debugOutput("ID number: " + this.idNumber);
-                
+
             },
             draw : drawLayer,
         });
