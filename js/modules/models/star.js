@@ -55,9 +55,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
         // Give this object a bunch of elements
         function initAsElementContainer(p) {
-            p.elements = {
-
-            };
+            p.elements = new ElementSet();
         }
 
         function initAsParticle(p) {
@@ -99,6 +97,9 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                     g.noFill();
                     g.ellipse(0, 0, this.radius + 10, this.radius + 10);
 
+                    this.elements.draw(g, this.radius);
+
+                    // Draw the text
                     g.fill(this.hue, 1, 1);
                     var textX = this.radius * .85 + 5;
                     var textY = this.radius * .74 + 5;
@@ -127,14 +128,14 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.velocity.addPolar(Math.random() * 100, Math.random() * 100);
                 console.log("star's actual hue: " + this.hue);
                 initFace(this);
-
+                initAsElementContainer(this);
                 this.debugOutputLines = [];
             },
 
             debugOutput : function(d) {
-             
+
                 this.debugOutputLines.push(d);
-          
+
             },
             clearDebugOutput : function() {
                 this.debugOutputLines = [];
@@ -143,7 +144,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             update : function(time) {
                 // Clear the output
                 this.clearDebugOutput();
-            
+
                 var d = this.position.magnitude();
                 var outside = Math.max(0, d - 200);
                 this.totalForce.setToMultiple(this.position, -Math.pow(outside, 3) / d);
@@ -153,7 +154,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 var ny = this.position.y * noiseScale;
                 var theta = noise.noise2D(nx, ny);
                 this.totalForce.addPolar(10, theta);
-            
+
                 this.velocity.addMultiple(this.totalForce, time.ellapsed);
                 //  console.log("Update star " + time.ellapsed);
                 this.position.addMultiple(this.velocity, time.ellapsed);
