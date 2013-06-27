@@ -89,13 +89,14 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             initAsTouchable : function() {
                 this.touchable = true;
                 this.touchHeld = false;
-                this.touchStart = function(touch) {
-                    this.touchHeld = true;
-                };
-                this.touchEnd = function(touch) {
-                    this.touchHeld = false;
-                };
 
+            },
+
+            touchStart : function(touch) {
+                this.touchHeld = true;
+            },
+            touchEnd : function(touch) {
+                this.touchHeld = false;
             },
 
             drawBackground : function(g, options) {
