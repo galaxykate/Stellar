@@ -56,6 +56,11 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
      		
      		//drawLashControlPoints(g, this.innerUpperSlant, this.outerUpperSlant, 1, this);
      		//drawLashControlPoints(g, this.innerLowerSlant, this.outerLowerSlant, 1, this);
+     		
+     		//g.fill(.4, 1, 1);
+     		//g.noStroke();
+     		//this.innerUpperSlant.drawCircle(g, 5);
+     		//this.innerUpperSlant.drawLineTo(g, this.inner);
             
         };
         
@@ -144,7 +149,7 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
             //this.innerLift = 1.2*Math.abs(Math.sin(liftScale*utilities.pnoise(.05*time.total + 150))); //*Processing.noise(.2*time + 150)));
     		this.innerLift = 2;
     		this.outerLift = this.innerLift;
-    		this.innerUpperTheta = this.innerLowerTheta + -1.6*this.innerLift;
+    		this.innerUpperTheta = this.innerLowerTheta + -.6*this.innerLift;
     		this.outerUpperTheta = this.outerLowerTheta + 1.6*this.outerLift;
     		/*if(this.starID === 1){
     			
@@ -191,19 +196,24 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
     			utilities.clearDebugOutput();
     			utilities.debugOutput("inner: " + this.inner);
     			utilities.debugOutput("outer: " + this.outer);
-    			utilities.debugOutput("innerLowerTheta: " + this.innerLowerTheta);
-    			utilities.debugOutput("outerLowerTheta: " + this.outerLowerTheta);
+    			//utilities.debugOutput("innerLowerTheta: " + this.innerLowerTheta);
+    			//utilities.debugOutput("outerLowerTheta: " + this.outerLowerTheta);
     			utilities.debugOutput("innerLift: " + this.innerLift);
     			utilities.debugOutput("outerLift: " + this.outerLift);
     			utilities.debugOutput("innerUpperTheta: " + this.innerUpperTheta);
     			utilities.debugOutput("outerUpperTheta: " + this.outerUpperTheta);
-    			utilities.debugOutput("innerLowerSlant: " + this.innerLowerSlant);
-    			utilities.debugOutput("outerLowerSlant: " + this.outerLowerSlant);
+    			//utilities.debugOutput("innerLowerSlant: " + this.innerLowerSlant);
+    			//utilities.debugOutput("outerLowerSlant: " + this.outerLowerSlant);
     			utilities.debugOutput("innerUpperSlant: " + this.innerUpperSlant);
     			utilities.debugOutput("outerUpperSlant: " + this.outerUpperSlant);
-    			utilities.debugOutput("eyeLine: " + this.eyeLine);
-    			utilities.debugOutput("eyeCenter: " + this.eyeCenter);
+    			//utilities.debugOutput("eyeLine: " + this.eyeLine);
+    			//utilities.debugOutput("eyeCenter: " + this.eyeCenter);
+    			utilities.debugOutput("eyeFocus: " + this.eyeFocus);
     			utilities.debugOutput("eyePos: " + this.eyePos);
+    			utilities.debugOutput("inner lerping to outer at: " + (.1 + 0.9 * this.eyeFocus.x));
+    			
+    			//utilities.debugOutput("innerUpperSlantScale: " + innerUpperSlantScale);
+    			//utilities.debugOutput("outerLowerSlantScale: " + outerLowerSlantScale);
     		}*/
     		
     		//console.log("2 Inner, outer: " + this.inner + " /// " + this.outer);
@@ -223,7 +233,9 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
 				this.cheekWidth = 200; // overriden by the size of the star
 				this.cheekCurve = 90; // what is this for? 90 degrees?
 				
+				// "inner" is the inner eye corner vector location
 				this.inner = new Vector.Vector();
+				// "outer" is the outer eye corner vector location
 				this.outer = new Vector.Vector();
 				this.innerLowerTheta = 0;
 				this.outerLowerTheta = 0;
@@ -232,14 +244,23 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
 			    this.innerUpperTheta = 0;
 				this.outerUpperTheta = 0;
 			    
+			    // Point is outside the two eyes, way off the face, slightly elevated
+			    // Doesn't seem in line with eyeballs, eye corners, or anything else.
 			    this.eyeLine = new Vector.Vector();
+			    // Proper center of the eye. Halfway between the inner/outer points
 				this.eyeCenter = new Vector.Vector();
+				// Appears to be right in the center of the eye =/
 				this.eyeFocus = new Vector.Vector(0, 0);
+				// Center of the eyeball
 				this.eyePos = new Vector.Vector();
 				
+				// The position of the inner lower lid control point.
             	this.innerLowerSlant = new Vector.Vector();
+            	// The position of the outer lower lid control point.
             	this.outerLowerSlant = new Vector.Vector();
+            	// The position of the inner Upper lid control point.
             	this.innerUpperSlant = new Vector.Vector();
+            	// The position of the outer upper lid control point.
             	this.outerUpperSlant = new Vector.Vector();
             	
             	this.starHue = hue;
