@@ -11,13 +11,20 @@ define([], function() {
 
         // Make the Vector class
         function Vector(x, y, z) {
+            // actually another vector, clone it
+            if (x.x !== undefined) {
+                this.x = x.x;
+                this.y = x.y;
+                this.z = x.z;
+            } else {
+                this.x = x;
+                this.y = y;
 
-            this.x = x;
-            this.y = y;
+                this.z = 0;
+                if (z !== undefined)
+                    this.z = z;
 
-            this.z = 0;
-            if (z !== undefined)
-                this.z = z;
+            }
 
         }
 
@@ -62,6 +69,13 @@ define([], function() {
 
             magnitude : function() {
                 return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+            },
+            
+            getDistanceTo : function(p) {
+                var dx = this.x - p.x;
+                var dy = this.y - p.y;
+                var dz = this.z - p.z;
+                return Math.sqrt(dx*dx + dy*dy + dz*dz);
             },
 
             //===========================================================

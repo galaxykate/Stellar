@@ -81,12 +81,7 @@ define([], function() {
             gFunc(h1, s1, b1, a1);
         };
 
-        return {
-            // public interface
-            KColor : KColor,
-         
-
-        };
+       return KColor;
     })();
 
 });

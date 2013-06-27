@@ -22,6 +22,13 @@ var utilities = {
         $("#debug_output").append(output + "<br>");
     },
 
+    debugArrayOutput : function(outputArray) {
+        $.each(outputArray, function(index, output) {
+            $("#debug_output").append(output + "<br>");
+
+        });
+    },
+
     clearDebugOutput : function() {
         $("#debug_output").html("");
     },
@@ -78,7 +85,7 @@ require.config({
     }
 });
 
-require(['jQuery', 'jQueryUI', 'noise', 'modules/models/game' ], function($, $UI, Noise, GAME) {
+require(['jQuery', 'jQueryUI', 'noise', 'modules/models/game'], function($, $UI, Noise, GAME) {
 
     utilities.noiseInstance = new Noise();
     GAME.startGame();

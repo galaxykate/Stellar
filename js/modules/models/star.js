@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(["inheritance", "modules/models/vector", "modules/models/face", "modules/models/elementSet", "noise"], function(Inheritance, Vector, Face, ElementSet, Noise) {
+define(["inheritance", "modules/models/vector", "modules/models/face", "modules/models/elementSet", "noise", "modules/models/uparticle"], function(Inheritance, Vector, Face, ElementSet, Noise, UParticle) {
     return (function() {
 
         var noise = new Noise();
@@ -50,129 +50,34 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             return states[Math.floor(Math.random() * 3)];
         };
 
-        // Private functions
-        var starCount = 0;
-
-        // Give this object a bunch of elements
-        function initAsElementContainer(p) {
-            p.elements = new ElementSet();
-            p.elements.setTotalMass();
-            p.mass = p.elements.totalMass;
-            p.radius = Math.pow(p.mass, .5)*1;
-            
-        }
-
-        function initAsParticle(p) {
-            p.position = new Vector.Vector(0, 0);
-            p.velocity = new Vector.Vector(0, 0);
-            p.forces = [];
-            p.totalForce = new Vector.Vector(0, 0);
-            p.mass = 1;
-        };
-
-        function initGraphics(p) {
-
-            p.hue = (p.idNumber * .212 + .3) % 1;
-        };
-
-        function initFace(p) {
-            p.face = new Face.Face(p.hue, p.idNumber);
-        };
-
-        function drawLayer(g, options) {
-
-            switch(options.layer) {
-                case "bg":
-                    break;
-
-                case "main":
-
-                    g.fill(this.hue, 1, 1);
-                    g.noStroke();
-                    g.ellipse(0, 0, this.radius, this.radius);
-
-                    this.face.draw(g)
-                    this.state.draw(g, this, options);
-
-                    break;
-
-                case "overlay":
-                    //var h = (this.idNumber * .212 + .3) % 1;
-                    g.stroke(this.hue, 1, 1);
-                    g.noFill();
-                    g.ellipse(0, 0, this.radius + 10, this.radius + 10);
-
-                    this.elements.draw(g, this.radius);
-
-                    // Draw the text
-                    g.fill(this.hue, 1, 1);
-                    var textX = this.radius * .85 + 5;
-                    var textY = this.radius * .74 + 5;
-                    g.text(this.state.name, textX, textY);
-                    $.each(this.debugOutputLines, function(index, line) {
-                        g.text(line, textX, textY + 12 * (index + 1));
-                    })
-                    break;
-
-            }
-        };
-
         // Make the star class
-        var Star = Class.extend({
+        //  Extend the star
+        var Star = UParticle.extend({
 
             init : function(universe) {
-                this.universe = universe;
-                this.idNumber = starCount;
+                this._super(universe);
                 this.state = randomState();
-                this.radius = Math.random() * 100 + 10;
-                starCount++;
-                initAsParticle(this);
-                // idNumber must be set before initting graphics (moved hue stuff there)
-                initGraphics(this);
-                this.position.setToPolar(Math.random() * 100, Math.random() * 100);
-                this.velocity.addPolar(Math.random() * 100, Math.random() * 100);
-                console.log("star's actual hue: " + this.hue);
-                initFace(this);
-                initAsElementContainer(this);
-                this.debugOutputLines = [];
+                this.radius = Math.random() * 20 + 3;
+           
+               // this.initGraphics();
+              //  this.initFace();
 
             },
 
-            debugOutput : function(d) {
+            initGraphics : function() {
 
-                this.debugOutputLines.push(d);
-
-            },
-            clearDebugOutput : function() {
-                this.debugOutputLines = [];
+                this.hue = (this.idNumber * .212 + .3) % 1;
             },
 
-            update : function(time) {
-                // Clear the output
-                this.clearDebugOutput();
-
-                var d = this.position.magnitude();
-                var outside = Math.max(0, d - 200);
-                this.totalForce.setToMultiple(this.position, -Math.pow(outside, 3) / d);
-
-                var noiseScale = .010;
-                var nx = this.position.x * noiseScale;
-                var ny = this.position.y * noiseScale;
-                var theta = noise.noise2D(nx, ny);
-                this.totalForce.addPolar(10, theta);
-
-                this.velocity.addMultiple(this.totalForce, time.ellapsed);
-                //  console.log("Update star " + time.ellapsed);
-                this.position.addMultiple(this.velocity, time.ellapsed);
-                //   console.log(this.velocity);
-
-                this.face.update(time, this.radius * .8, this.radius * .8);
-                //console.log("radius for face on update: " + this.radius * .8)
-
-                this.debugOutput("ID number: " + this.idNumber);
-
+            initFace : function(p) {
+                this.face = new Face.Face(this.hue, this.idNumber);
             },
-            draw : drawLayer,
+
+            draw : function(g, options) {
+                // Do all the other drawing
+                this._super(g, options);
+
+            }
         });
 
         return {

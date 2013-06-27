@@ -11,6 +11,7 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
         var processing;
         var drawables = [];
         var updateFunctions = [];
+        var touchableObjects = [];
         var time = {
             total : 0,
             ellapsed : 0
@@ -36,7 +37,7 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
             g.polarVertex = function(r, theta) {
                 this.vertex(r * Math.cos(theta), r * Math.sin(theta));
             }
-        }; 
+        };
 
         var draw = function(g) {
 
@@ -51,6 +52,10 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
                 //  console.log("add " + drawable);
                 view.currentDrawables = view.currentDrawables.concat(drawable.getDrawableObjects());
             });
+
+            // Initialize a list of objects that are touchable
+            touchableObjects = [];
+
             g.colorMode(g.HSB, 1);
             g.ellipseMode(g.CENTER_RADIUS);
 
@@ -83,11 +88,45 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
                 if (obj.position !== undefined) {
                     p.setTo(obj.position);
                     g.translate(p.x, p.y);
-
+              
                 }
                 obj.draw(g, options);
                 g.popMatrix();
+
+                if (options.layer === "main" && obj.touchable) {
+                    var data = [obj, new Vector.Vector(p)];
+                    touchableObjects.push(data);
+
+                }
             });
+
+        };
+
+        var getTouchableAt = function(p) {
+
+            var target = new Vector.Vector(p[0] - processing.width / 2, p[1] - processing.height / 2, 0);
+            stellarGame.touch.universeTouch = target;
+            console.log("Get touchable at: " + target);
+
+            var minDist = 130;
+            var closest;
+            // go through all the objects and find the closest (inefficient, but fine for now)
+            $.each(touchableObjects, function(index, objData) {
+
+                var obj = objData[0];
+
+                var d = obj.position.getDistanceTo(target);
+                console.log("    " + d + " to " + obj);
+
+                if (d < minDist) {
+                    minDist = d;
+                    closest = obj;
+                    console.log("      Obj found: " + obj);
+
+                }
+
+            });
+            return closest;
 
         };
 
@@ -95,6 +134,7 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
         console.log("START UNIVERSE VIEW");
         canvas = document.getElementById("universe_canvas");
         var initProcessing = function(g) {
+
             addDrawingUtilities(g);
             g.size(600, 400);
             g.colorMode(g.HSB, 1);
@@ -116,6 +156,8 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
             addDrawable : function(d) {
                 drawables.push(d);
             },
+
+            getTouchableAt : getTouchableAt,
         };
     })();
 
