@@ -72,6 +72,7 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
                 this.rightEye = new Eye.Eye(hue, id);
                 this.leftEye = new Eye.Eye(hue, id);
                 //console.log("setting star hue in face: " + hue);
+                //console.log("setting star id in face: " + id);
                 this.starHue = hue;
 
                 this.focus = new Vector.Vector(0, 0);

@@ -59,18 +59,12 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.state = randomState();
                 this.radius = Math.random() * 120 + 30;
 
-                this.initGraphics();
-                this.initFace(this);
+                this.initFace();
 
             },
 
-            initGraphics : function() {
-
-                this.hue = (this.idNumber * .212 + .3) % 1;
-            },
-
-            initFace : function(p) {
-                this.face = new Face.Face(this.hue, this.idNumber);
+            initFace : function() {
+                this.face = new Face.Face(this.idColor, this.idNumber);
             },
 
             drawMain : function(g, options) {
