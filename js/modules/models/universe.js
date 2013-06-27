@@ -23,7 +23,7 @@ define(["modules/models/star", "modules/models/vector", "modules/models/kcolor"]
                 backgroundStars[i] = [];
                 var starCount = backgroundStarDensity * (backgroundLayers - i);
                 for (var j = 0; j < starCount; j++) {
-                    var color = new KColor.KColor(Math.random(), 1, 1);
+                    var color = new KColor(Math.random(), 1, 1);
                     backgroundStars[i][j] = [Math.random() * 800, Math.random() * 800, Math.random() * .2, Math.random() * 10 + 2, color];
                 }
             }
@@ -59,7 +59,7 @@ define(["modules/models/star", "modules/models/vector", "modules/models/kcolor"]
                     y -= g.height / 2;
 
                     //  g.fill(.1 + .32 * i, .5, 1, .3);
-color.fill(g, 0, -.8);
+                    color.fill(g, 0, -.8);
                     g.ellipse(x, y, r, r);
                     g.fill(1, 0, 1);
                     g.ellipse(x, y, r * .1 + 1, r * .1 + 1);

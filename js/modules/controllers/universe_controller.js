@@ -7,12 +7,26 @@
 define([], function() {
 
     return (function() {
+
+        // Attach mouse events to the world window
+        var universeDiv = $("#universe_canvas");
+        var touch = {
+            lastPressed : [0, 0],
+            dragOffset : [0, 0],
+            pressed : false,
+        };
+        var universeView;
+
+        var setUniverseView = function(view) {
+            universeView = view;
+        }
         var controlUpdateFunction = [];
+
         var onControl = function(f) {
             controlUpdateFunction.push(f);
         };
 
-        var initMouseFunctions = function() {
+        var initTouchFunctions = function() {
             universeDiv.click(function(e) {
                 var p = toRelative(this, e);
 
@@ -20,33 +34,42 @@ define([], function() {
 
             universeDiv.mousemove(function(e) {
                 var p = toRelative(this, e);
-                if (mouse.pressed) {
-                    mouse.dragOffset = getOffset(p, mouse.lastPressed);
-                    console.log(mouse.dragOffset);
+                if (touch.pressed) {
+                    touch.dragOffset = getOffset(p, touch.lastPressed);
                 }
                 controlUpdated();
 
             });
 
             universeDiv.mouseup(function(e) {
-                mouse.pressed = false;
+                touch.pressed = false;
                 var p = toRelative(this, e);
-                mouse.dragOffset = [0, 0];
-
+                touch.dragOffset = [0, 0];
+                if (touch.heldObject !== undefined) {
+                    console.log("Touch ended " + touch.heldObject);
+                    touch.heldObject.touchEnd();
+                }
             });
 
             universeDiv.mousedown(function(e) {
-                mouse.pressed = true;
+                touch.pressed = true;
                 var p = toRelative(this, e);
-                mouse.lastPressed[0] = p[0];
-                mouse.lastPressed[1] = p[1];
-                console.log(mouse.lastPressed);
+                touch.lastPressed[0] = p[0];
+                touch.lastPressed[1] = p[1];
+            
+                // Figure out what this is pressed *on*
+                touch.heldObject = universeView.getTouchableAt(touch.lastPressed);
+                if (touch.heldObject !== undefined) {
+                    console.log("Touch " + touch.heldObject);
+                    touch.heldObject.touchStart();
+                }
+
             });
         };
 
         var controlUpdated = function() {
             $.each(controlUpdateFunction, function(index, f) {
-                f.call(undefined, mouse);
+                f.call(undefined, touch);
             });
         };
 
@@ -68,17 +91,13 @@ define([], function() {
 
         console.log("START UNIVERSE CONTROLLER");
 
-        // Attach mouse events to the world window
-        var universeDiv = $("#universe_canvas");
-        var mouse = {
-            lastPressed : [0, 0],
-            dragOffset : [0, 0],
-            pressed : false,
-        };
-        initMouseFunctions();
+        // Make the touch accessible from anywhere (but use sparingly!)
+        stellarGame.touch = touch;
+        initTouchFunctions();
 
         return {
             onControl : onControl,
+            setUniverseView : setUniverseView,
 
         };
     })();

@@ -36,16 +36,14 @@ define(["modules/models/elements"], function(Elements) {
             for (var i = 0; i < segments + 1; i++) {
                 var theta = (i / (segments) * thetaRange + startTheta);
                 g.polarVertex(innerRadius, theta);
-                g.polarVertex(outerRadius, theta);
 
             }
 
             for (var i = segments; i >= 0; i--) {
                 var theta = (i / (segments) * thetaRange + startTheta);
-                g.polarVertex(innerRadius, theta);
                 g.polarVertex(outerRadius, theta);
             }
-            
+
             g.endShape();
         };
 
@@ -75,19 +73,34 @@ define(["modules/models/elements"], function(Elements) {
             }
         };
 
+        ElementSet.prototype.getElementCount = function() {
+            var count = 0;
+            for (var i = 0; i < activeElements.length; i++) {
+                if (this.elementQuantity[i] > 0)
+                    count++;
+            }
+            return count;
+        };
+
         ElementSet.prototype.draw = function(g, radius) {
             var totalRange = 6;
             var innerRadius = radius + 20;
-            var outerRadius = innerRadius + 20;
             var endTheta = 0;
+            var margin = .2;
+            totalRange -= (margin * (this.getElementCount() - 1));
             for (var i = 0; i < activeElements.length; i++) {
-                var thetaRange = totalRange * this.elementQuantity[i] / this.totalMass;
-                g.fill(.1 * i, 1, 1);
+                var amt = this.elementQuantity[i];
+                if (amt > 0) {
+                        var outerRadius = amt/innerRadius + innerRadius;
+        
+                    var thetaRange = totalRange * amt / this.totalMass;
+                    g.fill(.1 * i, 1, 1);
 
-                var startTheta = endTheta;
-                endTheta = startTheta + thetaRange;
-                drawArc(g, innerRadius, outerRadius, startTheta, endTheta);
-
+                    var startTheta = endTheta;
+                    endTheta = startTheta + thetaRange;
+                    drawArc(g, innerRadius, outerRadius, startTheta, endTheta);
+                    endTheta += margin;
+                }
             }
         };
 
