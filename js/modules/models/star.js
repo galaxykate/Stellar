@@ -60,7 +60,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.radius = Math.random() * 120 + 30;
 
                 this.initGraphics();
-                this.initFace();
+                this.initFace(this);
 
             },
 
