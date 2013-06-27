@@ -57,10 +57,10 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             init : function(universe) {
                 this._super(universe);
                 this.state = randomState();
-                this.radius = Math.random() * 20 + 3;
-           
-               // this.initGraphics();
-              //  this.initFace();
+                this.radius = Math.random() * 120 + 30;
+
+                this.initGraphics();
+                this.initFace();
 
             },
 
@@ -73,9 +73,10 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.face = new Face.Face(this.hue, this.idNumber);
             },
 
-            draw : function(g, options) {
+            drawMain : function(g, options) {
                 // Do all the other drawing
                 this._super(g, options);
+                this.face.draw(g);
 
             }
         });
