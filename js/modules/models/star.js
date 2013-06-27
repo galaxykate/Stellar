@@ -78,6 +78,10 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this._super(g, options);
                 this.face.draw(g);
 
+            },
+            update : function(time) {
+                this._super(time);
+                this.face.update(time, this.radius, this.radius);
             }
         });
 

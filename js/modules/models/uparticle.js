@@ -60,8 +60,8 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 var noiseScale = .010;
                 var nx = this.position.x * noiseScale;
                 var ny = this.position.y * noiseScale;
-                var theta = noise.noise2D(nx, ny);
-                //this.totalForce.addPolar(10, theta);
+                var theta = 20*noise.noise2D(nx + time.total*.2 + this.idNumber, ny + time.total*.2);
+                this.totalForce.addPolar(40, theta);
 
                 this.velocity.addMultiple(this.totalForce, time.ellapsed);
                 this.position.addMultiple(this.velocity, time.ellapsed);
@@ -83,7 +83,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.forces = [];
                 this.totalForce = new Vector.Vector(0, 0);
                 this.mass = 1;
-                this.drag = .9;
+                this.drag = .98;
             },
 
             initAsTouchable : function() {
