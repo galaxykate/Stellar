@@ -14,7 +14,7 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
             g.noStroke();
             g.fill(1);
             var w = this.outer.x - this.inner.y;
-            g.ellipse(this.eyeCenter.x, this.eyeCenter.y, w, w*.70);
+            g.ellipse(this.eyeCenter.x, this.eyeCenter.y, w*1.1, w*.70);
             
             // Eyeball
             g.pushMatrix();
@@ -117,8 +117,8 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
         	
         	//var innerScale = this.cheekWidth * 0.3; // mustache eyelids
         	//var outerScale = this.cheekWidth * 0.6;
-        	var innerScale = this.cheekWidth * 0.03;
-        	var outerScale = this.cheekWidth * 0.06;
+        	var innerScale = this.cheekWidth * 0.06;
+        	var outerScale = this.cheekWidth * 0.03;
         	this.inner = new Vector.Vector(this.innerPct*this.cheekWidth, innerScale);
             this.outer = new Vector.Vector(this.outerPct*this.cheekWidth, outerScale);
             
@@ -175,7 +175,7 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
     		//console.log("2 eyeLine: " + this.eyeLine);
     		this.eyeCenter = this.inner.lerp(this.outer, .5);
     		this.eyeFocus = eyeFocusVector;
-    		this.eyePos = this.inner.lerp(this.outer, .05 + .9 * this.eyeFocus.x);
+    		this.eyePos = this.inner.lerp(this.outer, .1 + 0.9 * this.eyeFocus.x);
     		var eyeOffsetScalar = this.cheekWidth * 0.025;
     		this.eyePos.y -= eyeOffsetScalar;
     		
