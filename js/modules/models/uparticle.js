@@ -60,7 +60,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 var noiseScale = .010;
                 var nx = this.position.x * noiseScale;
                 var ny = this.position.y * noiseScale;
-                var theta = 20*noise.noise2D(nx + time.total*.2 + this.idNumber, ny + time.total*.2);
+                var theta = 20 * noise.noise2D(nx + time.total * .2 + this.idNumber, ny + time.total * .2);
                 this.totalForce.addPolar(40, theta);
 
                 this.velocity.addMultiple(this.totalForce, time.ellapsed);
@@ -121,7 +121,9 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     g.ellipse(0, 0, this.radius + 10, this.radius + 10);
                 }
 
-                this.elements.draw(g, this.radius);
+                if (stellarGame.drawElements) {
+                    this.elements.draw(g, this.radius);
+                }
 
                 // Draw the text
                 this.idColor.fill(g);

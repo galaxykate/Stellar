@@ -64,7 +64,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             drawMain : function(g, options) {
                 // Do all the other drawing
                 this._super(g, options);
-                this.face.draw(g);
+                if (stellarGame.drawFaces)
+                    this.face.draw(g);
 
             },
             update : function(time) {
