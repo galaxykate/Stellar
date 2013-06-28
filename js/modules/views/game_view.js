@@ -12,8 +12,6 @@ define(["modules/views/universe_view"], function(universeView) {
 
         function initializeUI() {
 
-            $("#show_faces").button();
-            $("#show_elements").button();
         };
         initializeUI();
 

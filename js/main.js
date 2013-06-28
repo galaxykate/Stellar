@@ -2,10 +2,13 @@
  * @author Kate Compton
  */
 
-var stellarGame = {};
+var stellarGame = {
+    drawFaces : false,
+    drawElements : false,
+};
+
 var utilities = {
     // put noise in here too?
-
 
     sCurve : function(v, iterations) {
         for (var i = 0; i < iterations; i++) {

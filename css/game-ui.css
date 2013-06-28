@@ -1,13 +1,20 @@
 body {
 
 }
+
+#controls {
+	width: 600px;
+	height: 50px;
+	float: left;
+	background-color: rgba(230, 255, 250, 1);
+}
+
 #universe_canvas {
 	float: left;
 	width: 600px;
 	height: 400px;
 	background-color: rgba(50, 255, 90, 1);
 }
-
 
 #universe_canvas {
 	width: 600px;
