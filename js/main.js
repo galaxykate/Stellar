@@ -6,6 +6,15 @@ var stellarGame = {};
 var utilities = {
     // put noise in here too?
 
+
+    sCurve : function(v, iterations) {
+        for (var i = 0; i < iterations; i++) {
+            var v2 = .5 - .5 * Math.cos(v * Math.PI);
+            v = v2;
+        }
+        return v;
+    },
+
     constrain : function(val, lowerBound, upperBound) {
         if (Math.max(val, upperBound) === val)
             return upperBound;
@@ -66,11 +75,10 @@ require.config({
         'noise' : 'libs/simplex_noise'
     },
     shim : {
-        'jQuery' : {
-            exports : '$'
-        },
+
         'jQueryUI' : {
-            exports : '$UI'
+            exports : '$',
+            deps : ['jQuery']
         },
         'underscore' : {
             exports : '_'
@@ -85,7 +93,7 @@ require.config({
     }
 });
 
-require(['jQuery', 'jQueryUI', 'noise', 'modules/models/game'], function($, $UI, Noise, GAME) {
+require(['jQueryUI', 'noise', 'modules/models/game'], function($, Noise, GAME) {
 
     utilities.noiseInstance = new Noise();
     GAME.startGame();
