@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(["modules/models/star", "modules/models/vector", "modules/models/kcolor"], function(Star, Vector, KColor) {
+define(["modules/models/star", "modules/models/dust", "modules/models/vector", "modules/models/kcolor"], function(Star, Dust, Vector, KColor) {
 
     return (function() {
 
@@ -16,6 +16,8 @@ define(["modules/models/star", "modules/models/vector", "modules/models/kcolor"]
 
         var stars = [];
         var starsToAdd = [];
+        var dust = [];
+        var dustToAdd = [];
 
         function makeBackgroundStars() {
 
@@ -88,6 +90,13 @@ define(["modules/models/star", "modules/models/vector", "modules/models/kcolor"]
                 starsToAdd.push(s);
             }
         };
+        
+        function generateDust(count){
+        	for (var i = 0; i < count; i++) {
+        		var d = new Dust.Dust(this);
+        		dustToAdd.push(d);
+        	}
+        }
 
         function update(time) {
             var theta = 10 * Math.sin(.01 * time.total);
@@ -101,13 +110,21 @@ define(["modules/models/star", "modules/models/vector", "modules/models/kcolor"]
             }
 
             stellarGame.time = time;
-
+			
+			// Big foreground stars!
             $.each(stars, function(index, star) {
                 star.update(time);
             });
 
             stars = stars.concat(starsToAdd);
             starsToAdd = [];
+            
+            // Dust!
+            $.each(dust, function(index, dust) {
+                dust.update(time);
+            });
+            dust = dust.concat(dustToAdd);
+            dustToAdd = [];
         };
 
         function gestureUpdate(gesture) {
@@ -121,13 +138,17 @@ define(["modules/models/star", "modules/models/vector", "modules/models/kcolor"]
         makeBackgroundStars();
 
         generateStars(4);
+        generateDust(3);
         update(1);
 
         return {
             // public interface
 
             getDrawableObjects : function() {
-                return stars.concat([this]);
+            	var drawables = stars.concat(dust);
+            	drawables = drawables.concat([this]);
+                //return stars.concat([this]);
+                return drawables;
             },
             draw : draw,
             gestureUpdate : gestureUpdate,
