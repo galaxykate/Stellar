@@ -37,7 +37,8 @@ define([], function() {
                 return new KColor(this.h, this.s, this.b, this.a)
             }, shade, fade);
         };
-
+		
+		// shade goes from -1 to 1, as does fade.
         KColor.prototype.fill = function(g, shade, fade) {
             return this.use(g.fill, shade, fade);
         };

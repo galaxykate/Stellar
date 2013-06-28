@@ -10,20 +10,14 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         var noise = new Noise();
 
         var states = [{
-            name : "dust",
+            name : "star",
             idNumber : 0,
             draw : function(g, star, options) {
 
             }
         }, {
-            name : "star",
-            idNumber : 1,
-            draw : function(g, star, options) {
-
-            }
-        }, {
             name : "nova",
-            idNumber : 2,
+            idNumber : 1,
             draw : function(g, star, options) {
                 var segments = 25;
                 var theta;
@@ -47,7 +41,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         }];
 
         var randomState = function() {
-            return states[Math.floor(Math.random() * 3)];
+            return states[Math.floor(Math.random() * 2)];
         };
 
         // Make the star class
@@ -76,6 +70,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             },
             update : function(time) {
                 this._super(time);
+            	this.debugOutput(this.state.name);
                 this.face.update(time, this.radius, this.radius);
             }
         });

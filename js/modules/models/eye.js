@@ -309,9 +309,10 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
 
                 // debug info for eyes
                 this.starID = id;
+                
+                //console.log("setting star hue in eye: " + hue);
+                //console.log("setting star id in eye: " + id);
 
-                console.log("setting star hue in eye: " + hue);
-                console.log("setting star id in eye: " + id);
             },
 
             update : updateEye,
