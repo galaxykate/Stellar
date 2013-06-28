@@ -24,7 +24,7 @@ define(['modules/controllers/universe_controller'], function(universeController)
             }, {
                 id : "drawElements",
                 displayName : "Draw Elements"
-            }];
+            }, ];
 
             // Go through and add each as a labelled checkbox, then turn those into a JQUERYUI toggle
             $.each(settings, function(index, setting) {
