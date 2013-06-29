@@ -22,12 +22,33 @@ body {
 	background-color: rgba(50, 255, 90, 1);
 }
 
-#debug_output {
+#debug_controls {
+	z-index: 40;
+	
+	position: relative;
 	background-color: rgba(155, 155, 155, 1);
 	width: 300px;
 	height: 400px;
 	float: left;
+	margin: 2px;
+}
+
+#debug_output {
+	z-index: 42;
+	position: relative;
+	background-color: rgba(155, 255, 155, 1);
+	width: 98%;
+	height: 300px;
+	float: left;
 	padding: 10px;
 	margin: 2px;
 	overflow: auto;
+}
+
+#debug_objectcreationpalette {
+	position: relative;
+	
+	z-index: 40;
+
+	background-color: rgba(155, 155, 255, 1);
 }
