@@ -25,7 +25,9 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "mo
             
             drawMain : function(g, options) {
                 // Do all the other drawing
-                
+                if (stellarGame.drawElements) {
+                    this.elements.drawAsDustCloud(g, this.radius);
+                }
             },
             
             drawOverlay : function(g, options) {

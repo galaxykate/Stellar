@@ -103,6 +103,24 @@ define(["modules/models/elements"], function(Elements) {
                 }
             }
         };
+        
+        // radius here is the boundary of the dust cloud
+        ElementSet.prototype.drawAsDustCloud = function(g, radius) {
+            
+            for (var i = 0; i < activeElements.length; i++) {
+                var amt = this.elementQuantity[i];
+                var elementRad = activeElements[i].number/10;
+                if (amt > 0) {
+                	// very rough scaling parameters, need to find better functions
+                    //utilities.debugOutput("elementQuantitiy of " + i + " is: " + amt);
+                    g.fill(.1 * i, 1, 1);
+                	var xrand = Math.random(-radius, radius);
+                	var yrand = Math.random(-radius, radius);
+                	g.ellipse(xrand, yrand, elementRad, elementRad)
+
+                }
+            }
+        };
 
         return ElementSet;
     })();

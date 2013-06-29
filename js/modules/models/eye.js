@@ -174,7 +174,7 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
             blink = Math.max(0, (Math.abs(2*blink - 1))*1.4 - .4);
             this.innerLift = 2*blink;
             
-               utilities.debugOutput(blink);
+               //utilities.debugOutput(blink);
           //*Processing.noise(.2*time + 150)));
            // this.innerLift = 3 * Math.pow(this.innerLift, 2);
             //this.innerLift = 2;
