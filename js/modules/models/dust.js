@@ -13,29 +13,36 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "mo
 
             init : function(universe) {
                 this._super(universe);
-                this.radius = Math.random() * 50 + 10;
-
+                this.radius = Math.random() * 20 + 10;
+				
+				this.hacktime = 0;
             },
             
             drawBackground: function(g, options) {
-				this.idColor.fill(g, -.8, .2);
-                g.noStroke();
-                g.ellipse(0, 0, this.radius, this.radius);
+            	if(stellarGame.drawDust){
+					this.idColor.fill(g, -.8, .5);
+	                g.noStroke();
+	                g.ellipse(0, 0, this.radius, this.radius);
+            	}
             },
             
             drawMain : function(g, options) {
-                // Do all the other drawing
-                if (stellarGame.drawElements) {
-                    this.elements.drawAsDustCloud(g, this.radius);
+            	if(stellarGame.drawDust){
+	                // Do all the other drawing
+	                if (stellarGame.drawElements) {
+	                    this.elements.drawAsDustCloud(g, this.radius, this.hacktime);
+	                }
                 }
             },
             
             drawOverlay : function(g, options) {
-            	
+            	if(stellarGame.drawDust){
+            	}
             }, 
             
             update : function(time) {
                 this._super(time);
+                this.hacktime = time;
             }
         });
 
