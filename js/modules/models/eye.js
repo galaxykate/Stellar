@@ -124,7 +124,7 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
         function drawCrease(g, creaseDir, eyeClass) {
             eyeClass.outer.vertex(g, false);
             var creaseScalar = eyeClass.cheekWidth * .25;
-            eyeClass.inner.bezierWithRelativeControlPoints(g, eyeClass.outer, new Vector.Vector(0, creaseScalar * creaseDir), new Vector.Vector(0, creaseScalar * creaseDir))
+            eyeClass.inner.bezierWithRelativeControlPoints(g, eyeClass.outer, new Vector(0, creaseScalar * creaseDir), new Vector(0, creaseScalar * creaseDir))
         }
 
         function drawLashControlPoints(g, innerSlant, outerSlant, controlStretch, eyeClass) {
@@ -132,7 +132,7 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
             g.noStroke();
 
             eyeClass.inner.drawCircle(g, 2);
-            var test = new Vector.Vector(innerSlant.x, innerSlant.y);
+            var test = new Vector(innerSlant.x, innerSlant.y);
             test.add(eyeClass.inner);
             test.drawCircle(g, 2);
             eyeClass.inner.drawLineTo(g, false, test);
@@ -149,8 +149,8 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
             //var outerScale = this.cheekWidth * 0.6;
             var innerScale = this.cheekWidth * 0.06;
             var outerScale = this.cheekWidth * 0.03;
-            this.inner = new Vector.Vector(this.innerPct * this.cheekWidth, innerScale);
-            this.outer = new Vector.Vector(this.outerPct * this.cheekWidth, outerScale);
+            this.inner = new Vector(this.innerPct * this.cheekWidth, innerScale);
+            this.outer = new Vector(this.outerPct * this.cheekWidth, outerScale);
 
             //console.log("1 Inner, outer: " + this.inner + " /// " + this.outer);
             //console.log("using cheekWidth " + this.cheekWidth); // gives proper cheekWidth
@@ -173,9 +173,9 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
             var blink = utilities.sCurve(utilities.pnoise(time.total*.2  + 10*this.starID), 4);
             blink = Math.max(0, (Math.abs(2*blink - 1))*1.4 - .4);
             this.innerLift = 2*blink;
-            
-               //utilities.debugOutput(blink);
           //*Processing.noise(.2*time + 150)));
+           
+           //*Processing.noise(.2*time + 150)));
            // this.innerLift = 3 * Math.pow(this.innerLift, 2);
             //this.innerLift = 2;
             this.outerLift = this.innerLift;
@@ -208,7 +208,7 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
             this.innerUpperSlant.setToPolar(innerUpperSlantScale + additionalUpperSlantScale * this.innerLift, this.innerUpperTheta);
             this.outerUpperSlant.setToPolar(outerUpperSlantScale + additionalUpperSlantScale * this.outerLift, this.outerUpperTheta);
 
-            this.eyeLine = new Vector.Vector(this.outer.x, this.outer.y);
+            this.eyeLine = new Vector(this.outer.x, this.outer.y);
             //console.log("1 eyeLine: " + this.eyeLine);
             this.eyeLine.sub(this.inner);
             //console.log("2 eyeLine: " + this.eyeLine);
@@ -274,9 +274,9 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
                 this.eyeBallRadius = 0;
 
                 // "inner" is the inner eye corner vector location
-                this.inner = new Vector.Vector();
+                this.inner = new Vector();
                 // "outer" is the outer eye corner vector location
-                this.outer = new Vector.Vector();
+                this.outer = new Vector();
                 this.innerLowerTheta = 0;
                 this.outerLowerTheta = 0;
                 this.innerLift = 0;
@@ -286,22 +286,22 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
 
                 // Point is outside the two eyes, way off the face, slightly elevated
                 // Doesn't seem in line with eyeballs, eye corners, or anything else.
-                this.eyeLine = new Vector.Vector();
+                this.eyeLine = new Vector();
                 // Proper center of the eye. Halfway between the inner/outer points
-                this.eyeCenter = new Vector.Vector();
+                this.eyeCenter = new Vector();
                 // Appears to be right in the center of the eye =/
-                this.eyeFocus = new Vector.Vector(0, 0);
+                this.eyeFocus = new Vector(0, 0);
                 // Center of the eyeball
-                this.eyePos = new Vector.Vector();
+                this.eyePos = new Vector();
 
                 // The position of the inner lower lid control point.
-                this.innerLowerSlant = new Vector.Vector();
+                this.innerLowerSlant = new Vector();
                 // The position of the outer lower lid control point.
-                this.outerLowerSlant = new Vector.Vector();
+                this.outerLowerSlant = new Vector();
                 // The position of the inner Upper lid control point.
-                this.innerUpperSlant = new Vector.Vector();
+                this.innerUpperSlant = new Vector();
                 // The position of the outer upper lid control point.
-                this.outerUpperSlant = new Vector.Vector();
+                this.outerUpperSlant = new Vector();
 
                 this.starColor = hue;
 

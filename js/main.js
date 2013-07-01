@@ -77,7 +77,9 @@ require.config({
         'underscore' : 'libs/underscore',
         'processing' : 'libs/processing-1.4.1',
         'inheritance' : 'libs/inheritance',
-        'noise' : 'libs/simplex_noise'
+        'noise' : 'libs/simplex_noise',
+        'quadtree' : 'modules/models/quadtree',
+     
     },
     shim : {
 

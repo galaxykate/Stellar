@@ -113,6 +113,10 @@ define([], function() {
                 this.z /= m;
             },
 
+            getOffsetTo : function(v) {
+                return new Vector(v.x - this.x, v.y - this.y, v.z - this.z);
+            },
+
             //===========================================================
             //===========================================================
 
@@ -153,12 +157,7 @@ define([], function() {
             },
         };
 
-        return {
-            // public interface
-            Vector : Vector,
-            // Star creation
-
-        };
+        return Vector;
     })();
 
 });

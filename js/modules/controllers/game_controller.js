@@ -4,7 +4,7 @@
 
 // Create the way that the game will render on-screen
 
-define(['modules/controllers/universe_controller'], function(universeController) {
+define(['modules/controllers/universe_controller', 'jQueryUI'], function(universeController, $) {
     // Return the singleton here:
     return (function() {
 
@@ -65,6 +65,11 @@ define(['modules/controllers/universe_controller'], function(universeController)
                 });
 
             });
+            
+            
+            // Fill up the palette with things to spawn
+            var spawnables = ["Star"];
+            
         };
 
         initializeDevUI();

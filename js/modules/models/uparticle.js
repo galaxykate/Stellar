@@ -24,7 +24,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 particleCount++;
                 this.initAsParticle();
-                // idNumber must be set before initting graphics (moved hue stuff there)
+
                 this.position.setToPolar(Math.random() * 200 + 100, Math.random() * 100);
                 this.velocity.addPolar(Math.random() * 1, Math.random() * 100);
 
@@ -78,10 +78,10 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             },
 
             initAsParticle : function() {
-                this.position = new Vector.Vector(0, 0);
-                this.velocity = new Vector.Vector(0, 0);
+                this.position = new Vector(0, 0);
+                this.velocity = new Vector(0, 0);
                 this.forces = [];
-                this.totalForce = new Vector.Vector(0, 0);
+                this.totalForce = new Vector(0, 0);
                 this.mass = 1;
                 this.drag = .98;
             },
