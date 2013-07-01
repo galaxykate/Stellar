@@ -49,8 +49,8 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
             faceClass.focus.x = utilities.pnoise(.5 * time.total + 1000 * (faceClass.starID + 1));
             faceClass.focus.y = utilities.pnoise(.5 * time.total + 600 * (faceClass.starID + 1));
 
-            var rightTargetVector = new Vector.Vector((1 - faceClass.focus.x) * faceClass.narrowing, (1 - faceClass.focus.y) * faceClass.narrowing);
-            var leftTargetVector = new Vector.Vector(faceClass.focus.x * faceClass.narrowing, faceClass.focus.y * faceClass.narrowing);
+            var rightTargetVector = new Vector((1 - faceClass.focus.x) * faceClass.narrowing, (1 - faceClass.focus.y) * faceClass.narrowing);
+            var leftTargetVector = new Vector(faceClass.focus.x * faceClass.narrowing, faceClass.focus.y * faceClass.narrowing);
             /*
              if(faceClass.starID === 1){
              utilities.debugOutput("time: " + time.total);
@@ -75,7 +75,7 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
                 //console.log("setting star id in face: " + id);
                 this.starHue = hue;
 
-                this.focus = new Vector.Vector(0, 0);
+                this.focus = new Vector(0, 0);
                 this.narrowing = 0;
             },
 

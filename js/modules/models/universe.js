@@ -4,21 +4,39 @@
 
 // Its the Universe!
 
-define(["modules/models/star", "modules/models/dust", "modules/models/vector", "modules/models/kcolor"], function(Star, Dust, Vector, KColor) {
+define(["modules/models/star", "modules/models/dust", "modules/models/vector", "modules/models/kcolor", "quadtree"], function(Star, Dust, Vector, KColor, QuadTree) {
 
     return (function() {
 
         var backgroundStars = [];
         var backgroundLayers = 3;
         var backgroundStarDensity = 10;
-        var cameraCenter = new Vector.Vector(0, 0, 0);
-        var gestureDir = new Vector.Vector(0, 0, 0);
+        var camera = {
+            angle : new Vector(0, 0, 0),
+            center : new Vector(0, 0, 0),
+            zoom : 1,
+
+        };
+        var gestureDir = new Vector(0, 0, 0);
 
         var stars = [];
         var starsToAdd = [];
         var dust = [];
         var dustToAdd = [];
+        var quadTree;
 
+        function makeUniverseTree() {
+            console.log("Make universe tree");
+            var r = 200;
+            quadTree = new QuadTree();
+            console.log(quadTree);
+            for (var i = 0; i < 10; i++) {
+                quadTree.insert(new Vector((Math.random() - .5) * 400, (Math.random() - .5) * 400));
+            }
+
+        };
+
+        // These stars loop
         function makeBackgroundStars() {
 
             for (var i = 0; i < backgroundLayers; i++) {
@@ -47,8 +65,11 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
                     // Offset the position
                     var z = i + 5 + backgroundStars[i][j][2];
                     r *= .2 * i * Math.pow(z, .5);
-                    x -= cameraCenter.x * (z + .01);
-                    y -= cameraCenter.y * (z + .01);
+                    var parallax = .1 * (z + .01);
+                    x -= camera.angle.x * parallax;
+                    y -= camera.angle.y * parallax;
+                    x -= camera.center.x * parallax;
+                    y -= camera.center.y * parallax;
 
                     // loop around the edges
                     x = (x % g.width);
@@ -80,6 +101,11 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
             if (options.layer === 'bg') {
                 drawBackgroundStars(g);
             }
+
+            if (options.layer === 'overlay') {
+             //   quadTree.drawTree(g);
+            }
+
         }
 
         function generateStars(count) {
@@ -90,12 +116,12 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
                 starsToAdd.push(s);
             }
         };
-        
-        function generateDust(count){
-        	for (var i = 0; i < count; i++) {
-        		var d = new Dust.Dust(this);
-        		dustToAdd.push(d);
-        	}
+
+        function generateDust(count) {
+            for (var i = 0; i < count; i++) {
+                var d = new Dust.Dust(this);
+                dustToAdd.push(d);
+            }
         }
 
         function update(time) {
@@ -105,20 +131,23 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
                 // cameraCenter.x += 1 * Math.cos(theta);
                 //cameraCenter.y += 1 * Math.sin(theta);
 
-                cameraCenter.addMultiple(gestureDir, .1);
+                camera.center.addMultiple(gestureDir, .1);
+                utilities.debugOutput("Center: " + camera.center);
                 gestureDir.mult(.99);
+                //  cameraAngle.mult(.9);
             }
+            utilities.debugOutput(camera.center);
 
             stellarGame.time = time;
-			
-			// Big foreground stars!
+
+            // Big foreground stars!
             $.each(stars, function(index, star) {
                 star.update(time);
             });
 
             stars = stars.concat(starsToAdd);
             starsToAdd = [];
-            
+
             // Dust!
             $.each(dust, function(index, dust) {
                 dust.update(time);
@@ -129,13 +158,14 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
 
         function gestureUpdate(gesture) {
             if (gesture.dragOffset !== undefined) {
-                gestureDir.x += gesture.dragOffset[0] * .01;
-                gestureDir.y += gesture.dragOffset[1] * .01;
+                gestureDir.x += gesture.dragOffset.x * .01;
+                gestureDir.y += gesture.dragOffset.y * .01;
 
             }
         };
 
         makeBackgroundStars();
+        makeUniverseTree();
 
         generateStars(4);
         generateDust(3);
@@ -145,14 +175,15 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
             // public interface
 
             getDrawableObjects : function() {
-            	var drawables = stars.concat(dust);
-            	drawables = drawables.concat([this]);
+                var drawables = stars.concat(dust);
+                drawables = drawables.concat([this]);
                 //return stars.concat([this]);
                 return drawables;
             },
             draw : draw,
             gestureUpdate : gestureUpdate,
             update : update,
+            camera : camera,
         };
 
     })();

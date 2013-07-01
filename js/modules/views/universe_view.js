@@ -8,7 +8,14 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
     console.log("Init universe view");
 
     return (function() {
+        var dimensions = {
+            width : 600,
+            height : 400
+        };
+        
         var processing;
+        var camera;
+
         var drawables = [];
         var updateFunctions = [];
         var touchableObjects = [];
@@ -80,21 +87,27 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
 
         };
 
+        var setToScreenPosition = function(p, objPos) {
+            p.setTo(objPos);
+            p.sub(camera.center);
+
+        };
+
         var drawLayer = function(g, options) {
-            var p = new Vector.Vector(0, 0);
+            var p = new Vector(0, 0);
             $.each(this.currentDrawables, function(index, obj) {
                 // figure out where this object is, and translate appropriately
                 g.pushMatrix();
                 if (obj.position !== undefined) {
-                    p.setTo(obj.position);
+                    setToScreenPosition(p, obj.position);
                     g.translate(p.x, p.y);
-              
+
                 }
                 obj.draw(g, options);
                 g.popMatrix();
 
                 if (options.layer === "main" && obj.touchable) {
-                    var data = [obj, new Vector.Vector(p)];
+                    var data = [obj, new Vector(p)];
                     touchableObjects.push(data);
 
                 }
@@ -104,7 +117,7 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
 
         var getTouchableAt = function(p) {
 
-            var target = new Vector.Vector(p[0] - processing.width / 2, p[1] - processing.height / 2, 0);
+            var target = new Vector(p.x - processing.width / 2, p.y - processing.height / 2, 0);
             stellarGame.touch.universeTouch = target;
             console.log("Get touchable at: " + target);
 
@@ -136,7 +149,8 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
         var initProcessing = function(g) {
 
             addDrawingUtilities(g);
-            g.size(600, 400);
+            g.size(dimensions.width, dimensions.height);
+
             g.colorMode(g.HSB, 1);
             g.background(.45, 1, 1);
 
@@ -150,7 +164,10 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
         processing = new Processing(canvas, initProcessing);
 
         return {
-
+            dimensions : dimensions,
+            setCamera : function(c) {
+                camera = c;
+            },
             onUpdate : onUpdate,
 
             addDrawable : function(d) {

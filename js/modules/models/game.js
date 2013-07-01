@@ -8,7 +8,7 @@
 define(['modules/views/game_view', 'modules/controllers/game_controller', 'modules/models/universe'], function(gameView, gameController, universe) {
     var startGame = function() {
         // Make this into a global object
-        
+
         this.view = gameView;
         console.log("START GAME");
 
@@ -19,6 +19,8 @@ define(['modules/views/game_view', 'modules/controllers/game_controller', 'modul
             universe.update(time);
 
         });
+
+        gameView.universeView.setCamera(universe.camera);
 
         // Give the game controller access to the universe view so that it
         //  can find objects by screen position

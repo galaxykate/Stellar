@@ -4,22 +4,28 @@
 
 // Create the way that the game will render on-screen
 
-define([], function() {
+define(["modules/models/vector"], function(Vector) {
 
     return (function() {
 
         // Attach mouse events to the world window
         var universeDiv = $("#universe_canvas");
         var touch = {
-            lastPressed : [0, 0],
-            dragOffset : [0, 0],
+            lastPressed : new Vector(0, 0),
+            dragOffset : new Vector(0, 0),
+            lastHover : new Vector(0, 0),
+            center : new Vector(0, 0),
             pressed : false,
         };
         var universeView;
 
         var setUniverseView = function(view) {
             universeView = view;
-        }
+            touch.center.setTo(view.dimensions.width / 2, view.dimensions.height / 2);
+          //  console.log(touch.center);
+           // console.log(view.dimensions);
+        };
+
         var controlUpdateFunction = [];
 
         var onControl = function(f) {
@@ -35,8 +41,12 @@ define([], function() {
             universeDiv.mousemove(function(e) {
                 var p = toRelative(this, e);
                 if (touch.pressed) {
-                    touch.dragOffset = getOffset(p, touch.lastPressed);
+
+                    touch.dragOffset.setTo(-touch.lastPressed.x + p[0], -touch.lastPressed.y + p[1]);
                 }
+                touch.lastHover.setTo(p[0], p[1]);
+               
+                touch.lastHover.sub(touch.center);
                 controlUpdated();
 
             });
@@ -44,7 +54,7 @@ define([], function() {
             universeDiv.mouseup(function(e) {
                 touch.pressed = false;
                 var p = toRelative(this, e);
-                touch.dragOffset = [0, 0];
+                touch.dragOffset.mult(0);
                 if (touch.heldObject !== undefined) {
                     console.log("Touch ended " + touch.heldObject);
                     touch.heldObject.touchEnd();
@@ -54,9 +64,8 @@ define([], function() {
             universeDiv.mousedown(function(e) {
                 touch.pressed = true;
                 var p = toRelative(this, e);
-                touch.lastPressed[0] = p[0];
-                touch.lastPressed[1] = p[1];
-            
+                touch.lastPressed.setTo(p[0], p[1])
+
                 // Figure out what this is pressed *on*
                 touch.heldObject = universeView.getTouchableAt(touch.lastPressed);
                 if (touch.heldObject !== undefined) {
@@ -75,15 +84,12 @@ define([], function() {
 
         var toRelative = function(div, e) {
 
-            var parentOffset = $(div).parent().offset();
+         //   var parentOffset = $(div).parent().offset();
+          var parentOffset =$(div).offset();
             //or $(this).offset(); if you really just want the current element's offset
             var relX = e.pageX - parentOffset.left;
             var relY = e.pageY - parentOffset.top;
             return [relX, relY];
-        };
-
-        var getOffset = function(p0, p1) {
-            return [p0[0] - p1[0], p0[1] - p1[1]];
         };
 
         //=======================================================
