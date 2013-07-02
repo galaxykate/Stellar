@@ -2,14 +2,22 @@ body {
 
 }
 
+#app {
+	z-index: 0;
+	position: relative;
+}
+
 #controls {
+	z-index: 50;
+	position: relative;
 	width: 600px;
 	height: 50px;
 	float: left;
 	background-color: rgba(230, 255, 250, 1);
 }
 
-#universe_canvas {
+#universe {
+	position: relative;
 	float: left;
 	width: 600px;
 	height: 400px;
@@ -24,7 +32,6 @@ body {
 
 #debug_controls {
 	z-index: 40;
-	
 	position: relative;
 	background-color: rgba(155, 155, 155, 1);
 	width: 300px;
@@ -45,10 +52,35 @@ body {
 	overflow: auto;
 }
 
-#debug_objectcreationpalette {
-	position: relative;
-	
-	z-index: 40;
+.palette {
+	z-index: 56;
+	position: static;
+	padding: 5px;
+	width: 200px;
+	height: 25px;
+	background-color: rgba(225, 235, 255, .6);
+	border-radius: 10px;
+	transition: all 0.22s;
+	overflow: hidden;
+	border: 2px solid rgba(255,255, 255, 1);
+}
+.palette:hover {
 
-	background-color: rgba(155, 155, 255, 1);
+	height: 300px;
+}
+
+.palette_button {
+	float: left;
+	width: 80px;
+	margin: 2px;
+	height: 20px;
+	background-color: rgba(100, 105, 110, .6);
+	border-radius: 10px;
+	border: 2px solid rgba(255,255, 255, 1);
+	box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+}
+
+.palette_button:hover {
+	background-color: rgba(160, 170, 190, 1);
+	box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
 }

@@ -5,6 +5,10 @@
 var stellarGame = {
     drawFaces : false,
     drawElements : false,
+    time : {
+        universeTime : 0,
+        gameTime : 0,
+    },
 };
 
 var utilities = {
@@ -72,15 +76,19 @@ require.config({
     paths : {
         'jQuery' : 'libs/jquery-1.10.1',
         'jQueryUI' : 'libs/jquery-ui',
+        'jQueryUITouchPunch' : 'libs/jquery.ui.touch-punch',
         'underscore' : 'libs/underscore',
         'processing' : 'libs/processing-1.4.1',
         'inheritance' : 'libs/inheritance',
         'noise' : 'libs/simplex_noise',
         'quadtree' : 'modules/models/quadtree',
-     
+
     },
     shim : {
-
+        'jQueryUITouchPunch' : {
+            exports : '$',
+            deps : ['jQueryUI']
+        },
         'jQueryUI' : {
             exports : '$',
             deps : ['jQuery']

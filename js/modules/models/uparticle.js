@@ -57,11 +57,13 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 var gravity = -Math.pow(outside, 2) / d;
                 this.totalForce.setToMultiple(this.position, gravity);
 
-                var noiseScale = .010;
+                var noiseScale = .0040;
                 var nx = this.position.x * noiseScale;
                 var ny = this.position.y * noiseScale;
-                var theta = 20 * noise.noise2D(nx + time.total * .2 + this.idNumber, ny + time.total * .2);
-                this.totalForce.addPolar(40, theta);
+                var t = time.total * .1;
+                var theta = 16 * noise.noise2D(nx + t + this.idNumber*39, ny + t);
+                var r = 190;
+                this.totalForce.addPolar(r, theta);
 
                 this.velocity.addMultiple(this.totalForce, time.ellapsed);
                 this.position.addMultiple(this.velocity, time.ellapsed);

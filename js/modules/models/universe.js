@@ -103,7 +103,7 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
             }
 
             if (options.layer === 'overlay') {
-             //   quadTree.drawTree(g);
+                //  quadTree.drawTree(g);
             }
 
         }
@@ -125,6 +125,8 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
         }
 
         function update(time) {
+            stellarGame.time.universeTime = time.total;
+            
             var theta = 10 * Math.sin(.01 * time.total);
             if (time.total > .1) {
 
@@ -136,7 +138,8 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
                 gestureDir.mult(.99);
                 //  cameraAngle.mult(.9);
             }
-            utilities.debugOutput(camera.center);
+            utilities.debugOutput("Camera center: " + camera.center);
+            utilities.debugOutput("Current tool: " + stellarGame.touch.activeTool);
 
             stellarGame.time = time;
 

@@ -12,7 +12,7 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
             width : 600,
             height : 400
         };
-        
+
         var processing;
         var camera;
 
@@ -30,7 +30,6 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
 
         var update = function(currentTime) {
             utilities.clearDebugOutput();
-            //   console.log("update " + currentTime);
             time.ellapsed = currentTime - time.total;
             time.total = currentTime;
             utilities.debugOutput("Update " + time.total.toFixed(2) + " fps: " + (1 / time.ellapsed).toFixed(2));
@@ -56,7 +55,6 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
             // Compile a list of all the drawable objects
             view.currentDrawables = [];
             $.each(drawables, function(index, drawable) {
-                //  console.log("add " + drawable);
                 view.currentDrawables = view.currentDrawables.concat(drawable.getDrawableObjects());
             });
 
@@ -71,6 +69,7 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
             g.pushMatrix();
             g.translate(g.width / 2, g.height / 2);
 
+            // Draw eaach layer in order
             drawLayer(g, {
                 layer : "bg",
             });
@@ -83,8 +82,23 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
                 layer : "overlay",
             });
 
+            // Draw the touch
+            var touch = stellarGame.touch;
+            var p = touch.lastHover;
+            if (touch.activeTool === undefined) {
+                g.fill(.8, 1, 1, .3);
+                g.stroke(.8, .4, 1);
+                g.ellipse(p.x, p.y, 20, 20);
+            } else {
+                touch.activeTool.drawCursor(g, p);
+            }
             g.popMatrix();
 
+        };
+
+        var setoUniversePosition = function(p, screenPos) {
+            p.setTo(screenPos);
+            p.add(camera.center);
         };
 
         var setToScreenPosition = function(p, objPos) {
@@ -119,7 +133,6 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
 
             var target = new Vector(p.x - processing.width / 2, p.y - processing.height / 2, 0);
             stellarGame.touch.universeTouch = target;
-            console.log("Get touchable at: " + target);
 
             var minDist = 130;
             var closest;
@@ -129,12 +142,10 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
                 var obj = objData[0];
 
                 var d = obj.position.getDistanceTo(target);
-                console.log("    " + d + " to " + obj);
 
                 if (d < minDist) {
                     minDist = d;
                     closest = obj;
-                    console.log("      Obj found: " + obj);
 
                 }
 
@@ -159,8 +170,6 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
                 draw(g);
             };
         };
-
-        console.log(canvas);
         processing = new Processing(canvas, initProcessing);
 
         return {

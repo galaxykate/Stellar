@@ -11,7 +11,7 @@ define(["modules/views/universe_view"], function(universeView) {
         // Private functions
 
         function initializeUI() {
-
+        
         };
         initializeUI();
 
