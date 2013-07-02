@@ -15,7 +15,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "mo
                 this._super(universe);
                 this.radius = Math.random() * 20 + 10;
 				
-				this.hacktime = 0;
             },
             
             drawBackground: function(g, options) {
@@ -42,7 +41,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "mo
             
             update : function(time) {
                 this._super(time);
-                this.hacktime = time;
             }
         });
 

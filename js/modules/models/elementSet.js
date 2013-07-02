@@ -106,8 +106,7 @@ define(["modules/models/elements"], function(Elements) {
         };
         
         // radius here is the boundary of the dust cloud
-        // TO DO: Take out hacktime once we have global time variable
-        ElementSet.prototype.drawAsDustCloud = function(g, radius, hacktime) {
+        ElementSet.prototype.drawAsDustCloud = function(g, radius) {
             
             //for (var i = 0; i < activeElements.length; i++) { // big elements are on top
             for (var i = activeElements.length-1; i >= 0; i--) { // big elements are on bottom
@@ -124,8 +123,8 @@ define(["modules/models/elements"], function(Elements) {
                     g.fill(.1 * i, .9, .9);
                     g.noStroke();
                     for (var j = 0; j < amt; j++){ 
-	                    var xloc = 2*radius*utilities.pnoise(.1*hacktime.total + 200 + amt + elementRad + j) - radius; //i* 10;//
-	                	var yloc = 2*radius*utilities.pnoise(.1*hacktime.total + 100 + amt + elementRad + j) -radius; //i* 10;
+	                    var xloc = 2*radius*utilities.pnoise(.1*stellarGame.time.total + 200 + amt + elementRad + j) - radius; //i* 10;//
+	                	var yloc = 2*radius*utilities.pnoise(.1*stellarGame.time.total + 100 + amt + elementRad + j) -radius; //i* 10;
 	                	//utilities.debugOutput("xloc, ylock: " + xloc + ", " + yloc);
 	                	g.ellipse(xloc, yloc, elementRad, elementRad)
                 	}
