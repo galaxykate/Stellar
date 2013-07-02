@@ -52,6 +52,12 @@ define(['modules/controllers/universe_controller', 'jQueryUI'], function(univers
 
                 var toggleButton = $("#" + setting.id);
                 toggleButton.button();
+                
+                if(stellarGame[setting.id]) {
+                	console.log("Detected " + setting.id + " as true");
+                	toggleButton[0].checked = true;
+                	toggleButton.button("refresh");
+                }
 
                 // Add the event listener to set the settings when the box is checked/unchecked
                 toggleButton.click(function() {

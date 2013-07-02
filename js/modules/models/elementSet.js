@@ -123,9 +123,9 @@ define(["modules/models/elements"], function(Elements) {
                     //utilities.debugOutput("elementQuantitiy of " + i + " is: " + amt);
                     g.fill(.1 * i, .9, .9);
                     g.noStroke();
-                    for (var j = 0; j < amt; j++){
-	                    var xloc = 2*radius*utilities.pnoise(.1*hacktime.total + 200 + amt + j) - radius; //i* 10;//
-	                	var yloc = 2*radius*utilities.pnoise(.1*hacktime.total + 100 + amt + j) -radius; //i* 10;
+                    for (var j = 0; j < amt; j++){ 
+	                    var xloc = 2*radius*utilities.pnoise(.1*hacktime.total + 200 + amt + elementRad + j) - radius; //i* 10;//
+	                	var yloc = 2*radius*utilities.pnoise(.1*hacktime.total + 100 + amt + elementRad + j) -radius; //i* 10;
 	                	//utilities.debugOutput("xloc, ylock: " + xloc + ", " + yloc);
 	                	g.ellipse(xloc, yloc, elementRad, elementRad)
                 	}
