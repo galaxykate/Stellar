@@ -119,8 +119,8 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
                     g.fill(.1 * i, .9, .9);
                     g.noStroke();
                     for (var j = 0; j < amt; j++){ 
-	                    var xloc = 2*radius*utilities.pnoise(.1*stellarGame.time.total + 200 + amt + elementRad + j) - radius; //i* 10;//
-	                	var yloc = 2*radius*utilities.pnoise(.1*stellarGame.time.total + 100 + amt + elementRad + j) -radius; //i* 10;
+	                    var xloc = 2*radius*utilities.pnoise(.1*stellarGame.time.universeTime + 200 + amt + elementRad + j) - radius; //i* 10;//
+	                	var yloc = 2*radius*utilities.pnoise(.1*stellarGame.time.universeTime + 100 + amt + elementRad + j) -radius; //i* 10;
 	                	g.ellipse(xloc, yloc, elementRad, elementRad)
                 	}
 			    }
