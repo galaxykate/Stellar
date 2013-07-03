@@ -166,7 +166,7 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
             }
             if (stellarGame.touch !== undefined) {
                 utilities.debugOutput("Camera center: " + camera.center);
-                utilities.debugOutput("Current tool: " + stellarGame.touch.activeTool); 
+                utilities.debugOutput("Current tool: " + stellarGame.touch.activeTool);
             }
 
             if (time.ellapsed !== undefined) {
@@ -191,34 +191,28 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
             }
         };
 
-        makeBackgroundStars();
-        makeUniverseTree();
-        generateStartRegion();
+        function getQuadrantsInRegion(region, filter) {
+            return quadTree.getQuadrantsInRegion(region, filter);
+        };
 
-        update(1);
+        function init() {
+            console.log("INIT UNIVERSE");
+            makeBackgroundStars();
+            makeUniverseTree();
+            generateStartRegion();
+        };
+
+        function getCamera() {
+            return camera;
+        }
 
         return {
-            // public interface
-
-            getDrawableObjects : function() {
-                var drawables = quadTree.getContentsInRegion({
-                    center : camera.center,
-                    w : 800,
-                    h : 600
-                });
-
-                drawables.push(this);
-
-                return drawables;
-                //var drawables = stars.concat(dust);
-                //drawables = drawables.concat([this]);
-                //return stars.concat([this]);
-                //return drawables;
-            },
+            getQuadrantsInRegion : getQuadrantsInRegion,
             draw : draw,
             gestureUpdate : gestureUpdate,
             update : update,
-            camera : camera,
+            getCamera : getCamera,
+            init : init,
         };
 
     })();

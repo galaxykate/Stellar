@@ -11,8 +11,9 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
     var quadrantIndices = [[0, 1], [3, 2]];
     // Make the star class
     //  Extend the star
-    var maxRadius = 2500;
+    var maxRadius = 10000;
     var minRadius = maxRadius / (Math.pow(2, maxLevels));
+    console.log(minRadius);
 
     var QuadTree = Class.extend({
 
@@ -142,8 +143,8 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
                     p.setTo(x, y);
                     var quadrant = this.getQuadrant(p, maxLevels, false);
                     if (quadrant !== undefined) {
-                        // if (g !== undefined)
-                        //   quadrant.draw(g, 3);
+                        if (g !== undefined)
+                            quadrant.draw(g, 3);
 
                         quads.push(quadrant);
                     }
@@ -159,7 +160,7 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
 
             $.each(quadrants, function(index, quadrant) {
                 found = found.concat(quadrant.contents);
-              
+
             });
 
             return found;
@@ -220,7 +221,7 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
         },
 
         toString : function() {
-            return "Quad" + this.quadrant + " (lvl " + this.level + ")";
+            return "Quad" + this.quadrant + " " + this.center + " (lvl " + this.level + ")";
         },
     });
 

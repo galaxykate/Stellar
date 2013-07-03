@@ -52,6 +52,7 @@ define(["modules/models/vector", "jQueryUITouchPunch"], function(Vector, $) {
 
                 touch.lastHover.sub(touch.center);
                 controlUpdated();
+             
 
             });
 
