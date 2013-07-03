@@ -7,7 +7,13 @@ var stellarGame = {
     drawElements : false,
     drawDust: true, // usually true
     drawStars: true, // usually true
-    drawCritters: true
+    drawCritters: true,
+
+    time : {
+        universeTime : 0,
+        gameTime : 0,
+    },
+
 };
 
 var utilities = {
@@ -68,6 +74,17 @@ var utilities = {
         }
 
         return (result + 1) / 2;
+    },
+
+    random : function() {
+        if (arguments.length === 0)
+            return Math.random();
+        if (arguments.length === 1)
+            return Math.random() * arguments[i];
+        if (arguments.length === 2)
+            return Math.random() * (arguments[1] - arguments[0]) + arguments[0];
+
+        return Math.random();
     }
 };
 
@@ -75,15 +92,19 @@ require.config({
     paths : {
         'jQuery' : 'libs/jquery-1.10.1',
         'jQueryUI' : 'libs/jquery-ui',
+        'jQueryUITouchPunch' : 'libs/jquery.ui.touch-punch',
         'underscore' : 'libs/underscore',
         'processing' : 'libs/processing-1.4.1',
         'inheritance' : 'libs/inheritance',
         'noise' : 'libs/simplex_noise',
         'quadtree' : 'modules/models/quadtree',
-     
+
     },
     shim : {
-
+        'jQueryUITouchPunch' : {
+            exports : '$',
+            deps : ['jQueryUI']
+        },
         'jQueryUI' : {
             exports : '$',
             deps : ['jQuery']

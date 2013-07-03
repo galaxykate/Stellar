@@ -46,6 +46,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             // Update this particle according to physics
             update : function(time) {
                 // Clear the output
+                var t = time.ellapsed;
                 this.clearDebugOutput();
 
                 var d = this.position.magnitude();
@@ -55,16 +56,18 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 var outside = Math.max(0, d - 200);
                 var gravity = -Math.pow(outside, 2) / d;
-                this.totalForce.setToMultiple(this.position, gravity);
+               // this.totalForce.setToMultiple(this.position, gravity);
 
-                var noiseScale = .010;
+                var noiseScale = .0040;
                 var nx = this.position.x * noiseScale;
                 var ny = this.position.y * noiseScale;
-                var theta = 20 * noise.noise2D(nx + time.total * .2 + this.idNumber, ny + time.total * .2);
-                this.totalForce.addPolar(40, theta);
+                var t = time.total * .1;
+                var theta = 16 * noise.noise2D(nx + t + this.idNumber * 39, ny + t);
+                var r = 190;
+                // this.totalForce.addPolar(r, theta);
 
-                this.velocity.addMultiple(this.totalForce, time.ellapsed);
-                this.position.addMultiple(this.velocity, time.ellapsed);
+                this.velocity.addMultiple(this.totalForce, t);
+                this.position.addMultiple(this.velocity, t);
                 this.velocity.mult(this.drag);
             },
 

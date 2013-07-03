@@ -37,8 +37,8 @@ define([], function() {
                 return new KColor(this.h, this.s, this.b, this.a)
             }, shade, fade);
         };
-		
-		// shade goes from -1 to 1, as does fade.
+
+        // shade goes from -1 to 1, as does fade.
         KColor.prototype.fill = function(g, shade, fade) {
             return this.use(g.fill, shade, fade);
         };
@@ -82,7 +82,76 @@ define([], function() {
             gFunc(h1, s1, b1, a1);
         };
 
-       return KColor;
+        //=================================================================
+        //=================================================================
+        //=================================================================
+
+        // From the internet
+        KColor.prototype.toRGB = function() {
+            var r, g, b;
+            var h = this.h * 6;
+            var s = this.s;
+            var v = this.b;
+            h = h % 6;
+
+            var i = Math.floor(h);
+            var f = h - i;
+            var p = v * (1 - s);
+            var q = v * (1 - (s * f));
+            var t = v * (1 - (s * (1 - f)));
+            if (i == 0) {
+                r = v;
+                g = t;
+                b = p;
+            } else if (i == 1) {
+                r = q;
+                g = v;
+                b = p;
+            } else if (i == 2) {
+                r = p;
+                g = v;
+                b = t;
+            } else if (i == 3) {
+                r = p;
+                g = q;
+                b = v;
+            } else if (i == 4) {
+                r = t;
+                g = p;
+                b = v;
+            } else if (i == 5) {
+                r = v;
+                g = p;
+                b = q;
+            }
+            r = Math.floor(r * 255);
+            g = Math.floor(g * 255);
+            b = Math.floor(b * 255);
+            return [r, g, b];
+        };
+
+        var toHexString = function(v) {
+            var v2 = v.toString(16);
+            if (v2.length == 0)
+                v2 = "0" + v2;
+            if (v2.length == 1)
+                v2 = "0" + v2;
+            return v2;
+        };
+
+        KColor.prototype.toHex = function() {
+            var rgb = this.toRGB();
+
+            var hex = rgb[0] << 16 | rgb[1] << 8 | rgb[2];
+            hex = toHexString(rgb[0]) + toHexString(rgb[1]) + toHexString(rgb[2]);
+            return hex;
+        };
+
+        //=================================================================
+        //=================================================================
+        //=================================================================
+
+        return KColor;
     })();
 
 });

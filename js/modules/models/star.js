@@ -60,32 +60,32 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             initFace : function() {
                 this.face = new Face.Face(this.idColor, this.idNumber);
             },
-            
-            drawBackground: function(g, options) {
-            	if(stellarGame.drawStars){
-            		this._super(g,options);
-            	}
+
+            drawBackground : function(g, options) {
+                if (stellarGame.drawStars) {
+                    this._super(g, options);
+                }
             },
 
             drawMain : function(g, options) {
                 // Do all the other drawing
-                if(stellarGame.drawStars){
-	                this._super(g, options);
-	                if (stellarGame.drawFaces)
-	                    this.face.draw(g);
+                if (stellarGame.drawStars) {
+                    this._super(g, options);
+                    if (stellarGame.drawFaces)
+                        this.face.draw(g);
                 }
 
             },
-            
+
             drawOverlay : function(g, options) {
-            	if(stellarGame.drawStars){
-            		this._super(g,options);
-            	}
+                if (stellarGame.drawStars) {
+                    this._super(g, options);
+                }
             },
-            
+
             update : function(time) {
                 this._super(time);
-            	this.debugOutput(this.state.name);
+                this.debugOutput(this.state.name);
                 this.face.update(time, this.radius, this.radius);
             }
         });

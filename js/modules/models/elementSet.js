@@ -4,7 +4,7 @@
 
 // Reusable Vector class
 
-define(["modules/models/elements"], function(Elements) {
+define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
     return (function() {
 
         // Private functions
@@ -22,8 +22,6 @@ define(["modules/models/elements"], function(Elements) {
                 symbol : elemData.symbol,
             };
         });
-
-        console.log(activeElements);
 
         // Draw an arc around some radius: used to show proportion of elements
         var segmentsPerCircle = 50;
@@ -49,7 +47,6 @@ define(["modules/models/elements"], function(Elements) {
 
         // Make the Vector class
         function ElementSet() {
-            console.log("Create element set");
             this.elementQuantity = [];
 
             // How many elements does this start with?
@@ -92,8 +89,8 @@ define(["modules/models/elements"], function(Elements) {
             for (var i = 0; i < activeElements.length; i++) {
                 var amt = this.elementQuantity[i];
                 if (amt > 0) {
-                        var outerRadius = amt/innerRadius + innerRadius;
-        
+                    var outerRadius = amt / innerRadius + innerRadius;
+
                     var thetaRange = totalRange * amt / this.totalMass;
                     g.fill(.1 * i, 1, 1);
 
@@ -119,17 +116,14 @@ define(["modules/models/elements"], function(Elements) {
                 
                 if (amt > 0) {
                 	// very rough scaling parameters, need to find better functions
-                    //utilities.debugOutput("elementQuantitiy of " + i + " is: " + amt);
                     g.fill(.1 * i, .9, .9);
                     g.noStroke();
                     for (var j = 0; j < amt; j++){ 
 	                    var xloc = 2*radius*utilities.pnoise(.1*stellarGame.time.total + 200 + amt + elementRad + j) - radius; //i* 10;//
 	                	var yloc = 2*radius*utilities.pnoise(.1*stellarGame.time.total + 100 + amt + elementRad + j) -radius; //i* 10;
-	                	//utilities.debugOutput("xloc, ylock: " + xloc + ", " + yloc);
 	                	g.ellipse(xloc, yloc, elementRad, elementRad)
                 	}
-					//utilities.debugOutput("elementRad: " + elementRad + " at " + xloc + ", " + yloc);
-                }
+			    }
             }
         };
 
