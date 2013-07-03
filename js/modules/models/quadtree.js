@@ -5,21 +5,24 @@
 // QuadTrees for partitioning space
 
 define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
-
-    var maxLevels = 4;
+    var quadrantCount = 0;
+    var maxLevels = 7;
     var quadrantOffsets = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
     var quadrantIndices = [[0, 1], [3, 2]];
     // Make the star class
     //  Extend the star
-    var maxRadius = 200;
+    var maxRadius = 2500;
     var minRadius = maxRadius / (Math.pow(2, maxLevels));
 
     var QuadTree = Class.extend({
 
         init : function(parent, quadrant) {
+            this.idNumber = quadrantCount;
+            quadrantCount++;
             if (parent === undefined) {
                 this.radius = maxRadius;
                 this.level = 0;
+
                 this.quadrant = -1;
                 this.center = new Vector(0, 0);
             } else {
@@ -92,19 +95,29 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
 
         },
 
-        insert : function(p) {
+        insert : function(obj) {
+            var p = obj;
+            if (p.x === undefined)
+                p = obj.position;
+
             var quadrant = this.getQuadrant(p, maxLevels, true);
-            quadrant.contents.push(p);
+            quadrant.contents.push(obj);
         },
 
-        getQuadrantsInRange : function(center, width, height, g) {
+        // Find all the quadrants that are bounded by this region
+        // {center:VECTOR, w: NUM, h:NUM}
+
+        getQuadrantsInRegion : function(region, g) {
             var quads = [];
 
-            g.fill(1, 1, 1);
-            g.ellipse(center.x, center.y, 10, 10);
+            if (g !== undefined) {
+                g.fill(1, 1, 1);
+                g.ellipse(region.center.x, region.center.y, 10, 10);
+            }
+
             // make points
-            var xCount = Math.floor(width / minRadius);
-            var yCount = Math.floor(height / minRadius);
+            var xCount = Math.floor(region.w / minRadius);
+            var yCount = Math.floor(region.h / minRadius);
             var p = new Vector(0, 0);
 
             for (var i = 0; i < xCount; i++) {
@@ -112,24 +125,45 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
                 if (xCount > 1)
                     xPct = i / (xCount - 1);
 
-                var x = center.x + (xPct - .5) * minRadius * xCount;
+                var x = region.center.x + (xPct - .5) * minRadius * xCount;
                 for (var j = 0; j < yCount; j++) {
 
                     var yPct = 0;
                     if (yCount > 1)
                         yPct = j / (yCount - 1);
 
-                    var y = center.y + (yPct - .5) * minRadius * yCount;
+                    var y = region.center.y + (yPct - .5) * minRadius * yCount;
                     //utilities.debugOutput(x + " " + y);
-                    g.noStroke();
-                    g.fill(.55, 1, 1);
-                    g.ellipse(x, y, 5, 5);
+                    if (g !== undefined) {
+                        g.noStroke();
+                        g.fill(.55, 1, 1);
+                        g.ellipse(x, y, 5, 5);
+                    }
+
                     p.setTo(x, y);
                     var quadrant = this.getQuadrant(p, maxLevels, false);
-                    if (quadrant !== undefined)
-                        quadrant.draw(g, 3);
+                    if (quadrant !== undefined) {
+                        // if (g !== undefined)
+                        //   quadrant.draw(g, 3);
+
+                        quads.push(quadrant);
+                    }
                 }
             }
+
+            return quads;
+        },
+
+        getContentsInRegion : function(region, filter) {
+            var found = [];
+            var quadrants = this.getQuadrantsInRegion(region);
+
+            $.each(quadrants, function(index, quadrant) {
+                found = found.concat(quadrant.contents);
+              
+            });
+
+            return found;
         },
 
         //
@@ -138,6 +172,7 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
             var h = (this.level * .231 + .1) % 1;
             g.strokeWeight(weight);
             g.stroke(h, 1, 1);
+            g.noFill();
             var r = this.radius - this.level * 2;
             g.rect(this.center.x - r, this.center.y - r, r * 2, r * 2);
 
@@ -145,16 +180,24 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
 
         drawTree : function(g) {
             if (this.level === 0) {
-                utilities.debugOutput(this.level);
+                /*
+                 this.getQuadrantsInRegion({
+                 center : stellarGame.touch.lastHover,
+                 w : 150,
+                 h : 100
+                 }, g);
+                 */
 
-                this.getQuadrantsInRange(stellarGame.touch.lastHover, 150, 100, g);
             }
             g.strokeWeight(1);
             g.stroke(1, 0, 1);
-            g.fill(0, 0, 0, .1);
+            g.noFill();
+            // g.fill(0, 0, 0, .1);
+
             var h = (this.level * .231 + .1) % 1;
             var r = this.radius - this.level * 2;
             this.draw(g, 1);
+
             if (this.children !== undefined) {
                 for (var i = 0; i < 4; i++) {
                     if (this.children[i] !== undefined)
@@ -164,14 +207,22 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
 
             if (this.contents !== undefined) {
 
-                g.fill(h, .4, 1);
-
+                g.fill((this.idNumber * .128) % 1, .4, 1);
+                g.noStroke();
                 g.text(this.contents.length, this.center.x - 5, this.center.y + 5);
+                $.each(this.contents, function(index, item) {
+
+                    item.position.drawCircle(g, 4);
+                });
             }
         },
         update : function(time) {
 
-        }
+        },
+
+        toString : function() {
+            return "Quad" + this.quadrant + " (lvl " + this.level + ")";
+        },
     });
 
     return QuadTree;

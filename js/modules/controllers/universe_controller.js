@@ -59,7 +59,7 @@ define(["modules/models/vector", "jQueryUITouchPunch"], function(Vector, $) {
                 touch.pressed = false;
                 var p = toRelative(this, e);
                 touch.dragOffset.mult(0);
-                touch.lastReleased.setTo(p[0], p[1])
+                touch.lastReleased.setTo(p[0], p[1]);
 
                 // If there is an active tool, pass the event to it
                 if (touch.activeTool !== undefined) {

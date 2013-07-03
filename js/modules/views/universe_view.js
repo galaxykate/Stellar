@@ -21,7 +21,7 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
         var touchableObjects = [];
         var time = {
             total : 0,
-            ellapsed : 0
+            ellapsed : 0.1,
         };
 
         var onUpdate = function(f) {
@@ -31,6 +31,11 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
         var update = function(currentTime) {
             utilities.clearDebugOutput();
             time.ellapsed = currentTime - time.total;
+            if (time.ellapsed === undefined)
+                time.ellapsed = .02;
+
+            utilities.constrain(time.ellapsed, .01, .2);
+
             time.total = currentTime;
             utilities.debugOutput("Update " + time.total.toFixed(2) + " fps: " + (1 / time.ellapsed).toFixed(2));
 

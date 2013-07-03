@@ -9,6 +9,7 @@ var stellarGame = {
         universeTime : 0,
         gameTime : 0,
     },
+
 };
 
 var utilities = {
@@ -69,6 +70,17 @@ var utilities = {
         }
 
         return (result + 1) / 2;
+    },
+
+    random : function() {
+        if (arguments.length === 0)
+            return Math.random();
+        if (arguments.length === 1)
+            return Math.random() * arguments[i];
+        if (arguments.length === 2)
+            return Math.random() * (arguments[1] - arguments[0]) + arguments[0];
+
+        return Math.random();
     }
 };
 

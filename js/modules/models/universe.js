@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(["modules/models/star", "modules/models/dust", "modules/models/vector", "modules/models/kcolor", "quadtree"], function(Star, Dust, Vector, KColor, QuadTree) {
+define(["modules/models/star", "modules/models/dust", "modules/models/vector", "modules/models/kcolor", "quadtree", "modules/models/uparticle"], function(Star, Dust, Vector, KColor, QuadTree, UParticle) {
 
     return (function() {
 
@@ -19,18 +19,16 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
         };
         var gestureDir = new Vector(0, 0, 0);
 
-        var stars = [];
-        var starsToAdd = [];
-        var dust = [];
-        var dustToAdd = [];
         var quadTree;
+
+        var toAdd = [];
 
         function makeUniverseTree() {
             console.log("Make universe tree");
             var r = 200;
             quadTree = new QuadTree();
             console.log(quadTree);
-            for (var i = 0; i < 10; i++) {
+            for (var i = 0; i < 0; i++) {
                 quadTree.insert(new Vector((Math.random() - .5) * 400, (Math.random() - .5) * 400));
             }
 
@@ -103,32 +101,60 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
             }
 
             if (options.layer === 'overlay') {
-                //  quadTree.drawTree(g);
+                g.pushMatrix();
+                g.translate(-camera.center.x, -camera.center.y);
+                // quadTree.drawTree(g);
+                g.popMatrix();
             }
 
         }
 
-        function generateStars(count) {
-
-            for (var i = 0; i < count; i++) {
-                var s = new Star.Star(this);
-
-                starsToAdd.push(s);
-            }
+        function generateStartRegion() {
+            generateRegion({
+                center : camera.center,
+                w : 3000,
+                h : 2000
+            });
         };
 
-        function generateDust(count) {
+        function generateOffscreen() {
+
+        }
+
+        function generateRegion(region) {
+
+            console.log("GENERATE REGION");
+            // Pick some random locations in the region
+            var density = .004;
+            var count = Math.ceil(region.w * region.h * density * density);
+            console.log(count);
+            var w2 = region.w / 2;
+            var h2 = region.h / 2;
+            var p = new Vector();
             for (var i = 0; i < count; i++) {
-                var d = new Dust.Dust(this);
-                dustToAdd.push(d);
+                p.setTo(utilities.random(-w2, w2) + region.center.x, utilities.random(-h2, h2) + region.center.y);
+
+                var obj;
+                if (Math.random() > .5)
+                    obj = new UParticle();
+                else
+                    obj = new Star.Star();
+                obj.position.setTo(p);
+                spawn(obj);
             }
+
+        }
+
+        function spawn(object) {
+            toAdd.push(object);
+            quadTree.insert(object);
         }
 
         function update(time) {
             stellarGame.time.universeTime = time.total;
-            
+
             var theta = 10 * Math.sin(.01 * time.total);
-            if (time.total > .1) {
+            if (time.total > .1 && gestureDir !== undefined) {
 
                 // cameraCenter.x += 1 * Math.cos(theta);
                 //cameraCenter.y += 1 * Math.sin(theta);
@@ -138,25 +164,23 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
                 gestureDir.mult(.99);
                 //  cameraAngle.mult(.9);
             }
-            utilities.debugOutput("Camera center: " + camera.center);
-            utilities.debugOutput("Current tool: " + stellarGame.touch.activeTool);
+            if (stellarGame.touch !== undefined) {
+                utilities.debugOutput("Camera center: " + camera.center);
+                utilities.debugOutput("Current tool: " + stellarGame.touch.activeTool);
+            }
 
-            stellarGame.time = time;
+            if (time.ellapsed !== undefined) {
+                var updateables = quadTree.getContentsInRegion({
+                    center : camera.center,
+                    w : 300,
+                    h : 200
+                });
 
-            // Big foreground stars!
-            $.each(stars, function(index, star) {
-                star.update(time);
-            });
+                $.each(updateables, function(index, obj) {
+                    obj.update(time);
+                });
+            }
 
-            stars = stars.concat(starsToAdd);
-            starsToAdd = [];
-
-            // Dust!
-            $.each(dust, function(index, dust) {
-                dust.update(time);
-            });
-            dust = dust.concat(dustToAdd);
-            dustToAdd = [];
         };
 
         function gestureUpdate(gesture) {
@@ -169,19 +193,28 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
 
         makeBackgroundStars();
         makeUniverseTree();
+        generateStartRegion();
 
-        generateStars(4);
-        generateDust(3);
         update(1);
 
         return {
             // public interface
 
             getDrawableObjects : function() {
-                var drawables = stars.concat(dust);
-                drawables = drawables.concat([this]);
-                //return stars.concat([this]);
+                var drawables = quadTree.getContentsInRegion({
+                    center : camera.center,
+                    w : 800,
+                    h : 600
+                });
+
+                drawables.push(this);
+
+                utilities.debugOutput(drawables);
                 return drawables;
+                //var drawables = stars.concat(dust);
+                //drawables = drawables.concat([this]);
+                //return stars.concat([this]);
+                //return drawables;
             },
             draw : draw,
             gestureUpdate : gestureUpdate,

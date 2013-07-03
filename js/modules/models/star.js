@@ -68,6 +68,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                     this.face.draw(g);
 
             },
+            
             update : function(time) {
                 this._super(time);
             	this.debugOutput(this.state.name);
