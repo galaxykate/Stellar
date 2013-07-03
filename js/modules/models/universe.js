@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(["modules/models/star", "modules/models/dust", "modules/models/vector", "modules/models/kcolor", "quadtree"], function(Star, Dust, Vector, KColor, QuadTree) {
+define(["modules/models/star", "modules/models/dust", "modules/models/critter", "modules/models/vector", "modules/models/kcolor", "quadtree"], function(Star, Dust, Critter, Vector, KColor, QuadTree) {
 
     return (function() {
 
@@ -23,6 +23,8 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
         var starsToAdd = [];
         var dust = [];
         var dustToAdd = [];
+        var critters = [];
+        var crittersToAdd = [];
         var quadTree;
 
         function makeUniverseTree() {
@@ -124,6 +126,13 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
             }
         }
 
+		function generateCritters(count) {
+            for (var i = 0; i < count; i++) {
+                var d = new Critter.Critter(this);
+                crittersToAdd.push(d);
+            }
+        }
+        
         function update(time) {
             var theta = 10 * Math.sin(.01 * time.total);
             if (time.total > .1) {
@@ -154,6 +163,13 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
             });
             dust = dust.concat(dustToAdd);
             dustToAdd = [];
+            
+            // Critters!
+            $.each(critters, function(index, critter) {
+                critter.update(time);
+            });
+            critters = critters.concat(crittersToAdd);
+            crittersToAdd = [];
         };
 
         function gestureUpdate(gesture) {
@@ -168,7 +184,8 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
         makeUniverseTree();
 
         generateStars(4);
-        generateDust(3);
+        generateDust(5);
+        generateCritters(4);
         update(1);
 
         return {
@@ -176,6 +193,7 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
 
             getDrawableObjects : function() {
                 var drawables = stars.concat(dust);
+                drawables = drawables.concat(critters);
                 drawables = drawables.concat([this]);
                 //return stars.concat([this]);
                 return drawables;

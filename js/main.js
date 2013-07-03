@@ -5,8 +5,9 @@
 var stellarGame = {
     drawFaces : false,
     drawElements : false,
-    drawDust: true,
-    drawStars: true
+    drawDust: true, // usually true
+    drawStars: true, // usually true
+    drawCritters: true
 };
 
 var utilities = {

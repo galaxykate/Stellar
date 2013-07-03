@@ -1,5 +1,5 @@
 /**
- * @author Kate Compton
+ * @author April Grow
  */
 
 // Its the Universe!

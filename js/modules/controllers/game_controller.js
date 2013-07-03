@@ -30,6 +30,9 @@ define(['modules/controllers/universe_controller', 'jQueryUI'], function(univers
             }, {
                 id : "drawDust",
                 displayName : "Draw Dust"
+            }, {
+                id : "drawCritters",
+                displayName : "Draw Critters"
             }, ];
 
             // Go through and add each as a labelled checkbox, then turn those into a JQUERYUI toggle
