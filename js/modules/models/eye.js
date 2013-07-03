@@ -173,6 +173,7 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
             var blink = utilities.sCurve(utilities.pnoise(time.total*.2  + 10*this.starID), 4);
             blink = Math.max(0, (Math.abs(2*blink - 1))*1.4 - .4);
             this.innerLift = 2*blink;
+          //*Processing.noise(.2*time + 150)));
            
            //*Processing.noise(.2*time + 150)));
            // this.innerLift = 3 * Math.pow(this.innerLift, 2);

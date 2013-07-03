@@ -51,6 +51,7 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 
             // How many elements does this start with?
             var maxElements = 1 + Math.floor(Math.random() * Math.random() * activeElements.length);
+            //console.log("maxElements: " + maxElements);
             var previousElement = Math.random() * 1000;
             for (var i = 0; i < activeElements.length; i++) {
 
@@ -98,6 +99,31 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
                     drawArc(g, innerRadius, outerRadius, startTheta, endTheta);
                     endTheta += margin;
                 }
+            }
+        };
+        
+        // radius here is the boundary of the dust cloud
+        ElementSet.prototype.drawAsDustCloud = function(g, radius) {
+            
+            //for (var i = 0; i < activeElements.length; i++) { // big elements are on top
+            for (var i = activeElements.length-1; i >= 0; i--) { // big elements are on bottom
+                //var amt = this.elementQuantity[i];
+                var amt = Math.ceil(Math.log(this.elementQuantity[i]));
+                //var elementRad = activeElements[i].number/10; 
+                var elementRad = Math.log(activeElements[i].number);
+                //var elementRad = Math.sqrt(activeElements[i].number);
+                if (elementRad < 1) elementRad = 1;
+                
+                if (amt > 0) {
+                	// very rough scaling parameters, need to find better functions
+                    g.fill(.1 * i, .9, .9);
+                    g.noStroke();
+                    for (var j = 0; j < amt; j++){ 
+	                    var xloc = 2*radius*utilities.pnoise(.1*stellarGame.time.total + 200 + amt + elementRad + j) - radius; //i* 10;//
+	                	var yloc = 2*radius*utilities.pnoise(.1*stellarGame.time.total + 100 + amt + elementRad + j) -radius; //i* 10;
+	                	g.ellipse(xloc, yloc, elementRad, elementRad)
+                	}
+			    }
             }
         };
 

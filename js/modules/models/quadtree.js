@@ -133,7 +133,6 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
                         yPct = j / (yCount - 1);
 
                     var y = region.center.y + (yPct - .5) * minRadius * yCount;
-                    //utilities.debugOutput(x + " " + y);
                     if (g !== undefined) {
                         g.noStroke();
                         g.fill(.55, 1, 1);

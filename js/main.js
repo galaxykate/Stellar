@@ -5,11 +5,14 @@
 var stellarGame = {
     drawFaces : false,
     drawElements : false,
+
     time : {
         universeTime : 0,
         gameTime : 0,
     },
 
+    drawDust: true,
+    drawStars: true
 };
 
 var utilities = {

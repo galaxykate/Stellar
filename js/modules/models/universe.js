@@ -166,7 +166,7 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
             }
             if (stellarGame.touch !== undefined) {
                 utilities.debugOutput("Camera center: " + camera.center);
-                utilities.debugOutput("Current tool: " + stellarGame.touch.activeTool);
+                utilities.debugOutput("Current tool: " + stellarGame.touch.activeTool); 
             }
 
             if (time.ellapsed !== undefined) {
@@ -209,7 +209,6 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
 
                 drawables.push(this);
 
-                utilities.debugOutput(drawables);
                 return drawables;
                 //var drawables = stars.concat(dust);
                 //drawables = drawables.concat([this]);
