@@ -4,7 +4,7 @@
 
 // Spacey whaaaaaales
 
-define(["inheritance", "modules/models/vector", "modules/models/uparticle"], function(Inheritance, Vector, UParticle) {
+define(["inheritance", "modules/models/vector", "modules/models/uparticle", "modules/models/face", "modules/models/emotion"], function(Inheritance, Vector, UParticle, Face, Emotion) {
     return (function() {
 
         // Make the star class
@@ -20,11 +20,14 @@ define(["inheritance", "modules/models/vector", "modules/models/uparticle"], fun
 				this.tailSegments = [];
 				for(i = 0; i < this.numSegments; i++){
 					var vect = new Vector(0, 0);
-					console.log("Setting up vector: " + vect);
+					//console.log("Setting up vector: " + vect);
 					this.tailSegments.push(vect);
 				}
 				this.tailShrinkScale = .4 + .4 * Math.random();
-				console.log("init critter " + this.idNumber + ": " + this.numSegments);
+				//console.log("init critter " + this.idNumber + ": " + this.numSegments);
+				this.face = new Face.Face(this.idColor, this.idNumber);
+				
+				this.emotion = new Emotion.Emotion(universe, this.radius + 20);
             },
             
             drawBackground: function(g, options) {
@@ -51,6 +54,8 @@ define(["inheritance", "modules/models/vector", "modules/models/uparticle"], fun
 					this.idColor.fill(g, 0, 0);
 	                g.noStroke();
 	                g.ellipse(0, 0, this.radius, this.radius);
+	                
+	                this.emotion.drawBackground(g, options);
 
             	}
             },
@@ -68,12 +73,21 @@ define(["inheritance", "modules/models/vector", "modules/models/uparticle"], fun
 	                tailVector.addPolar(this.radius, this.backAngle);
 	                tailVector.drawCircle(g, 4);
 	                */
+	                g.pushMatrix();
+	                g.rotate(this.frontAngle);
 	                
+	                //this.face.draw(g);
+	                this.face.drawRightProfile(g);
+	                g.popMatrix();
+	                
+	                this.emotion.drawMain(g, options);
                 }
             },
             
             drawOverlay : function(g, options) {
             	if(stellarGame.drawCritters){
+            		
+            		this.emotion.drawOverlay(g, options);
             	}
             }, 
             
@@ -107,6 +121,10 @@ define(["inheritance", "modules/models/vector", "modules/models/uparticle"], fun
                 this.totalForce.addPolar(.1, this.frontAngle);
                 this.velocity.setToPolar(10, this.frontAngle);
                 this.position.addMultiple(this.velocity, time.ellapsed);
+                
+                this.face.update(time, this.radius, this.radius);
+                
+                this.emotion.update(time);
             }
         });
 

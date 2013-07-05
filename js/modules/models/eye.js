@@ -152,43 +152,18 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
             this.inner = new Vector(this.innerPct * this.cheekWidth, innerScale);
             this.outer = new Vector(this.outerPct * this.cheekWidth, outerScale);
 
-            //console.log("1 Inner, outer: " + this.inner + " /// " + this.outer);
-            //console.log("using cheekWidth " + this.cheekWidth); // gives proper cheekWidth
-            //console.log("Time: " + time.total);
-            //var testNoise = this.noise.noise2D(Math.random(), Math.random());
-            //var testNoise = this.noise.noise2D(time.total * 0.1, time.total * 0.2);
-            //console.log("Test noise: " + testNoise);
-            //this.innerLowerTheta = -.1 - 4.5*(-.05 + utilities.pnoise(200+.5*time.total)); //+ Processing.noise(200 + time));
-            //this.outerLowerTheta = -.5 + Math.PI + -3.5*(-.05 + utilities.pnoise(.5*time.total)); // + Processing.noise(time));
-            //this.innerLowerTheta = 1.5;
             this.innerLowerTheta = -1 + 2.5 * utilities.pnoise(.5 * time.total + 400 + this.starID);
-            //this.outerLowerTheta = 1.5;
             this.outerLowerTheta = -.1 + 2.5 * utilities.pnoise(.5 * time.total + 500 + this.starID);
 
             var liftScale = this.cheekWidth * .25;
-
-            //this.innerLowerTheta = -1;
-            //this.outerLowerTheta = -1;
-            //this.innerLift = 1;
+            
             var blink = utilities.sCurve(utilities.pnoise(time.total*.2  + 10*this.starID), 4);
             blink = Math.max(0, (Math.abs(2*blink - 1))*1.4 - .4);
             this.innerLift = 2*blink;
-          //*Processing.noise(.2*time + 150)));
-           
-           //*Processing.noise(.2*time + 150)));
-           // this.innerLift = 3 * Math.pow(this.innerLift, 2);
-            //this.innerLift = 2;
             this.outerLift = this.innerLift;
             this.innerUpperTheta = this.innerLowerTheta + -.6 * this.innerLift;
             this.outerUpperTheta = this.outerLowerTheta + 1.6 * this.outerLift;
-            /*if(this.starID === 1){
 
-             utilities.debugOutput("innerUpperTheta: " + this.innerUpperTheta);
-             utilities.debugOutput(-Math.PI/2 + " <= /// >= " + Math.PI/2);
-             this.innerUpperTheta = utilities.constrain(this.innerUpperTheta, -Math.PI/2, Math.PI/2);
-             utilities.debugOutput("innerUpperThetaCONSTRAINED: " + this.innerUpperTheta);
-             } else {
-             }*/
             this.innerUpperTheta = utilities.constrain(this.innerUpperTheta, -Math.PI / 2, Math.PI / 2);
 
             //this.innerUpperTheta = -Math.PI/2;
@@ -219,42 +194,7 @@ define(["inheritance", "modules/models/vector", "noise"], function(Inheritance, 
             var eyeOffsetScalar = this.cheekWidth * 0.025;
             this.eyePos.y -= eyeOffsetScalar;
 
-            //utilities.debugOutput("focus for star " + this.starID + ": " + this.eyeFocus);
-            //utilities.debugOutput("eyePos for star " + this.starID + ": " + this.eyePos);
-            //utilities.debugOutput(" ");
 
-            //console.log("1this.starID: " + this.starID);
-            /*
-            if(this.starID === 1){
-            //console.log("2this.starID: " + this.starID);
-            utilities.clearDebugOutput();
-            utilities.debugOutput("inner: " + this.inner);
-            utilities.debugOutput("outer: " + this.outer);
-            //utilities.debugOutput("innerLowerTheta: " + this.innerLowerTheta);
-            //utilities.debugOutput("outerLowerTheta: " + this.outerLowerTheta);
-            utilities.debugOutput("innerLift: " + this.innerLift);
-            utilities.debugOutput("outerLift: " + this.outerLift);
-            utilities.debugOutput("innerUpperTheta: " + this.innerUpperTheta);
-            utilities.debugOutput("outerUpperTheta: " + this.outerUpperTheta);
-            //utilities.debugOutput("innerLowerSlant: " + this.innerLowerSlant);
-            //utilities.debugOutput("outerLowerSlant: " + this.outerLowerSlant);
-            utilities.debugOutput("innerUpperSlant: " + this.innerUpperSlant);
-            utilities.debugOutput("outerUpperSlant: " + this.outerUpperSlant);
-            //utilities.debugOutput("eyeLine: " + this.eyeLine);
-            //utilities.debugOutput("eyeCenter: " + this.eyeCenter);
-            utilities.debugOutput("eyeFocus: " + this.eyeFocus);
-            utilities.debugOutput("eyePos: " + this.eyePos);
-            utilities.debugOutput("inner lerping to outer at: " + (.1 + 0.9 * this.eyeFocus.x));
-            utilities.debugOutput("eyeBallRadius: " + this.eyeBallRadius);
-            //utilities.debugOutput("innerUpperSlantScale: " + innerUpperSlantScale);
-            //utilities.debugOutput("outerLowerSlantScale: " + outerLowerSlantScale);
-            }*/
-
-            //utilities.debugOutput("eyeBallRadius: " + this.eyeBallRadius);
-
-            //console.log("2 Inner, outer: " + this.inner + " /// " + this.outer);
-            //console.log("eyeCenter: " + this.eyeCenter);
-            //console.log("eyePosition: " + this.eyePos);
         }
 
         // Make the Face class

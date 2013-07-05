@@ -11,6 +11,14 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
         // functions from Kate's example
 
         // EYE -- move to its own class
+        function drawRightProfile(g) {
+        	g.pushMatrix();
+        	g.scale(-1, 1);
+        	g.scale(.8, .9); // Make the eye slightly smaller so that it appears to have been shortened a bit by the profile view
+        	g.translate(-1* this.faceWidth / 1.5, 0);
+        	this.rightEye.draw(g);
+        	g.popMatrix();
+        }
 
         function drawFace(g) {
             //var h = (.212 + .6) % 1;
@@ -89,6 +97,8 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
             },
 
             draw : drawFace,
+            
+            drawRightProfile: drawRightProfile,
         });
 
         return {

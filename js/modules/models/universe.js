@@ -139,10 +139,9 @@ define(["modules/models/star", "modules/models/dust", "modules/models/critter", 
                     obj = new Star.Star();
                 else if (Math.random() > .4)
                     obj = new Dust.Dust();
-                else if (Math.random() > .3)
+                else 
                 	obj = new Critter.Critter();
-                else
-                	obj = new UParticle();
+                	
                 obj.position.setTo(p);
                 spawn(obj);
             }
@@ -154,13 +153,6 @@ define(["modules/models/star", "modules/models/dust", "modules/models/critter", 
             quadTree.insert(object);
         }
 
-		function generateCritters(count) {
-            for (var i = 0; i < count; i++) {
-                var d = new Critter.Critter(this);
-                crittersToAdd.push(d);
-            }
-        }
-        
         function update(time) {
             stellarGame.time.universeTime = time.total;
 
