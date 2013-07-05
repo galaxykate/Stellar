@@ -51,7 +51,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             init : function(universe) {
                 this._super(universe);
                 this.state = randomState();
-                this.radius = Math.random() * 120 + 30;
+                this.radius = Math.random() * 40 + 20;
 
                 this.initFace();
 

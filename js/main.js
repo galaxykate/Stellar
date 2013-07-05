@@ -10,9 +10,8 @@ var stellarGame = {
         universeTime : 0,
         gameTime : 0,
     },
-
-    drawDust: true,
-    drawStars: true
+    drawDust : true,
+    drawStars : true
 };
 
 var utilities = {
