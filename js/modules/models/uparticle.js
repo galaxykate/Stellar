@@ -35,7 +35,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             },
 
             remove : function() {
-                this.radius = 0;
+                this.deleted = true;
             },
 
             debugOutput : function(d) {
@@ -114,6 +114,11 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 this.idColor.fill(g);
                 g.noStroke();
+                if (this.deleted) {
+                    g.fill(.2, 0, .4);
+                    g.stroke(1, 0, 1, .7);
+                }
+
                 g.ellipse(0, 0, this.radius, this.radius);
 
             },

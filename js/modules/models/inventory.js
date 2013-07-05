@@ -5,7 +5,7 @@
 // Inventory class
 // Contains tools, elements, etc
 
-define(["modules/models/elementSet", "modules/models/kcolor", "noise", "modules/models/vector"], function(ElementSet, KColor, Noise, Vector) {
+define(["modules/models/elementSet", "modules/models/kcolor", "noise", "modules/models/vector", "modules/models/uparticle"], function(ElementSet, KColor, Noise, Vector, UParticle) {
     return (function() {
         var noise = new Noise();
         var universe;
@@ -18,15 +18,31 @@ define(["modules/models/elementSet", "modules/models/kcolor", "noise", "modules/
         var moveTool = new Tool("Move", "move", {
             init : function() {
                 this.direction = new Vector(50, 0);
+                this.distSinceLastPlacement = 0;
             },
 
             onDrag : function(touch) {
                 this.moveWithOffset(touch);
 
                 var objs = touch.overObjects;
-                $.each(touch.overObjects, function(index, obj) {
-                    obj.remove();
-                });
+
+                // eat the objects underneath
+                /*
+                 $.each(touch.overObjects, function(index, obj) {
+                 obj.remove();
+                 });
+                 */
+
+                var d = stellarGame.touch.getOffsetToHistory(1).magnitude();
+                this.distSinceLastPlacement += d;
+
+                if (this.distSinceLastPlacement > 50 + Math.random()*40) {
+                    var p = new UParticle();
+                    p.position.setTo(touch.toWorldPosition(touch.currentPosition));
+                    universe.spawn(p);
+                    this.distSinceLastPlacement = 0;
+                }
+
                 // Drag
 
             },
@@ -42,9 +58,11 @@ define(["modules/models/elementSet", "modules/models/kcolor", "noise", "modules/
                 if (stellarGame.touch.pressed) {
                     if (this.direction) {
                         p.drawArrow(g, this.direction, 2);
-                        g.text(this.direction, p.x, p.y - 30);
+
                     }
                 }
+                g.fill(.5, .4, 1);
+                g.text(this.distSinceLastPlacement, p.x, p.y - 30);
 
                 var length = stellarGame.touch.history.length;
                 var history = stellarGame.touch.history;

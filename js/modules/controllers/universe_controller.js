@@ -34,6 +34,11 @@ define(["modules/models/vector", "jQueryUITouchPunch"], function(Vector, $) {
             center : new Vector(0, 0),
             overObjects : [],
 
+            toWorldPosition : function(p) {
+                return universeView.toWorldPosition(p);
+
+            },
+
             pressed : false,
         };
 
@@ -74,9 +79,8 @@ define(["modules/models/vector", "jQueryUITouchPunch"], function(Vector, $) {
 
                 touch.historyIndex = (touch.historyIndex + 1) % maxHistory;
                 touch.history[touch.historyIndex] = touch.currentPosition.clone();
-                
-                touch.overObjects = universeView.getTouchableAt(touch.currentPosition);
 
+                touch.overObjects = universeView.getTouchableAt(touch.currentPosition);
 
                 if (touch.pressed) {
 

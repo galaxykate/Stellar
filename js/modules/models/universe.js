@@ -119,7 +119,7 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
 
             console.log("GENERATE REGION");
             // Pick some random locations in the region
-            var density = .007;
+            var density = .003;
             var count = Math.ceil(region.w * region.h * density * density);
             console.log(count);
             var w2 = region.w / 2;
@@ -153,6 +153,7 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
             utilities.debugOutput("Camera center: " + camera.center);
             utilities.debugOutput("Current tool: " + stellarGame.touch.activeTool);
 
+            quadTree.cleanup();
         };
 
         function getQuadrantsInRegion(region, quads, g) {
@@ -188,7 +189,7 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
         return {
             getQuadrantsInRegion : getQuadrantsInRegion,
             draw : draw,
-
+            spawn : spawn,
             update : update,
             getCamera : getCamera,
             addScrollingMovement : addScrollingMovement,

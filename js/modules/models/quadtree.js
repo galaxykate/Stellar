@@ -219,6 +219,27 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
                 });
             }
         },
+
+        cleanup : function() {
+            utilities.debugOutput("Cleanup " + this);
+            if (this.level === maxLevels) {
+
+                this.contents = _.reject(this.contents, function(obj) {
+                    return obj.deleted;
+                   //return false;
+                });
+
+            } else {
+                if (this.children !== undefined) {
+                    for (var i = 0; i < 4; i++) {
+                        if (this.children[i] !== undefined) {
+                            this.children[i].cleanup();
+                        }
+                    }
+                }
+            }
+        },
+
         update : function(time) {
 
         },
