@@ -6,13 +6,13 @@
 
 define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
     var quadrantCount = 0;
-    var maxLevels = 4;
+    var maxLevels = 8;
     var quadrantOffsets = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
     var quadrantIndices = [[0, 1], [3, 2]];
 
     // Make the star class
     //  Extend the star
-    var maxRadius = 500;
+    var maxRadius = 30000;
     var minRadius = maxRadius / (Math.pow(2, maxLevels - 1));
     console.log(minRadius);
 

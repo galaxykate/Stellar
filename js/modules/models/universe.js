@@ -91,13 +91,13 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
         function draw(g, options) {
 
             if (options.layer === 'bg') {
-                //  drawBackgroundStars(g);
+                drawBackgroundStars(g);
             }
 
             if (options.layer === 'overlay') {
                 g.pushMatrix();
                 g.translate(-camera.center.x, -camera.center.y);
-                // quadTree.drawTree(g);
+              //  quadTree.drawTree(g);
                 g.popMatrix();
             }
 

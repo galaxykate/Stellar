@@ -5,7 +5,7 @@
 // Inventory class
 // Contains tools, elements, etc
 
-define(["modules/models/elementSet", "modules/models/kcolor", "noise", "modules/models/vector", "modules/models/uparticle"], function(ElementSet, KColor, Noise, Vector, UParticle) {
+define(["modules/models/elementSet", "modules/models/kcolor", "noise", "modules/models/vector", "modules/models/uparticle", "modules/models/star"], function(ElementSet, KColor, Noise, Vector, UParticle, Star) {
     return (function() {
         var noise = new Noise();
         var universe;
@@ -17,37 +17,14 @@ define(["modules/models/elementSet", "modules/models/kcolor", "noise", "modules/
         // A tool to move the camera
         var moveTool = new Tool("Move", "move", {
             init : function() {
-                this.direction = new Vector(50, 0);
-                this.distSinceLastPlacement = 0;
             },
 
             onDrag : function(touch) {
                 this.moveWithOffset(touch);
 
-                var objs = touch.overObjects;
-
-                // eat the objects underneath
-                /*
-                 $.each(touch.overObjects, function(index, obj) {
-                 obj.remove();
-                 });
-                 */
-
-                var d = stellarGame.touch.getOffsetToHistory(1).magnitude();
-                this.distSinceLastPlacement += d;
-
-                if (this.distSinceLastPlacement > 50 + Math.random()*40) {
-                    var p = new UParticle();
-                    p.position.setTo(touch.toWorldPosition(touch.currentPosition));
-                    universe.spawn(p);
-                    this.distSinceLastPlacement = 0;
-                }
-
-                // Drag
-
-            },
-
-            onMove : function(touch) {
+                $.each(touch.overObjects, function(index, obj) {
+                    obj.remove();
+                });
 
             },
 
@@ -81,6 +58,44 @@ define(["modules/models/elementSet", "modules/models/kcolor", "noise", "modules/
             }
         });
 
+        var spawnTool = new Tool("Spawn", "spawn", {
+            init : function() {
+                this.distSinceLastPlacement = 0;
+            },
+
+            onDrag : function(touch) {
+                this.moveWithOffset(touch);
+
+                var objs = touch.overObjects;
+
+                var d = stellarGame.touch.getOffsetToHistory(1).magnitude();
+                this.distSinceLastPlacement += d;
+
+                if (this.distSinceLastPlacement > 50 + Math.random() * 40) {
+
+                    var p = new UParticle();
+                    if (Math.random() > .4)
+                        p = new Star.Star();
+                    p.position.setTo(touch.toWorldPosition(touch.currentPosition));
+                    universe.spawn(p);
+                    this.distSinceLastPlacement = 0;
+                }
+
+                // Drag
+
+            },
+
+            onMove : function(touch) {
+            },
+
+            drawCursor : function(g, p) {
+                g.stroke(1, 0, 1, .8);
+                g.fill(1, 0, 1, .4);
+                g.ellipse(p.x, p.y, 10, 10);
+
+            }
+        });
+
         function Tool(name, id, handlers) {
             this.id = id;
             this.idNumber = toolCount;
@@ -88,6 +103,8 @@ define(["modules/models/elementSet", "modules/models/kcolor", "noise", "modules/
             toolCount++;
             this.idColor = new KColor((0.091 * this.idNumber + 0.19) % 1, 1, 1);
             var tool = this;
+            this.direction = new Vector(0, 0);
+
             if (handlers) {
                 $.each(handlers, function(name, handler) {
                     tool[name] = handler;
@@ -202,6 +219,7 @@ define(["modules/models/elementSet", "modules/models/kcolor", "noise", "modules/
             }
 
             this.addTool(moveTool);
+            this.addTool(spawnTool);
             moveTool.activate();
         };
 
