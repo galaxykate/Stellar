@@ -4,13 +4,14 @@
 
 // Its the Universe!
 
-define(["modules/models/star", "modules/models/dust", "modules/models/vector", "modules/models/kcolor", "quadtree", "modules/models/uparticle"], function(Star, Dust, Vector, KColor, QuadTree, UParticle) {
+define(["modules/models/star", "modules/models/dust", "modules/models/critter", "modules/models/vector", "modules/models/kcolor", "quadtree", "modules/models/uparticle"], function(Star, Dust, Critter, Vector, KColor, QuadTree, UParticle) {
 
     return (function() {
 
         var backgroundStars = [];
         var backgroundLayers = 3;
         var backgroundStarDensity = 10;
+
         var camera;
 
         var quadTree;
@@ -130,9 +131,14 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
 
                 var obj;
                 if (Math.random() > .5)
-                    obj = new UParticle();
-                else
+                    //obj = new UParticle();
                     obj = new Star.Star();
+                else if (Math.random() > .4)
+                    obj = new Dust.Dust();
+                else if (Math.random() > .3)
+                	obj = new Critter.Critter();
+                else
+                	obj = new UParticle();
                 obj.position.setTo(p);
                 spawn(obj);
             }
@@ -144,6 +150,13 @@ define(["modules/models/star", "modules/models/dust", "modules/models/vector", "
             quadTree.insert(object);
         }
 
+		function generateCritters(count) {
+            for (var i = 0; i < count; i++) {
+                var d = new Critter.Critter(this);
+                crittersToAdd.push(d);
+            }
+        }
+        
         function update(time) {
             stellarGame.time.universeTime = time.total;
 
