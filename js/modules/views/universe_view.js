@@ -109,8 +109,10 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
 
             // do update stuff
             update(g.millis() * .001);
-            if (stellarGame.touch)
-                getTouchableAt(stellarGame.touch.currentPosition);
+
+            $.each(activeObjects, function(index, obj) {
+                obj.update(time);
+            });
 
             // Draw eaach layer in order
             drawLayer(g, {

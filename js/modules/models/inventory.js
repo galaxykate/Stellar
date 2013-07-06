@@ -74,9 +74,10 @@ define(["modules/models/elementSet", "modules/models/kcolor", "noise", "modules/
                 if (this.distSinceLastPlacement > 50 + Math.random() * 40) {
 
                     var p = new UParticle();
-                    if (Math.random() > .4)
+                    if (Math.random() > .8)
                         p = new Star.Star();
                     p.position.setTo(touch.toWorldPosition(touch.currentPosition));
+                    p.velocity.setToMultiple(this.direction, .5);
                     universe.spawn(p);
                     this.distSinceLastPlacement = 0;
                 }
@@ -178,6 +179,8 @@ define(["modules/models/elementSet", "modules/models/kcolor", "noise", "modules/
         Tool.prototype.moveWithOffset = function(touch) {
             this.direction.setTo(stellarGame.touch.getOffsetToHistory(5));
             this.direction.mult(-.4);
+            var d = stellarGame.touch.currentPosition.magnitude();
+            this.direction.addMultiple(stellarGame.touch.currentPosition, .0002 * d);
 
             universe.addScrollingMovement(this.direction);
         }
