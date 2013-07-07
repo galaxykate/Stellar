@@ -15,9 +15,6 @@ define(['modules/views/game_view', 'modules/controllers/game_controller', 'modul
 
         game.view = gameView;
         console.log("START GAME");
-        game.inventory = new Inventory(universe);
-
-        game.inventory.createPaletteDiv($("#controls"));
 
         // Hook the universe view to the universe, so it knows what to draw
         gameView.universeView.setUniverse(universe);
@@ -30,6 +27,10 @@ define(['modules/views/game_view', 'modules/controllers/game_controller', 'modul
         // Give the game controller access to the universe view so that it
         //  can find objects by screen position
         gameController.universeController.setUniverseView(gameView.universeView);
+        gameController.universeController.init();
+
+        game.inventory = new Inventory(universe);
+        game.inventory.createPaletteDiv($("#controls"));
 
         stellarGame.ready = true;
 

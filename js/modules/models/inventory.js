@@ -5,9 +5,8 @@
 // Inventory class
 // Contains tools, elements, etc
 
-define(["modules/models/elementSet", "modules/models/kcolor", "noise", "modules/models/vector", "modules/models/uparticle", "modules/models/star"], function(ElementSet, KColor, Noise, Vector, UParticle, Star) {
+define(["modules/models/elementSet", "modules/models/kcolor", "modules/models/vector", "particleTypes"], function(ElementSet, KColor, Vector, ParticleTypes) {
     return (function() {
-        var noise = new Noise();
         var universe;
 
         // Private functions
@@ -151,6 +150,7 @@ define(["modules/models/elementSet", "modules/models/kcolor", "noise", "modules/
 
         // Draw the cursor for this tool into graphics g, at point p
         Tool.prototype.drawCursor = function(g, p) {
+            var noise = utilities.noiseInstance;
             g.noFill();
             this.idColor.stroke(g, .3, 1);
             g.strokeWeight(4);

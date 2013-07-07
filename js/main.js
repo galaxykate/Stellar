@@ -5,9 +5,9 @@
 var stellarGame = {
     drawFaces : false,
     drawElements : false,
-    drawDust: true, // usually true
-    drawStars: true, // usually true
-    drawCritters: true,
+    drawDust : true, // usually true
+    drawStars : true, // usually true
+    drawCritters : true,
 
     time : {
         universeTime : 0,
@@ -97,6 +97,8 @@ require.config({
         'inheritance' : 'libs/inheritance',
         'noise' : 'libs/simplex_noise',
         'quadtree' : 'modules/models/quadtree',
+        'particleTypes' : 'modules/models/particles/particle_types',
+        'uparticle' : 'modules/models/particles/uparticle',
 
     },
     shim : {

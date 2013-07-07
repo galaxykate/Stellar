@@ -4,10 +4,8 @@
 
 // Its the Universe!
 
-define(["inheritance", "modules/models/vector", "modules/models/face", "modules/models/elementSet", "noise", "modules/models/uparticle"], function(Inheritance, Vector, Face, ElementSet, Noise, UParticle) {
+define(["inheritance", "modules/models/vector", "modules/models/face", "modules/models/elementSet", "uparticle"], function(Inheritance, Vector, Face, ElementSet, UParticle) {
     return (function() {
-
-        var noise = new Noise();
 
         var states = [{
             name : "star",
@@ -19,6 +17,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             name : "nova",
             idNumber : 1,
             draw : function(g, star, options) {
+                var noise = utilities.noiseInstance;
+
                 var segments = 25;
                 var theta;
                 var r;
@@ -90,12 +90,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             }
         });
 
-        return {
-            // public interface
-            Star : Star,
-            // Star creation
-
-        };
+        return Star;
     })();
 
 });
