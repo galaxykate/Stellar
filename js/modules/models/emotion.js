@@ -16,13 +16,14 @@ define(["inheritance", "modules/models/vector", "modules/models/uparticle"], fun
                 
                 // If all of these are zero, neutral takes over
                 // No emotion cancels or precludes another
-				this.happy = Math.random();
-				this.sad = Math.random();
-				this.angry = Math.random();
-				this.fear = Math.random();
-				this.disgust = Math.random();
-				this.surprise = Math.random();
-				
+                this.values = [];
+                this.values["happy"] = Math.random();
+                this.values["sad"] = Math.random();
+                this.values["angry"] = Math.random();
+                this.values["fear"] = Math.random();
+                this.values["disgust"] = Math.random();
+                this.values["surprise"] = Math.random();
+                				
 				this.radius = newRad;
 				this.locVector = new Vector(0, 0);
             },
@@ -32,32 +33,32 @@ define(["inheritance", "modules/models/vector", "modules/models/uparticle"], fun
             	g.noStroke();
             	// Happy is golden yellow
             	this.locVector.setToPolar(this.radius, angle);
-            	g.fill(50/360, 1, this.happy, this.happy);
+            	g.fill(50/360, 1, this.values.happy, this.values.happy);
             	this.locVector.drawCircle(g, 10);
             	// Sad is ice blue
             	angle += Math.PI/3;
             	this.locVector.setToPolar(this.radius, angle);
-            	g.fill(209/360, 1, this.sad, this.sad);
+            	g.fill(209/360, 1, this.values.sad, this.values.sad);
             	this.locVector.drawCircle(g, 10);
             	// angry is blood red
             	angle += Math.PI/3;
             	this.locVector.setToPolar(this.radius, angle);
-            	g.fill(1, 1, this.angry, this.angry);
+            	g.fill(1, 1, this.values.angry, this.values.angry);
             	this.locVector.drawCircle(g, 10);
             	// Fear is purple
             	angle += Math.PI/3;
             	this.locVector.setToPolar(this.radius, angle);
-            	g.fill(269/360, 1, this.fear, this.fear);
+            	g.fill(269/360, 1, this.values.fear, this.values.fear);
             	this.locVector.drawCircle(g, 10);
             	// Disgust is green
             	angle += Math.PI/3;
             	this.locVector.setToPolar(this.radius, angle);
-            	g.fill(110/360, 1, this.disgust, this.disgust);
+            	g.fill(110/360, 1, this.values.disgust, this.values.disgust);
             	this.locVector.drawCircle(g, 10);
             	// Surprise is orange
             	angle += Math.PI/3;
             	this.locVector.setToPolar(this.radius, angle);
-            	g.fill(33/360, 1, this.surprise, this.surprise);
+            	g.fill(33/360, 1, this.values.surprise, this.values.surprise);
             	this.locVector.drawCircle(g, 10);
             },
             
@@ -75,6 +76,59 @@ define(["inheritance", "modules/models/vector", "modules/models/uparticle"], fun
             update : function(time) {
                 //this._super(time);
 
+            },
+            
+            getRankedEmotionName : function(rank){
+            	// sort by value and return the id ("happy", "sad", etc)
+            	
+            },
+            
+            getRankedEmotionValue : function(rank) {
+            	// sort by value and return the value (0-1)
+            },
+            
+            
+            setEmotion : function(name, value) {
+            	// find emotions with id of name ("happy", "sad", etc) and set its value (0-1)
+            	this.values[name] = value;
+            }, 
+            
+            setNeutral : function() {
+            	// sets all emotions to 0
+            	this.values.happy = 0;
+            	this.values.sad = 0;
+            	this.values.angry = 0;
+            	this.values.fear = 0;
+            	this.values.disgust = 0;
+            	this.values.surprise = 0;
+            }, 
+            
+            setRandomEmotionHigh : function() {
+            	// Picks a random emotion to set to 1.
+            	var choice = Math.floor(Math.random() * 6);
+            	switch(choice) {
+            		case 0:
+            			this.values.happy = 1;
+            			break;
+            		case 1:
+            			this.values.sad = 1;
+            			break;
+            		case 2:
+            			this.values.angry = 1;
+            			break;
+            		case 3:
+            			this.values.fear = 1;
+            			break;
+            		case 4:
+            			this.values.disgust = 1;
+            			break;
+            		case 5:
+            			this.values.surprise = 1;
+            			break;
+            		default:
+            			this.values.surprise = 1;
+            			break;
+            	}
             }
         });
 
