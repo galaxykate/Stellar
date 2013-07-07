@@ -34,6 +34,10 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
             },
 
+            remove : function() {
+                this.deleted = true;
+            },
+
             debugOutput : function(d) {
 
                 this.debugOutputLines.push(d);
@@ -56,7 +60,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 var outside = Math.max(0, d - 200);
                 var gravity = -Math.pow(outside, 2) / d;
-               // this.totalForce.setToMultiple(this.position, gravity);
+                // this.totalForce.setToMultiple(this.position, gravity);
 
                 var noiseScale = .0040;
                 var nx = this.position.x * noiseScale;
@@ -110,6 +114,11 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 this.idColor.fill(g);
                 g.noStroke();
+                if (this.deleted) {
+                    g.fill(.2, 0, .4);
+                    g.stroke(1, 0, 1, .7);
+                }
+
                 g.ellipse(0, 0, this.radius, this.radius);
 
             },
@@ -133,6 +142,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.idColor.stroke(g, 1, 1);
                 var textX = this.radius * .85 + 5;
                 var textY = this.radius * .74 + 5;
+                g.text(this.idNumber, textX, textY);
                 $.each(this.debugOutputLines, function(index, line) {
                     g.text(line, textX, textY + 12 * (index + 1));
                 })
@@ -158,7 +168,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             },
 
             toString : function() {
-                return "UPart" + this.position;
+                return "p" + this.idNumber + this.position;
             },
         });
         return UParticle;

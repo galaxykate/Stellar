@@ -5,7 +5,7 @@
 // Create the way that the game will render on-screen
 
 define(["modules/models/vector", "jQueryUITouchPunch"], function(Vector, $) {
-
+    var maxHistory = 50;
     return (function() {
 
         // Attach mouse events to the world window
@@ -14,11 +14,38 @@ define(["modules/models/vector", "jQueryUITouchPunch"], function(Vector, $) {
             lastPressed : new Vector(0, 0),
             lastReleased : new Vector(0, 0),
             dragOffset : new Vector(0, 0),
-            lastHover : new Vector(0, 0),
+            lastOffset : new Vector(0, 0),
+
+            // History function
+            history : [],
+            historyIndex : 0,
+            getHistory : function(stepsBack) {
+                var index = (this.history.length + this.historyIndex - stepsBack) % this.history.length;
+                return this.history[index];
+            },
+
+            getOffsetToHistory : function(stepsBack) {
+                var p = this.getHistory(stepsBack);
+
+                return this.currentPosition.getOffsetTo(p);
+            },
+
+            currentPosition : new Vector(0, 0),
             center : new Vector(0, 0),
+            overObjects : [],
+
+            toWorldPosition : function(p) {
+                return universeView.toWorldPosition(p);
+
+            },
 
             pressed : false,
         };
+
+        for (var i = 0; i < maxHistory; i++) {
+            touch.history[i] = new Vector(0, 0, 0);
+        }
+
         var universeView;
 
         var setUniverseView = function(view) {
@@ -26,8 +53,7 @@ define(["modules/models/vector", "jQueryUITouchPunch"], function(Vector, $) {
             touch.center.setTo(view.dimensions.width / 2, view.dimensions.height / 2);
 
             touch.setoUniversePosition = universeView.setoUniversePosition;
-            //  console.log(touch.center);
-            // console.log(view.dimensions);
+
         };
 
         var controlUpdateFunction = [];
@@ -43,16 +69,32 @@ define(["modules/models/vector", "jQueryUITouchPunch"], function(Vector, $) {
             });
 
             universeDiv.mousemove(function(e) {
+                var w = universeView.dimensions.width;
+                var h = universeView.dimensions.height;
+
                 var p = toRelative(this, e);
+                // Find the offset since the last movement
+                touch.lastOffset.setTo(p[0] + touch.currentPosition.x, p[1] + touch.currentPosition.y);
+                touch.currentPosition.setTo(p[0] - w / 2, p[1] - h / 2);
+
+                touch.historyIndex = (touch.historyIndex + 1) % maxHistory;
+                touch.history[touch.historyIndex] = touch.currentPosition.clone();
+
+                touch.overObjects = universeView.getTouchableAt(touch.currentPosition);
+
                 if (touch.pressed) {
 
                     touch.dragOffset.setTo(-touch.lastPressed.x + p[0], -touch.lastPressed.y + p[1]);
-                }
-                touch.lastHover.setTo(p[0], p[1]);
+                    if (touch.activeTool !== undefined) {
+                        touch.activeTool.touchDrag(touch);
 
-                touch.lastHover.sub(touch.center);
+                    }
+
+                } else {
+                    touch.activeTool.touchMove(touch);
+
+                }
                 controlUpdated();
-             
 
             });
 
@@ -64,12 +106,7 @@ define(["modules/models/vector", "jQueryUITouchPunch"], function(Vector, $) {
 
                 // If there is an active tool, pass the event to it
                 if (touch.activeTool !== undefined) {
-                    touch.activeTool.touchUp();
-                } else {
-                    // Do something with the held object
-                    if (touch.heldObject !== undefined) {
-                        touch.heldObject.touchEnd();
-                    }
+                    touch.activeTool.touchUp(touch);
                 }
             });
 
@@ -79,14 +116,7 @@ define(["modules/models/vector", "jQueryUITouchPunch"], function(Vector, $) {
                 touch.lastPressed.setTo(p[0], p[1])
 
                 if (touch.activeTool !== undefined) {
-                    touch.activeTool.touchDown();
-                } else {
-                    // Figure out what this is pressed *on*
-
-                    touch.heldObject = universeView.getTouchableAt(touch.lastPressed);
-                    if (touch.heldObject !== undefined) {
-                        touch.heldObject.touchStart();
-                    }
+                    touch.activeTool.touchDown(touch);
                 }
 
             });

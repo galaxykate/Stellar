@@ -11,13 +11,9 @@ define(["modules/models/star", "modules/models/dust", "modules/models/critter", 
         var backgroundStars = [];
         var backgroundLayers = 3;
         var backgroundStarDensity = 10;
-        var camera = {
-            angle : new Vector(0, 0, 0),
-            center : new Vector(0, 0, 0),
-            zoom : 1,
 
-        };
-        var gestureDir = new Vector(0, 0, 0);
+        var camera;
+
         var quadTree;
 
         var toAdd = [];
@@ -102,7 +98,7 @@ define(["modules/models/star", "modules/models/dust", "modules/models/critter", 
             if (options.layer === 'overlay') {
                 g.pushMatrix();
                 g.translate(-camera.center.x, -camera.center.y);
-                // quadTree.drawTree(g);
+              //  quadTree.drawTree(g);
                 g.popMatrix();
             }
 
@@ -111,8 +107,8 @@ define(["modules/models/star", "modules/models/dust", "modules/models/critter", 
         function generateStartRegion() {
             generateRegion({
                 center : camera.center,
-                w : 3000,
-                h : 2000
+                w : 1000,
+                h : 500
             });
         };
 
@@ -124,7 +120,7 @@ define(["modules/models/star", "modules/models/dust", "modules/models/critter", 
 
             console.log("GENERATE REGION");
             // Pick some random locations in the region
-            var density = .004;
+            var density = .003;
             var count = Math.ceil(region.w * region.h * density * density);
             console.log(count);
             var w2 = region.w / 2;
@@ -157,64 +153,51 @@ define(["modules/models/star", "modules/models/dust", "modules/models/critter", 
             stellarGame.time.universeTime = time.total;
 
             var theta = 10 * Math.sin(.01 * time.total);
-            if (time.total > .1 && gestureDir !== undefined) {
+            camera.center.addMultiple(camera.scrollingMovement, time.ellapsed);
+            camera.scrollingMovement.mult(.98);
+            utilities.debugOutput("Camera center: " + camera.center);
+            utilities.debugOutput("Current tool: " + stellarGame.touch.activeTool);
 
-                // cameraCenter.x += 1 * Math.cos(theta);
-                //cameraCenter.y += 1 * Math.sin(theta);
-
-                camera.center.addMultiple(gestureDir, .1);
-                utilities.debugOutput("Center: " + camera.center);
-                gestureDir.mult(.99);
-                //  cameraAngle.mult(.9);
-            }
-            if (stellarGame.touch !== undefined) {
-                utilities.debugOutput("Camera center: " + camera.center);
-                utilities.debugOutput("Current tool: " + stellarGame.touch.activeTool);
-            }
-
-            if (time.ellapsed !== undefined) {
-                var updateables = quadTree.getContentsInRegion({
-                    center : camera.center,
-                    w : 300,
-                    h : 200
-                });
-
-                $.each(updateables, function(index, obj) {
-                    obj.update(time);
-                });
-            }
-
+            quadTree.cleanup();
         };
 
-        function gestureUpdate(gesture) {
-            if (gesture.dragOffset !== undefined) {
-                gestureDir.x += gesture.dragOffset.x * .01;
-                gestureDir.y += gesture.dragOffset.y * .01;
-
-            }
-        };
-
-        function getQuadrantsInRegion(region, filter) {
-            return quadTree.getQuadrantsInRegion(region, filter);
+        function getQuadrantsInRegion(region, quads, g) {
+            return quadTree.getQuadrantsInRegion(region, quads, g);
         };
 
         function init() {
             console.log("INIT UNIVERSE");
+
+            camera = {
+                angle : new Vector(0, 0, 0),
+                center : new Vector(0, 0, 0),
+                zoom : 1,
+                scrollingMovement : new Vector(20, 0, 0),
+
+            };
+
             makeBackgroundStars();
             makeUniverseTree();
             generateStartRegion();
         };
 
         function getCamera() {
+            console.log(camera);
             return camera;
+        }
+
+        function addScrollingMovement(v) {
+            camera.scrollingMovement.addMultiple(v, 1);
+
         }
 
         return {
             getQuadrantsInRegion : getQuadrantsInRegion,
             draw : draw,
-            gestureUpdate : gestureUpdate,
+            spawn : spawn,
             update : update,
             getCamera : getCamera,
+            addScrollingMovement : addScrollingMovement,
             init : init,
         };
 

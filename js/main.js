@@ -13,7 +13,6 @@ var stellarGame = {
         universeTime : 0,
         gameTime : 0,
     },
-
 };
 
 var utilities = {

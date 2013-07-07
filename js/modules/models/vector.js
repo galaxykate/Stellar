@@ -36,28 +36,28 @@ define([], function() {
 
         // Shared class attributes
         Vector.prototype = {
+            clone : function() {
+                return new Vector(this);
+            },
+
             addMultiple : function(v, m) {
                 this.x += v.x * m;
                 this.y += v.y * m;
                 this.z += v.z * m;
             },
-
             addPolar : function(r, theta) {
                 this.x += r * Math.cos(theta);
                 this.y += r * Math.sin(theta);
             },
-
             setToPolar : function(r, theta) {
                 this.x = r * Math.cos(theta);
                 this.y = r * Math.sin(theta);
             },
-
             setToMultiple : function(v, m) {
                 this.x = v.x * m;
                 this.y = v.y * m;
                 this.z = v.z * m;
             },
-
             setTo : function(x, y, z) {
                 // Just in case this was passed a vector
                 if (x.x !== undefined) {
@@ -72,11 +72,9 @@ define([], function() {
                         this.z = z;
                 }
             },
-
             magnitude : function() {
                 return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
             },
-
             getDistanceTo : function(p) {
                 var dx = this.x - p.x;
                 var dy = this.y - p.y;
@@ -94,25 +92,21 @@ define([], function() {
                 this.z += v.z;
 
             },
-
             sub : function(v) {
                 this.x -= v.x;
                 this.y -= v.y;
                 this.z -= v.z;
             },
-
             mult : function(m) {
                 this.x *= m;
                 this.y *= m;
                 this.z *= m;
             },
-
             div : function(m) {
                 this.x /= m;
                 this.y /= m;
                 this.z /= m;
             },
-
             getOffsetTo : function(v) {
                 return new Vector(v.x - this.x, v.y - this.y, v.z - this.z);
             },
@@ -147,6 +141,9 @@ define([], function() {
             },
             drawLineTo : function(g, v) {
                 g.line(this.x, this.y, v.x, v.y);
+            },
+            drawArrow : function(g, v, m) {
+                g.line(this.x, this.y, v.x * m + this.x, v.y * m + this.y);
             },
 
             //===========================================================

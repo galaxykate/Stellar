@@ -16,7 +16,6 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
         var universe;
 
         var processing;
-        var camera;
 
         var activeQuadrants = [];
         var activeObjects = [];
@@ -25,6 +24,13 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
         var time = {
             total : 0,
             ellapsed : 0.1,
+        };
+        var toWorldPosition = function(p) {
+            var p2 = new Vector(p);
+            p2.x += camera.center.x;
+            p2.y += camera.center.y;
+            return p2;
+
         };
 
         var onUpdate = function(f) {
@@ -55,7 +61,6 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
         };
 
         var draw = function(g) {
-
             utilities.clearDebugOutput();
 
             g.colorMode(g.HSB, 1);
@@ -71,19 +76,22 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
             g.translate(-camera.center.x, -camera.center.y);
 
             // Calculate the active regions
+            var border = 120;
             var region = {
                 center : camera.center,
-                w : dimensions.width,
-                h : dimensions.height
+                w : dimensions.width + border * 2,
+                h : dimensions.height + border * 2
             };
-            if (stellarGame.drawQuadTree)
-                activeQuadrants = universe.getQuadrantsInRegion(region, g);
-            else
-                activeQuadrants = universe.getQuadrantsInRegion(region);
+            region.left = region.center.x - region.w / 2;
+            region.right = region.center.x + region.w / 2;
+            region.top = region.center.y - region.h / 2;
+            region.bottom = region.center.y + region.h / 2;
+
+            stellarGame.drawQuadTree = true;
+
+            activeQuadrants = universe.getQuadrantsInRegion(region, []);
 
             g.popMatrix();
-
-            g.ellipse(camera.center.x, camera.center.y, 50, 50);
 
             activeObjects = [];
             // Compile all the active objects
@@ -91,6 +99,8 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
             var contentsArrays = [];
             $.each(activeQuadrants, function(index, quad) {
                 contentsArrays[index] = quad.contents;
+                //  utilities.debugOutput(quad);
+                //     utilities.debugArrayOutput(contentsArrays[index]);
 
             });
             // Compile all the arrays of contents into a single array
@@ -99,8 +109,10 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
 
             // do update stuff
             update(g.millis() * .001);
-            if (stellarGame.touch)
-                getTouchableAt(stellarGame.touch.lastHover);
+
+            $.each(activeObjects, function(index, obj) {
+                obj.update(time);
+            });
 
             // Draw eaach layer in order
             drawLayer(g, {
@@ -117,13 +129,11 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
 
             // Draw the touch
             var touch = stellarGame.touch;
-            var p = touch.lastHover;
+
             if (touch.activeTool === undefined) {
-                g.fill(.8, 1, 1, .2);
-                g.stroke(.8, .4, .3);
-                g.ellipse(p.x, p.y, 20, 20);
+
             } else {
-                touch.activeTool.drawCursor(g, p);
+                touch.activeTool.drawCursor(g, touch.currentPosition);
             }
             g.popMatrix();
 
@@ -160,14 +170,14 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
         };
 
         var getTouchableAt = function(p) {
+            // utilities.debugOutput("Get touchable at " + p);
 
-            var target = new Vector(p.x - processing.width / 2 + camera.center.x, p.y - processing.height / 2 + camera.center.y, 0);
-
-            stellarGame.touch.universeTouch = target;
+            var touchables = [];
+            var target = new Vector(p.x + camera.center.x, p.y + camera.center.y, 0);
 
             var minDist = 10;
-            var closest;
             // go through all the objects and find the closest (inefficient, but fine for now)
+            // utilities.debugArrayOutput(activeObjects);
 
             var length = activeObjects.length;
             $.each(activeObjects, function(index, obj) {
@@ -175,19 +185,22 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
                 if (obj !== undefined) {
 
                     var d = obj.position.getDistanceTo(target);
+                    // utilities.debugOutput(obj + ": " + Math.floor(d));
+                    //  utilities.debugOutput(obj + ": " + d);
                     if (obj.radius)
                         d -= obj.radius;
                     if (d < minDist) {
-                        minDist = d;
-                        closest = obj;
+
+                        touchables.push(obj);
 
                     }
                 }
 
             });
-            utilities.debugOutput("Touchable at: " + target + ": " + closest);
+            //          utilities.debugOutput("...done<br> ");
+            // utilities.debugArrayOutput(touchables);
 
-            return closest;
+            return touchables;
 
         };
 
@@ -203,8 +216,10 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
             g.background(.45, 1, 1);
 
             g.draw = function() {
+                if (stellarGame.ready) {
 
-                draw(g);
+                    draw(g);
+                }
             };
         };
         processing = new Processing(canvas, initProcessing);
@@ -214,8 +229,10 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
 
             setUniverse : function(u) {
                 universe = u;
-                camera = u.getCamera();
+                camera = universe.getCamera();
+
             },
+            toWorldPosition : toWorldPosition,
             onUpdate : onUpdate,
 
             getTouchableAt : getTouchableAt,

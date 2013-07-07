@@ -6,13 +6,14 @@
 
 define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
     var quadrantCount = 0;
-    var maxLevels = 7;
+    var maxLevels = 8;
     var quadrantOffsets = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
     var quadrantIndices = [[0, 1], [3, 2]];
+
     // Make the star class
     //  Extend the star
-    var maxRadius = 10000;
-    var minRadius = maxRadius / (Math.pow(2, maxLevels));
+    var maxRadius = 30000;
+    var minRadius = maxRadius / (Math.pow(2, maxLevels - 1));
     console.log(minRadius);
 
     var QuadTree = Class.extend({
@@ -36,6 +37,7 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
                 this.center.x += this.radius * quadrantOffsets[this.quadrant][0];
                 this.center.y += this.radius * quadrantOffsets[this.quadrant][1];
             }
+            this.setBounds();
 
             this.children = [];
             if (this.level < maxLevels) {
@@ -108,77 +110,77 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
         // Find all the quadrants that are bounded by this region
         // {center:VECTOR, w: NUM, h:NUM}
 
-        getQuadrantsInRegion : function(region, g) {
-            var quads = [];
+        getQuadrantsInRegion : function(region, quads, g) {
+            if (quads === undefined)
+                quads = [];
 
-            if (g !== undefined) {
+            if (g !== undefined && this.level === 0) {
+
+                g.fill(.55, .3, 1, .2);
+                g.rectMode(g.RADIUS);
+                g.rect(region.center.x, region.center.y, region.w / 2, region.h / 2);
+
                 g.fill(1, 1, 1);
+
                 g.ellipse(region.center.x, region.center.y, 10, 10);
             }
 
-            // make points
-            var xCount = Math.floor(region.w / minRadius);
-            var yCount = Math.floor(region.h / minRadius);
-            var p = new Vector(0, 0);
+            if (this.intersects(region)) {
 
-            for (var i = 0; i < xCount; i++) {
-                var xPct = 0;
-                if (xCount > 1)
-                    xPct = i / (xCount - 1);
+                if (this.level === maxLevels) {
+                    quads.push(this);
+                    if (g)
+                        this.draw(g, 5);
+                } else {
 
-                var x = region.center.x + (xPct - .5) * minRadius * xCount;
-                for (var j = 0; j < yCount; j++) {
-
-                    var yPct = 0;
-                    if (yCount > 1)
-                        yPct = j / (yCount - 1);
-
-                    var y = region.center.y + (yPct - .5) * minRadius * yCount;
-                    if (g !== undefined) {
-                        g.noStroke();
-                        g.fill(.55, 1, 1);
-                        g.ellipse(x, y, 5, 5);
-                    }
-
-                    p.setTo(x, y);
-                    var quadrant = this.getQuadrant(p, maxLevels, false);
-                    if (quadrant !== undefined) {
-                        if (g !== undefined)
-                            quadrant.draw(g, 3);
-
-                        quads.push(quadrant);
+                    if (this.children !== undefined) {
+                        for (var i = 0; i < 4; i++) {
+                            if (this.children[i] !== undefined) {
+                                this.children[i].getQuadrantsInRegion(region, quads, g);
+                            }
+                        }
                     }
                 }
+
             }
 
             return quads;
         },
 
-        getContentsInRegion : function(region, filter) {
-            var found = [];
-            var quadrants = this.getQuadrantsInRegion(region);
+        setBounds : function() {
+            var radius = this.radius;
 
-            $.each(quadrants, function(index, quadrant) {
-                found = found.concat(quadrant.contents);
+            this.left = this.center.x - radius;
+            this.right = this.center.x + radius;
+            this.top = this.center.y - radius;
+            this.bottom = this.center.y + radius;
 
-            });
+        },
 
-            return found;
+        intersects : function(region) {
+
+            return !(this.left > region.right || this.right < region.left || this.top > region.bottom || this.bottom < region.top);
+
         },
 
         //
 
         draw : function(g, weight) {
+            g.rectMode(g.RADIUS);
+
             var h = (this.level * .231 + .1) % 1;
             g.strokeWeight(weight);
             g.stroke(h, 1, 1);
             g.noFill();
-            var r = this.radius - this.level * 2;
-            g.rect(this.center.x - r, this.center.y - r, r * 2, r * 2);
+            var r = this.radius - this.level * .2;
+            g.rect(this.center.x, this.center.y, r, r);
+            g.text(this.idNumber, this.center.x - r + 3, this.center.y - r + 12);
 
         },
 
         drawTree : function(g) {
+            g.rectMode(g.RADIUS);
+
             if (this.level === 0) {
                 /*
                  this.getQuadrantsInRegion({
@@ -208,6 +210,7 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
             if (this.contents !== undefined) {
 
                 g.fill((this.idNumber * .128) % 1, .4, 1);
+
                 g.noStroke();
                 g.text(this.contents.length, this.center.x - 5, this.center.y + 5);
                 $.each(this.contents, function(index, item) {
@@ -216,12 +219,33 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
                 });
             }
         },
+
+        cleanup : function() {
+            utilities.debugOutput("Cleanup " + this);
+            if (this.level === maxLevels) {
+
+                this.contents = _.reject(this.contents, function(obj) {
+                    return obj.deleted;
+                   //return false;
+                });
+
+            } else {
+                if (this.children !== undefined) {
+                    for (var i = 0; i < 4; i++) {
+                        if (this.children[i] !== undefined) {
+                            this.children[i].cleanup();
+                        }
+                    }
+                }
+            }
+        },
+
         update : function(time) {
 
         },
 
         toString : function() {
-            return "Quad" + this.quadrant + " " + this.center + " (lvl " + this.level + ")";
+            return "q" + this.idNumber + " " + this.quadrant + " " + this.center + " (lvl " + this.level + ")";
         },
     });
 
