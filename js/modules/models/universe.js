@@ -135,7 +135,7 @@ define(["modules/models/vector", "modules/models/kcolor", "quadtree", "particleT
                     obj = new particleTypes.Star();
                 else if (Math.random() > .4)
                     obj = new particleTypes.Dust();
-                else if (Math.random() > .3)
+                else if (Math.random() > .9)
                     obj = new particleTypes.Critter();
                 else
                     obj = new particleTypes.UParticle();

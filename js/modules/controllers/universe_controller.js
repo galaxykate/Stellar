@@ -151,7 +151,7 @@ define(["modules/models/vector", "jQueryUITouchPunch"], function(Vector, $) {
         };
 
         return {
-            init: init,
+            init : init,
             onControl : onControl,
             setUniverseView : setUniverseView,
 
