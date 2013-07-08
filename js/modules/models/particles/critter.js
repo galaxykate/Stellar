@@ -20,11 +20,9 @@ define(["inheritance", "modules/models/vector", "uparticle"], function(Inheritan
                 this.tailSegments = [];
                 for ( i = 0; i < this.numSegments; i++) {
                     var vect = new Vector(0, 0);
-                    console.log("Setting up vector: " + vect);
                     this.tailSegments.push(vect);
                 }
                 this.tailShrinkScale = .4 + .4 * Math.random();
-                console.log("init critter " + this.idNumber + ": " + this.numSegments);
             },
 
             drawBackground : function(g, options) {

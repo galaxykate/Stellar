@@ -98,7 +98,10 @@ require.config({
         'noise' : 'libs/simplex_noise',
         'quadtree' : 'modules/models/quadtree',
         'particleTypes' : 'modules/models/particles/particle_types',
+        'toolTypes' : 'modules/models/tools/tool_types',
+        'tool' : 'modules/models/tools/tool',
         'uparticle' : 'modules/models/particles/uparticle',
+        'kcolor' : 'modules/models/kcolor'
 
     },
     shim : {

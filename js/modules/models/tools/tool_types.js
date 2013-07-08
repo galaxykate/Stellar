@@ -3,35 +3,31 @@
  */
 
 // poluting the namespace, fix at some point
-var particleTypeNames = ["star", "dust", "critter"];
-var particleTypePath = "modules/models/particles/";
-var particleFiles = particleTypeNames.map(function(name, index) {
-    return particleTypePath + name;
+var toolTypeNames = ["move", "spawn"];
+var toolTypePath = "modules/models/tools/";
+var toolFiles = toolTypeNames.map(function(name, index) {
+    return toolTypePath + name;
 });
 
-var particleKeyNames = particleTypeNames.map(function(name, index) {
-    return name.charAt(0).toUpperCase() + name.slice(1);});
+// Make the list of filenames into good constructor names (eg "star" => "Star")
+var toolKeyNames = toolTypeNames.map(function(name, index) {
+    return name.charAt(0).toUpperCase() + name.slice(1);
+});
 
-particleFiles.push("uparticle");
-particleKeyNames.push("UParticle");
-
-console.log(particleFiles);
-console.log(particleKeyNames);
-define(particleFiles, function() {
+define(toolFiles, function() {
     var typeConstructors = arguments;
     return (function() {
-        var particleTypes = {};
+        var toolTypes = {};
 
         // Go through the arguments
         var length = typeConstructors.length;
         for (var i = 0; i < length; i++) {
-            var name = particleKeyNames[i];
+            var name = toolKeyNames[i];
             console.log(name);
-            particleTypes[name] = typeConstructors[i];
+            toolTypes[name] = typeConstructors[i];
         }
-
-        console.log(particleTypes);
-        return particleTypes;
+        console.log(toolTypes);
+        return toolTypes;
     })();
 
 });

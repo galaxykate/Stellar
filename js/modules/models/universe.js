@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(["modules/models/vector", "modules/models/kcolor", "quadtree", "particleTypes"], function(Vector, KColor, QuadTree, particleTypes) {
+define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], function(Vector, KColor, QuadTree, particleTypes) {
 
     return (function() {
 
@@ -107,8 +107,8 @@ define(["modules/models/vector", "modules/models/kcolor", "quadtree", "particleT
         function generateStartRegion() {
             generateRegion({
                 center : camera.center,
-                w : 1000,
-                h : 500
+                w : 10000,
+                h : 5000
             });
         };
 
