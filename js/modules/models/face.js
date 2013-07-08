@@ -10,7 +10,6 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
         // Private functions
         // functions from Kate's example
 
-        // EYE -- move to its own class
         function drawRightProfile(g) {
         	g.pushMatrix();
         	g.scale(-1, 1);
@@ -21,13 +20,7 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
         }
 
         function drawFace(g) {
-            //var h = (.212 + .6) % 1;
-            /* // background debug circle to show the size of the face
-            g.noStroke();
-            g.fill(0.621, .1, 1);
-            g.ellipse(0, 0, this.faceWidth, this.faceHeight);
-            */
-            //console.log(faceWidth/2);
+
             g.pushMatrix();
             drawHalfFace(g, false, this);
             g.popMatrix();
@@ -36,7 +29,6 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
             drawHalfFace(g, true, this);
             g.popMatrix();
 
-            //this.centerEye.draw(g);
         };
 
         function drawHalfFace(g, leftFace, faceClass) {
@@ -59,14 +51,6 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
 
             var rightTargetVector = new Vector((1 - faceClass.focus.x) * faceClass.narrowing, (1 - faceClass.focus.y) * faceClass.narrowing);
             var leftTargetVector = new Vector(faceClass.focus.x * faceClass.narrowing, faceClass.focus.y * faceClass.narrowing);
-            /*
-             if(faceClass.starID === 1){
-             utilities.debugOutput("time: " + time.total);
-             utilities.debugOutput("narrowing: " + faceClass.narrowing);
-             utilities.debugOutput("focus: " + faceClass.focus);
-             utilities.debugOutput("right target Vector: " + rightTargetVector);
-             utilities.debugOutput("left target Vector: " + leftTargetVector);
-             }*/
 
             faceClass.rightEye.update(time, faceClass.eyeRadius, faceClass.eyeRadius, rightTargetVector);
             faceClass.leftEye.update(time, faceClass.eyeRadius, faceClass.eyeRadius, leftTargetVector);

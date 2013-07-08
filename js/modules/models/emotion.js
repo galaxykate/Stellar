@@ -60,6 +60,8 @@ define(["inheritance", "modules/models/vector", "modules/models/uparticle"], fun
             	this.locVector.setToPolar(this.radius, angle);
             	g.fill(33/360, 1, this.values.surprise, this.values.surprise);
             	this.locVector.drawCircle(g, 10);
+            	
+            	console.log("emotion draw background: true!");
             },
             
             drawMain : function(g, options) {

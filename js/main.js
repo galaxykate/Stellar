@@ -5,15 +5,9 @@
 var stellarGame = {
     drawFaces : false,
     drawElements : false,
-<<<<<<< HEAD
-    drawDust: false, // usually true
-    drawStars: false, // usually true
-    drawCritters: true,
-=======
     drawDust : true, // usually true
     drawStars : true, // usually true
     drawCritters : true,
->>>>>>> ee9b50e323562bfa4f91c8e38b92c70872a1f5e3
 
     time : {
         universeTime : 0,

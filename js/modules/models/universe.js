@@ -134,18 +134,11 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
                     //obj = new UParticle();
                     obj = new particleTypes.Star();
                 else if (Math.random() > .4)
-<<<<<<< HEAD
-                    obj = new Dust.Dust();
-                else 
-                	obj = new Critter.Critter();
-                	
-=======
                     obj = new particleTypes.Dust();
-                else if (Math.random() > .9)
+                else if (Math.random() > .1)
                     obj = new particleTypes.Critter();
                 else
                     obj = new particleTypes.UParticle();
->>>>>>> ee9b50e323562bfa4f91c8e38b92c70872a1f5e3
                 obj.position.setTo(p);
                 spawn(obj);
             }
@@ -157,16 +150,6 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
             quadTree.insert(object);
         }
 
-<<<<<<< HEAD
-=======
-        function generateCritters(count) {
-            for (var i = 0; i < count; i++) {
-                var d = new Critter.Critter(this);
-                crittersToAdd.push(d);
-            }
-        }
-
->>>>>>> ee9b50e323562bfa4f91c8e38b92c70872a1f5e3
         function update(time) {
             stellarGame.time.universeTime = time.total;
 

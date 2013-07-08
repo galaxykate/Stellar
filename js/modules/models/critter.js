@@ -56,23 +56,15 @@ define(["inheritance", "modules/models/vector", "modules/models/uparticle", "mod
 	                g.ellipse(0, 0, this.radius, this.radius);
 	                
 	                this.emotion.drawBackground(g, options);
-
+					
+					console.log("critter draw bg: true!");
             	}
             },
             
             drawMain : function(g, options) {
             	if(stellarGame.drawCritters){
-            		/*
-	                this.idColor.fill(g, 1, 1);
-	                var faceVector = new Vector(0, 0);
-	                faceVector.addPolar(this.radius, this.frontAngle);
-	                faceVector.drawCircle(g, 6);
-	                
-	                this.idColor.fill(g, 1, .5);
-	                var tailVector = new Vector(0, 0);
-	                tailVector.addPolar(this.radius, this.backAngle);
-	                tailVector.drawCircle(g, 4);
-	                */
+            		console.log("critter draw main: true!");
+
 	                g.pushMatrix();
 	                g.rotate(this.frontAngle);
 	                
@@ -86,7 +78,7 @@ define(["inheritance", "modules/models/vector", "modules/models/uparticle", "mod
             
             drawOverlay : function(g, options) {
             	if(stellarGame.drawCritters){
-            		
+            		console.log("critter draw overlay: true!");
             		this.emotion.drawOverlay(g, options);
             	}
             }, 
