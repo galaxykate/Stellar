@@ -4,15 +4,15 @@
 
 // Spacey whaaaaaales
 
-define(["inheritance", "modules/models/vector", "modules/models/uparticle"], function(Inheritance, Vector, UParticle) {
+define(["inheritance", "modules/models/vector", "uparticle"], function(Inheritance, Vector, UParticle) {
     return (function() {
 
         // Make the star class
         //  Extend the star
-        var Emotion = UParticle.extend({
+        var Emotion = Class.extend({
 
             init : function(universe, newRad) {
-                this._super(universe);
+                //this._super(universe);
                 
                 // If all of these are zero, neutral takes over
                 // No emotion cancels or precludes another
@@ -61,7 +61,6 @@ define(["inheritance", "modules/models/vector", "modules/models/uparticle"], fun
             	g.fill(33/360, 1, this.values.surprise, this.values.surprise);
             	this.locVector.drawCircle(g, 10);
             	
-            	console.log("emotion draw background: true!");
             },
             
             drawMain : function(g, options) {
