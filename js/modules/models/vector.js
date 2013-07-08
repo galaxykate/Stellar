@@ -75,6 +75,15 @@ define([], function() {
             magnitude : function() {
                 return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
             },
+            
+            constrainMagnitude : function(min, max) {
+                var d = this.magnitude();
+                if (d !== 0) {
+                    var d2 = utilities.constrain(d, min, max);
+                    this.mult(d2 / d);
+                }
+            },
+
             getDistanceTo : function(p) {
                 var dx = this.x - p.x;
                 var dy = this.y - p.y;

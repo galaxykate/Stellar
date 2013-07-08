@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(["inheritance", "modules/models/vector", "modules/models/elementSet", "noise", "modules/models/kcolor"], function(Inheritance, Vector, ElementSet, Noise, KColor) {
+define(["inheritance", "modules/models/vector", "modules/models/elementSet", "noise", "kcolor"], function(Inheritance, Vector, ElementSet, Noise, KColor) {
     return (function() {
 
         var noise = new Noise();
@@ -14,8 +14,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
         // Make the star class
         var UParticle = Class.extend({
-            init : function(universe) {
-                this.universe = universe;
+            init : function() {
                 this.idNumber = particleCount;
                 particleCount++;
                 this.idColor = new KColor((this.idNumber * .289 + .31) % 1, 1, 1);
@@ -90,7 +89,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.forces = [];
                 this.totalForce = new Vector(0, 0);
                 this.mass = 1;
-                this.drag = .98;
+                this.drag = .93;
             },
 
             initAsTouchable : function() {

@@ -5,9 +5,15 @@
 var stellarGame = {
     drawFaces : false,
     drawElements : false,
+<<<<<<< HEAD
     drawDust: false, // usually true
     drawStars: false, // usually true
     drawCritters: true,
+=======
+    drawDust : true, // usually true
+    drawStars : true, // usually true
+    drawCritters : true,
+>>>>>>> ee9b50e323562bfa4f91c8e38b92c70872a1f5e3
 
     time : {
         universeTime : 0,
@@ -97,6 +103,11 @@ require.config({
         'inheritance' : 'libs/inheritance',
         'noise' : 'libs/simplex_noise',
         'quadtree' : 'modules/models/quadtree',
+        'particleTypes' : 'modules/models/particles/particle_types',
+        'toolTypes' : 'modules/models/tools/tool_types',
+        'tool' : 'modules/models/tools/tool',
+        'uparticle' : 'modules/models/particles/uparticle',
+        'kcolor' : 'modules/models/kcolor'
 
     },
     shim : {

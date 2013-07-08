@@ -69,6 +69,7 @@ define(["modules/models/vector", "jQueryUITouchPunch"], function(Vector, $) {
             });
 
             universeDiv.mousemove(function(e) {
+
                 var w = universeView.dimensions.width;
                 var h = universeView.dimensions.height;
 
@@ -144,10 +145,13 @@ define(["modules/models/vector", "jQueryUITouchPunch"], function(Vector, $) {
         console.log("START UNIVERSE CONTROLLER");
 
         // Make the touch accessible from anywhere (but use sparingly!)
-        stellarGame.touch = touch;
-        initTouchFunctions();
+        var init = function() {
+            stellarGame.touch = touch;
+            initTouchFunctions();
+        };
 
         return {
+            init : init,
             onControl : onControl,
             setUniverseView : setUniverseView,
 

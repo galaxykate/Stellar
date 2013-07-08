@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(["modules/models/star", "modules/models/dust", "modules/models/critter", "modules/models/vector", "modules/models/kcolor", "quadtree", "modules/models/uparticle"], function(Star, Dust, Critter, Vector, KColor, QuadTree, UParticle) {
+define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], function(Vector, KColor, QuadTree, particleTypes) {
 
     return (function() {
 
@@ -98,7 +98,7 @@ define(["modules/models/star", "modules/models/dust", "modules/models/critter", 
             if (options.layer === 'overlay') {
                 g.pushMatrix();
                 g.translate(-camera.center.x, -camera.center.y);
-              //  quadTree.drawTree(g);
+                //  quadTree.drawTree(g);
                 g.popMatrix();
             }
 
@@ -107,8 +107,8 @@ define(["modules/models/star", "modules/models/dust", "modules/models/critter", 
         function generateStartRegion() {
             generateRegion({
                 center : camera.center,
-                w : 1000,
-                h : 500
+                w : 10000,
+                h : 5000
             });
         };
 
@@ -132,12 +132,20 @@ define(["modules/models/star", "modules/models/dust", "modules/models/critter", 
                 var obj;
                 if (Math.random() > .5)
                     //obj = new UParticle();
-                    obj = new Star.Star();
+                    obj = new particleTypes.Star();
                 else if (Math.random() > .4)
+<<<<<<< HEAD
                     obj = new Dust.Dust();
                 else 
                 	obj = new Critter.Critter();
                 	
+=======
+                    obj = new particleTypes.Dust();
+                else if (Math.random() > .9)
+                    obj = new particleTypes.Critter();
+                else
+                    obj = new particleTypes.UParticle();
+>>>>>>> ee9b50e323562bfa4f91c8e38b92c70872a1f5e3
                 obj.position.setTo(p);
                 spawn(obj);
             }
@@ -149,6 +157,16 @@ define(["modules/models/star", "modules/models/dust", "modules/models/critter", 
             quadTree.insert(object);
         }
 
+<<<<<<< HEAD
+=======
+        function generateCritters(count) {
+            for (var i = 0; i < count; i++) {
+                var d = new Critter.Critter(this);
+                crittersToAdd.push(d);
+            }
+        }
+
+>>>>>>> ee9b50e323562bfa4f91c8e38b92c70872a1f5e3
         function update(time) {
             stellarGame.time.universeTime = time.total;
 
