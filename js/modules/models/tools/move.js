@@ -17,9 +17,12 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
         MoveTool = Tool.extend({
             initializeTool : function() {
-                this.elements = new ElementSet();
+                this.elements = new ElementSet(this);
 
                 this.mode = MOVE;
+            },
+            updateElements : function() {
+                // Do something with the new element amounts
             },
 
             // Release any dust
@@ -31,6 +34,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
             onDown : function(touch) {
 
             },
+
             onDrag : function(touch) {
                 var tool = this;
                 this.moveWithOffset(touch);
@@ -83,8 +87,6 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                             g.line(rInner * cInnerTheta, rInner * sInnerTheta, rOuter * cOuterTheta, rOuter * sOuterTheta);
 
                         }
-
-                     
 
                     }
                 }

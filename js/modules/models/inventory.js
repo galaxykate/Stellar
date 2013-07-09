@@ -13,8 +13,8 @@ define(["modules/models/elementSet", "kcolor", "modules/models/vector", "particl
 
         // Make the Inventory class
         function Inventory() {
-var inventory = this;
-            this.elements = new ElementSet();
+            var inventory = this;
+            this.elements = new ElementSet(this);
             this.tools = [];
 
             // What should go in the inventory
@@ -39,6 +39,10 @@ var inventory = this;
 
         // Shared class attributes
         Inventory.prototype = {
+
+            updateElements : function() {
+                // Do something with the new element amounts
+            },
 
             // A method to add tools
             addTool : function(tool) {

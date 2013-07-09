@@ -90,11 +90,12 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
             // Give this object a bunch of elements
             initAsElementContainer : function() {
-                this.elements = new ElementSet();
-                this.elements.setTotalMass();
-                this.mass = this.elements.totalMass;
-                this.radius = Math.pow(this.mass, .5) * 1;
+                this.elements = new ElementSet(this);
 
+            },
+
+            updateElements : function() {
+                // Do something with the new element amounts
             },
 
             initAsParticle : function() {

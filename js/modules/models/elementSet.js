@@ -46,8 +46,9 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         };
 
         // Make the Vector class
-        function ElementSet() {
+        function ElementSet(parent) {
             this.elementQuantity = [];
+            this.parent = parent;
 
             // How many elements does this start with?
             var maxElements = 1 + Math.floor(Math.random() * Math.random() * activeElements.length);
@@ -60,6 +61,7 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
                 previousElement = this.elementQuantity[i];
             }
             this.setTotalMass();
+            this.parent.updateElements();
 
         };
 
