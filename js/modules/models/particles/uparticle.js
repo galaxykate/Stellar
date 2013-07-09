@@ -19,7 +19,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 particleCount++;
                 this.idColor = new KColor((this.idNumber * .289 + .31) % 1, 1, 1);
 
-                this.radius = 10;
+                this.setRadius(10);
 
                 particleCount++;
                 this.initAsParticle();
@@ -28,8 +28,17 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.velocity.addPolar(Math.random() * 1, Math.random() * 100);
 
                 this.initAsElementContainer();
+
                 this.initAsTouchable();
                 this.debugOutputLines = [];
+
+            },
+
+            setRadius : function(r) {
+                this.radius = r;
+            },
+
+            initialUpdate : function() {
 
             },
 
@@ -50,6 +59,11 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             update : function(time) {
                 // Clear the output
                 var t = time.ellapsed;
+                if (this.lastUpdate === undefined) {
+                    this.lastUpdate = 0;
+                    this.initialUpdate();
+                }
+
                 this.clearDebugOutput();
 
                 var d = this.position.magnitude();
@@ -76,11 +90,12 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
             // Give this object a bunch of elements
             initAsElementContainer : function() {
-                this.elements = new ElementSet();
-                this.elements.setTotalMass();
-                this.mass = this.elements.totalMass;
-                this.radius = Math.pow(this.mass, .5) * 1;
+                this.elements = new ElementSet(this);
 
+            },
+
+            updateElements : function() {
+                // Do something with the new element amounts
             },
 
             initAsParticle : function() {
@@ -121,7 +136,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 g.ellipse(0, 0, this.radius, this.radius);
 
             },
-
             drawOverlay : function(g, options) {
                 //var h = (this.idNumber * .212 + .3) % 1;
                 if (this.touchHeld) {
@@ -146,7 +160,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     g.text(line, textX, textY + 12 * (index + 1));
                 })
             },
-
             draw : function(g, options) {
 
                 switch(options.layer) {
@@ -165,7 +178,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 }
             },
-
             toString : function() {
                 return "p" + this.idNumber + this.position;
             },

@@ -4,7 +4,7 @@
 
 // UParticle-inherited class
 
-define(["modules/models/vector", "kcolor", "tool"], function(Vector, KColor, Tool) {
+define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", "particleTypes"], function(Vector, KColor, Tool, ElementSet, particleTypes) {
     return (function() {
 
         //========================================================
@@ -17,8 +17,12 @@ define(["modules/models/vector", "kcolor", "tool"], function(Vector, KColor, Too
 
         MoveTool = Tool.extend({
             initializeTool : function() {
-                this.contents = 0;
+                this.elements = new ElementSet(this);
+
                 this.mode = MOVE;
+            },
+            updateElements : function() {
+                // Do something with the new element amounts
             },
 
             // Release any dust
@@ -30,11 +34,14 @@ define(["modules/models/vector", "kcolor", "tool"], function(Vector, KColor, Too
             onDown : function(touch) {
 
             },
+
             onDrag : function(touch) {
+                var tool = this;
                 this.moveWithOffset(touch);
 
                 $.each(touch.overObjects, function(index, obj) {
-                    obj.remove();
+                    tool.elements.siphon(obj.elements, 1);
+
                 });
 
             },
@@ -47,12 +54,16 @@ define(["modules/models/vector", "kcolor", "tool"], function(Vector, KColor, Too
                 g.ellipse(p.x, p.y, 10, 10);
 
                 g.pushMatrix();
-                   this.drawDirection(g, p);
-                     
+                this.drawDirection(g, p);
+
                 g.translate(p.x, p.y);
+
                 if (this.mode === MOVE) {
                     if (stellarGame.touch.pressed) {
 
+                        this.elements.drawAsDustCloud(g, 20);
+
+                        // Draw a spiral
                         g.stroke(1, 0, 1, .8);
 
                         var streaks = 30;
@@ -76,6 +87,7 @@ define(["modules/models/vector", "kcolor", "tool"], function(Vector, KColor, Too
                             g.line(rInner * cInnerTheta, rInner * sInnerTheta, rOuter * cOuterTheta, rOuter * sOuterTheta);
 
                         }
+
                     }
                 }
 

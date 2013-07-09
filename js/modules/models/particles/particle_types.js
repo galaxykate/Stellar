@@ -3,14 +3,15 @@
  */
 
 // poluting the namespace, fix at some point
-var particleTypeNames = ["star", "dust", "critter"];
+var particleTypeNames = ["star", "dust", "trailhead"];
 var particleTypePath = "modules/models/particles/";
 var particleFiles = particleTypeNames.map(function(name, index) {
     return particleTypePath + name;
 });
 
 var particleKeyNames = particleTypeNames.map(function(name, index) {
-    return name.charAt(0).toUpperCase() + name.slice(1);});
+    return name.charAt(0).toUpperCase() + name.slice(1);
+});
 
 particleFiles.push("uparticle");
 particleKeyNames.push("UParticle");

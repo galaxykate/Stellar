@@ -53,6 +53,13 @@ define([], function() {
                 this.x = r * Math.cos(theta);
                 this.y = r * Math.sin(theta);
             },
+
+            setToPolarOffset : function(v, r, theta) {
+                this.x = v.x + r * Math.cos(theta);
+                this.y = v.y + r * Math.sin(theta);
+                this.z = v.z;
+            },
+            
             setToMultiple : function(v, m) {
                 this.x = v.x * m;
                 this.y = v.y * m;
@@ -75,7 +82,7 @@ define([], function() {
             magnitude : function() {
                 return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
             },
-            
+
             constrainMagnitude : function(min, max) {
                 var d = this.magnitude();
                 if (d !== 0) {
