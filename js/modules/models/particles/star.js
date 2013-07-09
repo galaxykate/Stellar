@@ -43,6 +43,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         var randomState = function() {
             return states[Math.floor(Math.random() * 2)];
         };
+        
 
         // Make the star class
         //  Extend the star
@@ -54,7 +55,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.radius = Math.random() * 40 + 20;
 
                 this.initFace();
-
+				
+				this.burningFuel = true;
             },
 
             initFace : function() {

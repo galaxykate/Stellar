@@ -79,6 +79,10 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
             }
             return count;
         };
+        
+        ElementSet.prototype.burnSomeFuel = function() {
+        	
+        }
 
         ElementSet.prototype.draw = function(g, radius) {
             var totalRange = 6;
