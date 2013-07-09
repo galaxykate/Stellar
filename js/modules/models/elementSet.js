@@ -61,7 +61,7 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
                 previousElement = this.elementQuantity[i];
             }
             this.setTotalMass();
-            this.parent.updateElements();
+            //this.parent.updateElements(); // causes errors because this.parent.elements is not set yet!
 
         };
 
@@ -81,6 +81,10 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
                 console.log("Chosen: " + elem);
 
             }
+            
+            
+            this.setTotalMass();
+            target.setTotalMass();
 
         };
 

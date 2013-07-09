@@ -86,6 +86,8 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.velocity.addMultiple(this.totalForce, t);
                 this.position.addMultiple(this.velocity, t);
                 this.velocity.mult(this.drag);
+                
+                this.updateElements();
             },
 
             // Give this object a bunch of elements
@@ -96,6 +98,10 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
             updateElements : function() {
                 // Do something with the new element amounts
+                //this.elements.setTotalMass(); // this is set by elements.siphon()
+                if(this.elements.totalMass === 0){
+                	this.remove();
+               	}
             },
 
             initAsParticle : function() {
