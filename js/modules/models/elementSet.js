@@ -63,6 +63,25 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 
         };
 
+        // Siphon off some elements
+        ElementSet.prototype.siphon = function(target, volume) {
+            console.log("Siphon from " + target);
+            for (var i = 0; i < volume; i++) {
+                var elem = utilities.getWeightedRandom(target.elementQuantity, function(index, elem) {
+                    return index;
+
+                });
+
+                var siphonAmt = Math.min(150, target.elementQuantity[elem]);
+
+                this.elementQuantity[elem] += siphonAmt;
+                target.elementQuantity[elem] -= siphonAmt
+                console.log("Chosen: " + elem);
+
+            }
+
+        };
+
         ElementSet.prototype.setTotalMass = function() {
             this.totalMass = 0;
 
@@ -101,29 +120,40 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
                 }
             }
         };
-        
+
         // radius here is the boundary of the dust cloud
         ElementSet.prototype.drawAsDustCloud = function(g, radius) {
-            
+            var t = stellarGame.time.universeTime;
+
             //for (var i = 0; i < activeElements.length; i++) { // big elements are on top
-            for (var i = activeElements.length-1; i >= 0; i--) { // big elements are on bottom
+            for (var i = activeElements.length - 1; i >= 0; i--) {// big elements are on bottom
                 //var amt = this.elementQuantity[i];
                 var amt = Math.ceil(Math.log(this.elementQuantity[i]));
-                //var elementRad = activeElements[i].number/10; 
+
+                amt = Math.min(amt, 1);
+                //var elementRad = activeElements[i].number/10;
                 var elementRad = Math.log(activeElements[i].number);
                 //var elementRad = Math.sqrt(activeElements[i].number);
-                if (elementRad < 1) elementRad = 1;
-                
+                if (elementRad < 1)
+                    elementRad = 1;
+                g.fill(.1 * i, .9, .9);
+                g.noStroke();
+                //g.text(Math.floor(this.elementQuantity[i]), 0, 12 * i);
+
                 if (amt > 0) {
-                	// very rough scaling parameters, need to find better functions
-                    g.fill(.1 * i, .9, .9);
-                    g.noStroke();
-                    for (var j = 0; j < amt; j++){ 
-	                    var xloc = 2*radius*utilities.pnoise(.1*stellarGame.time.universeTime + 200 + amt + elementRad + j) - radius; //i* 10;//
-	                	var yloc = 2*radius*utilities.pnoise(.1*stellarGame.time.universeTime + 100 + amt + elementRad + j) -radius; //i* 10;
-	                	g.ellipse(xloc, yloc, elementRad, elementRad)
-                	}
-			    }
+                    // very rough scaling parameters, need to find better functions
+                    for (var j = 0; j < amt; j++) {
+                        var r = 6 * Math.pow(i, .6) + 5;
+                        var theta = j + t * (Math.sin(i + j) - .5) + 10;
+                        //      var xloc = 2 * radius * utilities.pnoise(.1 * t + 200 + amt + elementRad + j) - radius;
+                        //i* 10;//
+                        //     var yloc = 2 * radius * utilities.pnoise(.1 * t + 100 + amt + elementRad + j) - radius;
+                        //i* 10;
+                        //    g.ellipse(xloc, yloc, elementRad, elementRad)
+                        g.ellipse(r * Math.cos(theta), r * Math.sin(theta), elementRad, elementRad)
+                    }
+                }
+
             }
         };
 

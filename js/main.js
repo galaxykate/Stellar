@@ -26,6 +26,36 @@ var utilities = {
         return v;
     },
 
+    // Inefficient, fix someday
+    // the weight is determined by the function getWeight(index, item, list)
+    getWeightedRandom : function(array) {
+        var totalWeight = 0;
+        var length = array.length;
+        console.log(array);
+
+        for (var i = 0; i < length; i++) {
+
+            totalWeight += array[i];
+        };
+
+        console.log("Total weight: " + totalWeight);
+
+        var randomNumber = Math.floor(Math.random() * totalWeight);
+        console.log("Number: " + randomNumber);
+        var cumWeight = 0;
+
+        for (var i = 0; i < length; i++) {
+
+            cumWeight += array[i]
+            console.log("Cumulative at " + i + ": " + cumWeight);
+            if (randomNumber < cumWeight) {
+                return i;
+            }
+        };
+
+        console.log("Nothing found?")
+    },
+
     constrain : function(val, lowerBound, upperBound) {
         if (Math.max(val, upperBound) === val)
             return upperBound;
