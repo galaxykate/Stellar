@@ -31,29 +31,23 @@ var utilities = {
     getWeightedRandom : function(array) {
         var totalWeight = 0;
         var length = array.length;
-        console.log(array);
 
         for (var i = 0; i < length; i++) {
 
             totalWeight += array[i];
         };
 
-        console.log("Total weight: " + totalWeight);
-
         var randomNumber = Math.floor(Math.random() * totalWeight);
-        console.log("Number: " + randomNumber);
         var cumWeight = 0;
 
         for (var i = 0; i < length; i++) {
 
             cumWeight += array[i]
-            console.log("Cumulative at " + i + ": " + cumWeight);
             if (randomNumber < cumWeight) {
                 return i;
             }
         };
 
-        console.log("Nothing found?")
     },
 
     constrain : function(val, lowerBound, upperBound) {
@@ -122,6 +116,7 @@ require.config({
         'jQuery' : 'libs/jquery-1.10.1',
         'jQueryUI' : 'libs/jquery-ui',
         'jQueryUITouchPunch' : 'libs/jquery.ui.touch-punch',
+        'jQueryHammer' : 'libs/jquery.hammer',
         'underscore' : 'libs/underscore',
         'processing' : 'libs/processing-1.4.1',
         'inheritance' : 'libs/inheritance',
@@ -136,6 +131,10 @@ require.config({
     },
     shim : {
         'jQueryUITouchPunch' : {
+            exports : '$',
+            deps : ['jQueryUI']
+        },
+        'jQueryHammer' : {
             exports : '$',
             deps : ['jQueryUI']
         },

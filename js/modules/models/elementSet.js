@@ -52,22 +52,29 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 
             // How many elements does this start with?
             var maxElements = 1 + Math.floor(Math.random() * Math.random() * activeElements.length);
-            //console.log("maxElements: " + maxElements);
             var previousElement = Math.random() * 1000;
             for (var i = 0; i < activeElements.length; i++) {
-
+                this.elementQuantity[i] = 0;
                 // Each element should be a little less frequent then the element before
-                this.elementQuantity[i] = previousElement * (.3 + .4 * Math.random());
-                previousElement = this.elementQuantity[i];
+                if (i <= maxElements) {
+                    this.elementQuantity[i] = previousElement * (.3 + .4 * Math.random());
+                    previousElement = this.elementQuantity[i];
+                }
+
             }
+
             this.setTotalMass();
             this.parent.updateElements();
 
         };
 
+        //===============================================================
+        //===============================================================
+        //===============================================================
+        // Ways to transfer, add, fuse, or remove elements
+
         // Siphon off some elements
         ElementSet.prototype.siphon = function(target, volume) {
-            console.log("Siphon from " + target);
             for (var i = 0; i < volume; i++) {
                 var elem = utilities.getWeightedRandom(target.elementQuantity, function(index, elem) {
                     return index;
@@ -78,11 +85,41 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 
                 this.elementQuantity[elem] += siphonAmt;
                 target.elementQuantity[elem] -= siphonAmt
-                console.log("Chosen: " + elem);
 
             }
 
+            this.setTotalMass();
+            target.setTotalMass();
+
         };
+
+        // Transfer some of the elements to the target
+        ElementSet.prototype.transferTo = function(target, pct) {
+            for (var i = 0; i < activeElements.length; i++) {
+                var amt = this.elementQuantity[i] * pct;
+                this.elementQuantity[i] -= amt;
+                target.elementQuantity[i] += amt;
+
+            }
+            this.setTotalMass();
+            target.setTotalMass();
+
+        };
+
+        // Multiply the elements by some amount
+        ElementSet.prototype.multiply = function(m) {
+            for (var i = 0; i < activeElements.length; i++) {
+                this.elementQuantity[i] *= m;
+
+            }
+            this.setTotalMass();
+            target.setTotalMass();
+
+        };
+
+        //===============================================================
+        //===============================================================
+        //===============================================================
 
         ElementSet.prototype.setTotalMass = function() {
             this.totalMass = 0;
@@ -127,26 +164,35 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         ElementSet.prototype.drawAsDustCloud = function(g, radius) {
             var t = stellarGame.time.universeTime;
 
-            //for (var i = 0; i < activeElements.length; i++) { // big elements are on top
-            for (var i = activeElements.length - 1; i >= 0; i--) {// big elements are on bottom
+            var minRadius = 2;
+
+            for (var i = 0; i < activeElements.length; i++) {// big elements are on top
+                //for (var i = activeElements.length - 1; i >= 0; i--) {// big elements are on bottom
                 //var amt = this.elementQuantity[i];
+
+                var hue = (i * 2.13) % 1;
                 var amt = Math.ceil(Math.log(this.elementQuantity[i]));
 
                 amt = Math.min(amt, 1);
                 //var elementRad = activeElements[i].number/10;
-                var elementRad = Math.log(activeElements[i].number);
+                // var elementRad = Math.log(activeElements[i].number);
+
+                var volume = utilities.constrain(this.elementQuantity[i], 0, 10000);
+                var elementRad = .05 * volume * Math.pow(1.8, i);
+                elementRad = Math.pow(elementRad, .5);
                 //var elementRad = Math.sqrt(activeElements[i].number);
-                if (elementRad < 1)
-                    elementRad = 1;
-                g.fill(.1 * i, .9, .9);
+                if (elementRad < minRadius)
+                    elementRad = minRadius;
+                g.fill(hue, .9, .9);
                 g.noStroke();
                 //g.text(Math.floor(this.elementQuantity[i]), 0, 12 * i);
 
                 if (amt > 0) {
                     // very rough scaling parameters, need to find better functions
                     for (var j = 0; j < amt; j++) {
-                        var r = 6 * Math.pow(i, .6) + 5;
-                        var theta = j + t * (Math.sin(i + j) - .5) + 10;
+                        var spread = radius * Math.pow(this.totalMass, .4) + 5;
+                        var r = spread * .02 * Math.pow(i, .4) + 5;
+                        var theta = j + t * (3 * Math.sin(i + j + this.parent.idNumber) - .5) + 10;
                         //      var xloc = 2 * radius * utilities.pnoise(.1 * t + 200 + amt + elementRad + j) - radius;
                         //i* 10;//
                         //     var yloc = 2 * radius * utilities.pnoise(.1 * t + 100 + amt + elementRad + j) - radius;

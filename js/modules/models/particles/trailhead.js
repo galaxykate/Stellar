@@ -21,10 +21,35 @@ define(["modules/models/vector", "uparticle", particleTypePath + "dust"], functi
 
             drawMain : function(g, options) {
                 this.idColor.fill(g, .9, 1);
+                var t = stellarGame.time.universeTime;
+                var radius = this.radius*.4;
                 g.noStroke();
-                g.ellipse(0, 0, this.radius, this.radius);
-                this.idColor.fill(g, .3, 1);
-                g.ellipse(0, 0, this.radius * .3, this.radius * .3);
+                var points = 5;
+                var starLevels = 2;
+                for (var j = 0; j < starLevels; j++) {
+                    var jPct = j * 1.0 / (starLevels - 1);
+                    g.fill(.65, (.3 - .3 * jPct), 1, .2 + jPct);
+                    g.beginShape();
+                    g.vertex(0, 0);
+                    var pop = 0;
+                    var segments = points * 10;
+                    for (var i = 0; i < segments + 1; i++) {
+                        var theta = i * 2 * Math.PI / segments;
+
+                        var spike = Math.abs(Math.sin(theta * points / 2));
+                        spike = 1 - Math.pow(spike, .2);
+
+                        var sparkle = 1.1 * utilities.pnoise(t * 2 + theta + this.idNumber);
+                        sparkle = Math.pow(sparkle, 2);
+
+                        var r = .6 * radius * (spike * sparkle);
+
+                        r += 1 + 1.5 * pop;
+                        r *= radius * .7 * (1.2 - Math.pow(.7 * jPct, 1));
+                        g.vertex(r * Math.cos(theta), r * Math.sin(theta));
+                    }
+                    g.endShape();
+                }
             },
 
             drawOverlay : function(g, options) {

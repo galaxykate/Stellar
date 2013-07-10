@@ -107,8 +107,8 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
         function generateStartRegion() {
             generateRegion({
                 center : camera.center,
-                w : 10000,
-                h : 5000
+                w : 1000,
+                h : 500
             });
         };
 
@@ -132,6 +132,8 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
                 var obj;
 
                 obj = new particleTypes.Trailhead();
+                if (Math.random() > .5)
+                    obj = new particleTypes.Star();
                 obj.position.setTo(p);
                 spawn(obj);
             }

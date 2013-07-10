@@ -25,6 +25,12 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
             total : 0,
             ellapsed : 0.1,
         };
+
+        var transformScreenToUniverse = function(p) {
+            p.x += camera.center.x;
+            p.y += camera.center.y;
+        };
+
         var toWorldPosition = function(p) {
             var p2 = new Vector(p);
             p2.x += camera.center.x;
@@ -232,6 +238,7 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
                 camera = universe.getCamera();
 
             },
+            transformScreenToUniverse : transformScreenToUniverse,
             toWorldPosition : toWorldPosition,
             onUpdate : onUpdate,
 

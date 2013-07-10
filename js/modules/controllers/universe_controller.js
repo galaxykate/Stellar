@@ -4,7 +4,7 @@
 
 // Create the way that the game will render on-screen
 
-define(["modules/models/vector", "jQueryUITouchPunch"], function(Vector, $) {
+define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function(Vector, $) {
     var maxHistory = 50;
     return (function() {
 
@@ -30,12 +30,18 @@ define(["modules/models/vector", "jQueryUITouchPunch"], function(Vector, $) {
                 return this.currentPosition.getOffsetTo(p);
             },
 
+            currentUniversePosition : new Vector(0, 0),
             currentPosition : new Vector(0, 0),
             center : new Vector(0, 0),
             overObjects : [],
 
             toWorldPosition : function(p) {
                 return universeView.toWorldPosition(p);
+
+            },
+
+            transformScreenToUniverse : function(p) {
+                return universeView.transformScreenToUniverse(p);
 
             },
 
@@ -63,6 +69,7 @@ define(["modules/models/vector", "jQueryUITouchPunch"], function(Vector, $) {
         };
 
         var initTouchFunctions = function() {
+
             universeDiv.click(function(e) {
                 var p = toRelative(this, e);
 
@@ -77,6 +84,8 @@ define(["modules/models/vector", "jQueryUITouchPunch"], function(Vector, $) {
                 // Find the offset since the last movement
                 touch.lastOffset.setTo(p[0] + touch.currentPosition.x, p[1] + touch.currentPosition.y);
                 touch.currentPosition.setTo(p[0] - w / 2, p[1] - h / 2);
+                touch.currentUniversePosition.setTo(touch.currentPosition);
+                touch.transformScreenToUniverse(touch.currentUniversePosition);
 
                 touch.historyIndex = (touch.historyIndex + 1) % maxHistory;
                 touch.history[touch.historyIndex] = touch.currentPosition.clone();
@@ -121,6 +130,9 @@ define(["modules/models/vector", "jQueryUITouchPunch"], function(Vector, $) {
                 }
 
             });
+
+            var hammertime = universeDiv.hammer();
+
         };
 
         var controlUpdated = function() {

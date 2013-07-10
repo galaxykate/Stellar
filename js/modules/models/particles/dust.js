@@ -12,8 +12,9 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "up
         var Dust = UParticle.extend({
 
             init : function(universe) {
+
                 this._super(universe);
-                this.radius = Math.random() * 20 + 10;
+                this.siphonable = true;
 
             },
 
@@ -28,9 +29,9 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "up
             drawMain : function(g, options) {
                 if (stellarGame.drawDust) {
                     // Do all the other drawing
-                  //  if (stellarGame.drawElements) {
-                        this.elements.drawAsDustCloud(g, this.radius, this.hacktime);
-                   // }
+                    //  if (stellarGame.drawElements) {
+                    this.elements.drawAsDustCloud(g, this.radius, this.hacktime);
+                    // }
                 }
             },
 

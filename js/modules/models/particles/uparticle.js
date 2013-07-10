@@ -25,7 +25,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.initAsParticle();
 
                 this.position.setToPolar(Math.random() * 200 + 100, Math.random() * 100);
-                this.velocity.addPolar(Math.random() * 1, Math.random() * 100);
+                this.velocity.addPolar(Math.random() * .3, Math.random() * 100);
 
                 this.initAsElementContainer();
 
