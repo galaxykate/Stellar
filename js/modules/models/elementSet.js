@@ -6,6 +6,17 @@
 
 define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
     return (function() {
+        // TUNING VALUES
+        var PPCHAINREACTIONTEMP = 1000;
+        // proto-proton chain reaction: 4 H to 1 HE
+        var PPAMOUNT = .01;
+        var TAPREACTIONTEMP = 2000;
+        // triple-alpha process : 3 HE to 1 C
+        var TAPAMOUNT = .01;
+        var MADEUPSTUFFTEMP = 3000;
+        // all other elements will convert on a 4-to-1 ratio
+        var MADEUPSTUFFAMOUNT = .01;
+        // until more research is done on this
 
         // Private functions
 
@@ -64,7 +75,7 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
             }
 
             this.setTotalMass();
-            this.parent.updateElements();
+            //this.parent.updateElements(); // causes errors because this.parent.elements is not set yet!
 
         };
 
@@ -87,6 +98,9 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
                 target.elementQuantity[elem] -= siphonAmt
 
             }
+
+            this.setTotalMass();
+            target.setTotalMass();
 
             this.setTotalMass();
             target.setTotalMass();
@@ -138,6 +152,50 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
             return count;
         };
 
+        ElementSet.prototype.burnSomeFuel = function(temp) {
+            var amountToRemove = 0;
+            var burning = false;
+            if (temp >= PPCHAINREACTIONTEMP) {
+                if (this.elementQuantity[0] > 4) {
+                    burning = true;
+                    amountToRemove = this.elementQuantity[0] * PPAMOUNT;
+                    this.elementQuantity[0] -= amountToRemove;
+                    this.elementQuantity[1] += amountToRemove / 4;
+                    //utilities.debugOutput("REMOVING SOME HYDROGEN?: " + amountToRemove);
+                }
+            }
+            //utilities.debugOutput("Element Quantity: " + this.elementQuantity);
+
+            if (temp >= TAPREACTIONTEMP) {
+                if (this.elementQuantity[1] > 3) {
+                    burning = true;
+                    amountToRemove = this.elementQuantity[1] * TAPAMOUNT;
+                    this.elementQuantity[1] -= amountToRemove;
+                    this.elementQuantity[2] += amountToRemove / 4;
+                    //console.log("REMOVING SOME HELIUM?: " + amountToRemove);
+                }
+            }
+
+            for (var i = 2; i < activeElements.length - 1; i++) {
+                if (temp >= MADEUPSTUFFTEMP) {
+                    if (this.elementQuantity[i] > 4) {
+                        burning = true;
+                        amountToRemove = this.elementQuantity[i] * MADEUPSTUFFAMOUNT;
+                        this.elementQuantity[i] -= amountToRemove;
+                        this.elementQuantity[i + 1] += amountToRemove / 4;
+                        //console.log("REMOVING SOME OTHER ELEMENT " + i);
+                    }
+                }
+            }
+
+            if (burning === false) {
+                //console.log("OH SHIT WE RAN OUT OF ELEMENTS!")
+                //utilities.debugOutput("EXPLODE EXPLODE EXPLODE");
+                this.parent.temperature = -10000;
+            }
+
+        }
+
         ElementSet.prototype.draw = function(g, radius) {
             var totalRange = 6;
             var innerRadius = radius + 20;
@@ -175,6 +233,7 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 
                 amt = Math.min(amt, 1);
                 //var elementRad = activeElements[i].number/10;
+
                 // var elementRad = Math.log(activeElements[i].number);
 
                 var volume = utilities.constrain(this.elementQuantity[i], 0, 10000);
@@ -184,6 +243,7 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
                 if (elementRad < minRadius)
                     elementRad = minRadius;
                 g.fill(hue, .9, .9);
+
                 g.noStroke();
                 //g.text(Math.floor(this.elementQuantity[i]), 0, 12 * i);
 

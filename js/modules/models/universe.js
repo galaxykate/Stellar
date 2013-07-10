@@ -131,10 +131,18 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
                 var obj;
 
-                obj = new particleTypes.Trailhead();
-                if (Math.random() > .5)
+                if (Math.random() > .5) {
+                    //console.log("1");
+                    obj = new particleTypes.Trailhead();
+                } else if (Math.random() > .5) {
+                    //console.log("2");
                     obj = new particleTypes.Star();
+                } else {
+                    //console.log("3");
+                    obj = new particleTypes.Critter();
+                }
                 obj.position.setTo(p);
+
                 spawn(obj);
             }
 

@@ -21,7 +21,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 this.setRadius(10);
 
-                particleCount++;
                 this.initAsParticle();
 
                 this.position.setToPolar(Math.random() * 200 + 100, Math.random() * 100);
@@ -31,6 +30,10 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 this.initAsTouchable();
                 this.debugOutputLines = [];
+
+                // For ranges of surface temperatuers, visit https://en.wikipedia.org/wiki/Stellar_classification
+                this.temperature = 0;
+                // Kelvin
 
             },
 
@@ -86,6 +89,8 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.velocity.addMultiple(this.totalForce, t);
                 this.position.addMultiple(this.velocity, t);
                 this.velocity.mult(this.drag);
+
+                this.updateElements();
             },
 
             // Give this object a bunch of elements
@@ -96,6 +101,15 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
             updateElements : function() {
                 // Do something with the new element amounts
+                //this.elements.setTotalMass(); // this is set by elements.siphon()
+                if (this.elements.totalMass === 0) {
+                    this.remove();
+                }
+                this.elements.burnSomeFuel(this.temperature);
+
+                if (this.temperature === -10000) {
+                    this.remove();
+                }
             },
 
             initAsParticle : function() {
