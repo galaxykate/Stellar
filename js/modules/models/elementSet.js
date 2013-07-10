@@ -121,7 +121,7 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         			amountToRemove = this.elementQuantity[0]*PPAMOUNT;
         			this.elementQuantity[0] -= amountToRemove;
         			this.elementQuantity[1] += amountToRemove/4;
-        			//utilities.debugOutput("REMOVING SOME HYDROGEN?: " + amountToRemove);
+        			utilities.debugOutput("REMOVING SOME HYDROGEN?: " + amountToRemove);
         		}
         	}
         	//utilities.debugOutput("Element Quantity: " + this.elementQuantity);
@@ -132,7 +132,7 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         			amountToRemove = this.elementQuantity[1]*TAPAMOUNT;
         			this.elementQuantity[1] -= amountToRemove;
         			this.elementQuantity[2] += amountToRemove/4;
-        			//console.log("REMOVING SOME HELIUM?: " + amountToRemove);
+        			console.log("REMOVING SOME HELIUM?: " + amountToRemove);
         		}
         	}
         	
@@ -143,7 +143,7 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 	        			amountToRemove = this.elementQuantity[i]*MADEUPSTUFFAMOUNT;
 	        			this.elementQuantity[i] -= amountToRemove;
 	        			this.elementQuantity[i+1] += amountToRemove/4;
-	        			//console.log("REMOVING SOME OTHER ELEMENT " + i);
+	        			console.log("REMOVING SOME OTHER ELEMENT " + i + ", " + amountToRemove);
 	        		}
         		}
         	}

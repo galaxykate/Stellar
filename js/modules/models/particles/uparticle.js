@@ -25,7 +25,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.initAsParticle();
 
                 this.position.setToPolar(Math.random() * 200 + 100, Math.random() * 100);
-                this.velocity.addPolar(Math.random() * 1, Math.random() * 100);
+                this.velocity.addPolar(Math.random() * 1, Math.random() * 1);
 
                 this.initAsElementContainer();
 
@@ -34,6 +34,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 
                 // For ranges of surface temperatuers, visit https://en.wikipedia.org/wiki/Stellar_classification
                 this.temperature = 0; // Kelvin
+                this.burningFuel = false;
 
             },
 
@@ -91,6 +92,8 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.velocity.mult(this.drag);
                 
                 this.updateElements();
+                
+                //console.log("position/velocity of " + this.idNumber + ": " + this.position + ", " + this.velocity);
             },
 
             // Give this object a bunch of elements
@@ -105,7 +108,9 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 if(this.elements.totalMass === 0){
                 	this.remove();
                	}
-               	this.elements.burnSomeFuel(this.temperature);
+               	if(this.burnFuel){
+               		this.elements.burnSomeFuel(this.temperature);
+                }
                	
                	if(this.temperature === -10000){
                		this.remove();

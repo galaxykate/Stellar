@@ -141,6 +141,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 					obj = new particleTypes.Critter();
 				}
 				obj.position.setTo(p);
+				obj.velocity.mult(0);
                 spawn(obj);
             }
 

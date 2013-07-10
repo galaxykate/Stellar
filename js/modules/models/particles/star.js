@@ -56,6 +56,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
                 this.initFace();
 				this.temperature = Math.random*3000;
+				this.burningFuel = true;
             },
 
             initFace : function() {
