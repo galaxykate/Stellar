@@ -31,6 +31,9 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 this.initAsTouchable();
                 this.debugOutputLines = [];
+                
+                // For ranges of surface temperatuers, visit https://en.wikipedia.org/wiki/Stellar_classification
+                this.temperature = 0; // Kelvin
 
             },
 
@@ -101,6 +104,11 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 //this.elements.setTotalMass(); // this is set by elements.siphon()
                 if(this.elements.totalMass === 0){
                 	this.remove();
+               	}
+               	this.elements.burnSomeFuel(this.temperature);
+               	
+               	if(this.temperature === -10000){
+               		this.remove();
                	}
             },
 

@@ -57,13 +57,13 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
 	                
 	                this.emotion.drawBackground(g, options);
 					
-					console.log("critter draw bg: true!");
+					//console.log("critter draw bg: true!");
             	}
             },
             
             drawMain : function(g, options) {
             	if(stellarGame.drawCritters){
-            		console.log("critter draw main: true!");
+            		//console.log("critter draw main: true!");
 
 	                g.pushMatrix();
 	                g.rotate(this.frontAngle);
@@ -78,7 +78,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
             
             drawOverlay : function(g, options) {
             	if(stellarGame.drawCritters){
-            		console.log("critter draw overlay: true!");
+            		//console.log("critter draw overlay: true!");
             		this.emotion.drawOverlay(g, options);
             	}
             }, 

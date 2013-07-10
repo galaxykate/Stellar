@@ -55,8 +55,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.radius = Math.random() * 40 + 20;
 
                 this.initFace();
-				
-				this.burningFuel = true;
+				this.temperature = Math.random*3000;
             },
 
             initFace : function() {
