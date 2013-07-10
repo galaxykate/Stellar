@@ -6,7 +6,7 @@
 
 define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", "particleTypes"], function(Vector, KColor, Tool, ElementSet, particleTypes) {
     return (function() {
-
+        var minDustMass = 10;
         //========================================================
         //========================================================
         //========================================================
@@ -27,7 +27,21 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
             // Release any dust
             onUp : function(touch) {
+                var tool = this;
+                // Release all the elements as a dust cloud
 
+                if (touch.overObjects.length > 0) {
+                    tool.elements.transferTo(touch.overObjects[0].elements, 1);
+
+                } else {
+                    if (tool.elements.totalMass > minDustMass) {
+                        var dust = new particleTypes.Dust();
+                        // Transfer 100% of the elements to the new dust cloud
+                        tool.elements.transferTo(dust.elements, 1);
+                        dust.position.setTo(touch.currentUniversePosition);
+                        stellarGame.universe.spawn(dust);
+                    }
+                }
             },
 
             // Choose mode
@@ -40,6 +54,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 this.moveWithOffset(touch);
 
                 $.each(touch.overObjects, function(index, obj) {
+                    if (obj.siphonable)
                     tool.elements.siphon(obj.elements, 1);
 
                 });
@@ -57,6 +72,8 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 this.drawDirection(g, p);
 
                 g.translate(p.x, p.y);
+                g.fill(1, 0, 1);
+                g.text(this.elements.totalMass, 5, 15);
 
                 if (this.mode === MOVE) {
                     if (stellarGame.touch.pressed) {

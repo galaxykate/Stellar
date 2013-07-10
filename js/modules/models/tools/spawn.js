@@ -26,14 +26,12 @@ define(["modules/models/vector", "kcolor", "tool", "particleTypes"], function(Ve
 
                 if (this.distSinceLastPlacement > 50 + Math.random() * 40) {
 
-                    var p = new particleTypes.UParticle();
-                    if (Math.random() > .8)
-                        p = new particleTypes.Star();
+                    var p = new particleTypes.Star();
                     p.position.setTo(touch.toWorldPosition(touch.currentPosition));
 
                     var v = this.direction.clone();
                     v.constrainMagnitude(0, 10);
-                    p.velocity.setToMultiple(v, .5);
+                    p.velocity.setToMultiple(v, .05);
                     stellarGame.universe.spawn(p);
                     this.distSinceLastPlacement = 0;
                 }

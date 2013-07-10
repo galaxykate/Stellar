@@ -73,6 +73,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 // Do all the other drawing
                 if (stellarGame.drawStars) {
                     this._super(g, options);
+
                     if (stellarGame.drawFaces)
                         this.face.draw(g);
                 }
