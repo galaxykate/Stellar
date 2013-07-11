@@ -19,7 +19,7 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         // until more research is done on this
         
         var CUTOFFAMOUNT = 50;
-
+		var HEATSCALAR = 100;
         // Private functions
 
         // Which elements are actually active in this game?
@@ -173,6 +173,7 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 
         ElementSet.prototype.burnSomeFuel = function(temp) {
         	var amountToRemove = 0;
+        	var heatGenerated = 0;
         	var burning = false;
         	if(temp >= PPCHAINREACTIONTEMP){
         		if(this.elementQuantity[0] > CUTOFFAMOUNT){ // should be > 4
@@ -181,6 +182,7 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         			this.elementQuantity[0] -= amountToRemove;
         			this.elementQuantity[1] += amountToRemove/4;
         			utilities.debugOutput("REMOVING SOME HYDROGEN?: " + amountToRemove);
+        			heatGenerated += HEATSCALAR;
         		}
         	}
         	//utilities.debugOutput("Element Quantity: " + this.elementQuantity);
@@ -192,6 +194,7 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         			this.elementQuantity[1] -= amountToRemove;
         			this.elementQuantity[2] += amountToRemove/4;
         			utilities.debugOutput("REMOVING SOME HELIUM?: " + amountToRemove);
+        			heatGenerated += HEATSCALAR*2;
         		}
         	}
         	
@@ -203,15 +206,11 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 	        			this.elementQuantity[i] -= amountToRemove;
 	        			this.elementQuantity[i+1] += amountToRemove/4;
 	        			utilities.debugOutput("REMOVING SOME OTHER ELEMENT " + i + ", " + amountToRemove);
+	        			heatGenerated += HEATSCALAR*3;
 	        		}
         		}
         	}
-        	
-        	if (burning === false) {
-        		//console.log("OH SHIT WE RAN OUT OF ELEMENTS!")
-        		//utilities.debugOutput("EXPLODE EXPLODE EXPLODE");
-        		this.parent.temperature = -10000;
-        	}
+        	return heatGenerated;
         	
         }
         

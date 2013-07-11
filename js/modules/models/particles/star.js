@@ -44,6 +44,36 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             return states[Math.floor(Math.random() * 2)];
         };
         
+        // Only stars burn dust
+        // They burn so long as there is fuel
+        var updateDustBurning = function(star) {
+        	star.tempGenerated = star.elements.burnSomeFuel(star.temperature);
+        	utilities.debugOutput("temp: " + star.tempGenerated);
+        	
+        	// If the star is able to burn energy again and is marked as a nova, change it back to a star
+        	if(star.tempGenerated > 0 && star.state === states[1]){
+        		reviveStar(star);
+        	}
+        	
+        	// If a star is unable to burn energy and is marked as a star, nova it!
+            if(star.tempGenerated <= 0 && star.state === states[0]) {
+            	triggerSupernova(star);
+            }
+            
+        };
+        
+        var updateInternalForces = function(star, burnedEnergy) {
+        	star.internalGravity = 100 * star.mass;
+        	star.outwardForce = 100 * burnedEnergy;
+        	
+        };
+        
+        // When enements are added to a dormant star
+        var reviveStar = function(star){
+        	star.state = states[0];
+        }
+        
+        // When a star runs out of elements
         var triggerSupernova = function(star) {
         	star.state = states[1];
         	
@@ -94,6 +124,11 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 				this.temperature = Math.random()*3000 + 1000;
 				console.log("star " + this.idNumber + " temp: " + this.temperature);
 				this.burningFuel = true;
+				
+				// internal gravity will be a function of mass
+				this.internalGravity;
+				// outwardForce will be a function of the reactions
+				this.outwardForce;
             },
 
             initFace : function() {
@@ -127,11 +162,13 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this._super(time);
                 this.debugOutput(this.state.name);
                 this.face.update(time, this.radius, this.radius);
+                updateDustBurning(this);
                 
+                /*
                 if(this.temperature === -10000 && this.burningFuel){
                		//this.remove();
                		triggerSupernova(this);
-               	}
+               	}*/
             }
         });
 

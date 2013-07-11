@@ -34,7 +34,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 // For ranges of surface temperatuers, visit https://en.wikipedia.org/wiki/Stellar_classification
                 this.temperature = 0; // Kelvin
-
+                this.tempGenerated = 100; // Kelvin
 
             },
 
@@ -108,9 +108,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 if(this.elements.totalMass === 0){
                 	this.remove();
                	}
-               	if(this.burningFuel){
-               		this.elements.burnSomeFuel(this.temperature);
-                }
 
             },
 
