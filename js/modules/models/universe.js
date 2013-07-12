@@ -159,7 +159,10 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
             var theta = 10 * Math.sin(.01 * time.total);
             camera.center.addMultiple(camera.scrollingMovement, time.ellapsed);
             camera.scrollingMovement.mult(.98);
+
             utilities.debugOutput("Camera center: " + camera.center);
+            //utilities.debugOutput("Camera scrollingMovement: " + camera.scrollingMovement);
+            //utilities.debugOutput("time.ellapsed: " + time.ellapsed);
             utilities.debugOutput("Current tool: " + stellarGame.touch.activeTool);
 
             quadTree.cleanup();

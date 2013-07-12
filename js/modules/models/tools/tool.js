@@ -123,10 +123,16 @@ define(["modules/models/vector", "uparticle", "kcolor"], function(Vector, UParti
                 this.direction.setTo(stellarGame.touch.getOffsetToHistory(5));
                 var d = this.direction.magnitude();
                 //this.direction.mult(-.4);
+                if(d === 0 || d === NaN) {
+                	console.log("DIRECTION MAGNITUDE ERROR: " + d);
+                	d = .00001;
+                }
                 this.direction.mult(-Math.pow(d, .5) / d);
                 var d = stellarGame.touch.currentPosition.magnitude();
                 this.direction.addMultiple(stellarGame.touch.currentPosition, .0002 * d);
-
+				
+				//utilities.debugOutput("direction: " + this.direction);
+				
                 stellarGame.universe.addScrollingMovement(this.direction);
             },
 
