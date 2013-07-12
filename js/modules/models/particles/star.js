@@ -73,20 +73,22 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         	star.state = states[0];
         }
         
+        var DUSTEXPLOSIONVELOCITY = 600;
+        
         // When a star runs out of elements
         var triggerSupernova = function(star) {
         	star.state = states[1];
         	
         	var elemsToShed = star.elements.calcShedElements(1, .5, .5);
-        	console.log("star " + star.idNumber + " elements: " + star.elements.elementQuantity);
-        	console.log("star " + star.idNumber + " toShed: " + elemsToShed);
+        	//console.log("star " + star.idNumber + " elements: " + star.elements.elementQuantity);
+        	//console.log("star " + star.idNumber + " toShed: " + elemsToShed);
         	var numDustToSpawn = Math.ceil(Math.random() * 5) + 2;
-        	console.log("star " + star.idNumber + " numDustToSpawn: " + numDustToSpawn);
+        	//console.log("star " + star.idNumber + " numDustToSpawn: " + numDustToSpawn);
         	for(var j = 0; j < elemsToShed.length; j++){
         		elemsToShed[j] = elemsToShed[j]/numDustToSpawn;
         	}
 
-        	star.radius = star.radius * .5; // shrink the star by half. Because.
+        	//star.radius = star.radius * .5; // shrink the star by half. Because.
         	
         	for(var i = 0; i < numDustToSpawn; i++) {
         		// spawn a new dust
@@ -97,10 +99,13 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         		// place it at the center of the star
         		
         		newDustObj.position = star.position.clone();
-        		console.log("new Dust(star) position: " + newDustObj.position);
+        		
         		// give it a velocity directly away from the star
-        		newDustObj.velocity.setTo(Math.random() * 50 - 25, Math.random()*50 - 25);
+        		newDustObj.velocity.setTo(Math.random() * DUSTEXPLOSIONVELOCITY - (DUSTEXPLOSIONVELOCITY/2), Math.random()*DUSTEXPLOSIONVELOCITY - (DUSTEXPLOSIONVELOCITY/2));
+        		//console.log("new Dust(star) pos, vel: " + newDustObj.position + ", " + newDustObj.velocity);
         		// optionally adjust drag?
+        		//newDustObj.DEBUGPOSITION = true;
+        		newDustObj.DEBUGVELOCITY = true;
         		
         		stellarGame.universe.spawn(newDustObj);
         	}
@@ -161,8 +166,13 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             update : function(time) {
                 this._super(time);
                 this.debugOutput(this.state.name);
-                this.face.update(time, this.radius, this.radius);
                 updateDustBurning(this);
+                
+                utilities.debugOutput("radius: " + this.radius);
+                this.radius = Math.pow(this.elements.totalMass, .5);
+                
+                this.face.update(time, this.radius, this.radius);
+                
                 
                 /*
                 if(this.temperature === -10000 && this.burningFuel){

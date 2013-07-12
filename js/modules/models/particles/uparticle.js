@@ -83,13 +83,23 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 var nx = this.position.x * noiseScale;
                 var ny = this.position.y * noiseScale;
                 var t = time.total * .1;
+                var ellapsed = time.ellapsed;
                 var theta = 16 * noise.noise2D(nx + t + this.idNumber * 39, ny + t);
                 var r = 190;
                 // this.totalForce.addPolar(r, theta);
 
-                this.velocity.addMultiple(this.totalForce, t);
-                this.position.addMultiple(this.velocity, t);
+                this.velocity.addMultiple(this.totalForce, ellapsed);
+                this.position.addMultiple(this.velocity, ellapsed);
                 this.velocity.mult(this.drag);
+                
+                //DEBUG CHECKING
+                if(this.DEBUGPOSITION){
+                	utilities.debugOutput(this.idNumber + ": " + this.position);
+                }
+                if(this.DEBUGVELOCITY){
+                	utilities.debugOutput(this.idNumber + ": " + this.velocity);
+
+                }
 
                 this.updateElements();
                 
