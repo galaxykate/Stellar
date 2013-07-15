@@ -94,10 +94,10 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 
                 //DEBUG CHECKING
                 if(this.DEBUGPOSITION){
-                	utilities.debugOutput(this.idNumber + ": " + this.position);
+                	utilities.debugOutput(this.idNumber + "pos: " + this.position);
                 }
                 if(this.DEBUGVELOCITY){
-                	utilities.debugOutput(this.idNumber + ": " + this.velocity);
+                	utilities.debugOutput(this.idNumber + "vel: " + this.velocity);
 
                 }
 

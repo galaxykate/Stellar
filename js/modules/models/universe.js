@@ -107,8 +107,8 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
         function generateStartRegion() {
             generateRegion({
                 center : camera.center,
-                w : 1000,
-                h : 500
+                w : 3000,
+                h : 1500
             });
         };
 

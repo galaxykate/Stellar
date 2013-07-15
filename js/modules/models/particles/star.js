@@ -48,7 +48,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         // They burn so long as there is fuel
         var updateDustBurning = function(star) {
         	star.tempGenerated = star.elements.burnSomeFuel(star.temperature);
-        	utilities.debugOutput("temp: " + star.tempGenerated);
+        	//utilities.debugOutput("temp: " + star.tempGenerated);
         	
         	// If the star is able to burn energy again and is marked as a nova, change it back to a star
         	if(star.tempGenerated > 0 && star.state === states[1]){
@@ -105,7 +105,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         		//console.log("new Dust(star) pos, vel: " + newDustObj.position + ", " + newDustObj.velocity);
         		// optionally adjust drag?
         		//newDustObj.DEBUGPOSITION = true;
-        		newDustObj.DEBUGVELOCITY = true;
+        		//newDustObj.DEBUGVELOCITY = true;
         		
         		stellarGame.universe.spawn(newDustObj);
         	}
@@ -126,8 +126,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.radius = Math.random() * 40 + 20;
 
                 this.initFace();
-				this.temperature = Math.random()*3000 + 1000;
-				console.log("star " + this.idNumber + " temp: " + this.temperature);
+				this.temperature = Math.random()*4000 + 1000;
+				//console.log("star " + this.idNumber + " temp: " + this.temperature);
 				this.burningFuel = true;
 				
 				// internal gravity will be a function of mass
@@ -166,9 +166,10 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             update : function(time) {
                 this._super(time);
                 this.debugOutput(this.state.name);
+                this.debugOutput(this.temperature);
                 updateDustBurning(this);
                 
-                utilities.debugOutput("radius: " + this.radius);
+                //utilities.debugOutput("radius: " + this.radius);
                 this.radius = Math.pow(this.elements.totalMass, .5);
                 
                 this.face.update(time, this.radius, this.radius);
