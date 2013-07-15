@@ -18,6 +18,9 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.idNumber = particleCount;
                 particleCount++;
                 this.idColor = new KColor((this.idNumber * .289 + .31) % 1, 1, 1);
+                this.age = {
+                    birth : stellarGame.time.universeTime,
+                };
 
                 this.setRadius(10);
 
@@ -33,9 +36,9 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.debugOutputLines = [];
 
                 // For ranges of surface temperatuers, visit https://en.wikipedia.org/wiki/Stellar_classification
-                this.temperature = 0; // Kelvin
+                this.temperature = 0;
+                // Kelvin
                 this.burningFuel = false;
-
 
             },
 
@@ -61,6 +64,34 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             },
 
             // Update this particle according to physics
+            beginUpdate : function(time) {
+                this.totalForce.mult(0);
+
+            },
+
+            addForces : function(time) {
+                var noiseScale = .0040;
+                var nx = this.position.x * noiseScale;
+                var ny = this.position.y * noiseScale;
+                var t = time.total * .03;
+                var theta = 20 * noise.noise2D(nx + t + this.idNumber * 39, ny + t);
+                var r = this.mass * 60;
+                this.drag = .99;
+                this.totalForce.addPolar(r, theta);
+            },
+
+            updatePosition : function(time) {
+                var t = time.ellapsed;
+                this.velocity.addMultiple(this.totalForce, t);
+                this.position.addMultiple(this.velocity, t);
+                utilities.debugOutput(this.position);
+            },
+
+            finishUpdate : function(time) {
+                this.velocity.mult(this.drag);
+
+            },
+
             update : function(time) {
                 // Clear the output
                 var t = time.ellapsed;
@@ -88,12 +119,8 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 var r = 190;
                 // this.totalForce.addPolar(r, theta);
 
-                this.velocity.addMultiple(this.totalForce, t);
-                this.position.addMultiple(this.velocity, t);
-                this.velocity.mult(this.drag);
-
                 this.updateElements();
-                
+
                 //console.log("position/velocity of " + this.idNumber + ": " + this.position + ", " + this.velocity);
             },
 
@@ -106,16 +133,16 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             updateElements : function() {
                 // Do something with the new element amounts
                 //this.elements.setTotalMass(); // this is set by elements.siphon()
-                if(this.elements.totalMass === 0){
-                	this.remove();
-               	}
-               	if(this.burnFuel){
-               		this.elements.burnSomeFuel(this.temperature);
+                if (this.elements.totalMass === 0) {
+                    this.remove();
                 }
-               	
-               	if(this.temperature === -10000){
-               		this.remove();
-               	}
+                if (this.burnFuel) {
+                    this.elements.burnSomeFuel(this.temperature);
+                }
+
+                if (this.temperature === -10000) {
+                    this.remove();
+                }
 
             },
 
@@ -199,6 +226,61 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 }
             },
+
+            //======================================================================
+            //======================================================================
+            //======================================================================
+            // Drawing styles
+            drawAsDot : function(g) {
+                g.noStroke();
+                var starLevels = 2;
+                for ( j = 0; j < starLevels; j++) {
+
+                    var jPct = j * 1.0 / (starLevels - 1);
+                    this.idColor.fill(g, jPct * .8, jPct - .6);
+                    var r = (1 - .8 * jPct) * this.radius;
+                    g.ellipse(0, 0, r, r);
+                }
+
+            },
+
+            drawAsBlinkenStar : function(g, segmentDetail, useNoise, useTriangle) {
+                var i, j;
+                var t = stellarGame.time.universeTime;
+                var radius = this.radius * .4;
+                g.noStroke();
+                var points = 5;
+                var spikiness = .5;
+                var starLevels = 2;
+                for ( j = 0; j < starLevels; j++) {
+                    var jPct = j * 1.0 / (starLevels - 1);
+
+                    g.beginShape();
+
+                    var pop = 0;
+                    var segments = points * segmentDetail;
+                    g.fill(.065, (0.4 - 0.4 * jPct), 1, 0.2 + jPct);
+                    for ( i = 0; i < segments + 1; i++) {
+                        var theta = i * 2 * Math.PI / segments;
+
+                        var spike = Math.abs(Math.sin(theta * points / 2));
+                        spike = 1 - Math.pow(spike, .2);
+
+                        var sparkle = .5;
+                        if (useNoise)
+                            sparkle = spikiness * utilities.pnoise(t * 2 + theta + this.idNumber) + .1;
+                        sparkle = Math.pow(sparkle, 2);
+
+                        var r = .3 * radius * (spike * sparkle);
+
+                        r += .4 + 1.5 * pop;
+                        r *= radius * .7 * (1.2 - Math.pow(.7 * jPct, 1));
+                        g.vertex(r * Math.cos(theta), r * Math.sin(theta));
+                    }
+                    g.endShape();
+                }
+            },
+
             toString : function() {
                 return "p" + this.idNumber + this.position;
             },

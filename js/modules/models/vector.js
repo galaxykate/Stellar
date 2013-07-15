@@ -59,12 +59,20 @@ define([], function() {
                 this.y = v.y + r * Math.sin(theta);
                 this.z = v.z;
             },
-            
+
             setToMultiple : function(v, m) {
                 this.x = v.x * m;
                 this.y = v.y * m;
                 this.z = v.z * m;
             },
+
+            setToLerp : function(v0, v1, m) {
+                var m1 = 1 - m;
+                this.x = v0.x * m + v1.x * m1;
+                this.y = v0.y * m + v1.y * m1;
+                this.z = v0.z * m + v1.z * m1;
+            },
+
             setTo : function(x, y, z) {
                 // Just in case this was passed a vector
                 if (x.x !== undefined) {
@@ -158,6 +166,14 @@ define([], function() {
             drawLineTo : function(g, v) {
                 g.line(this.x, this.y, v.x, v.y);
             },
+
+            drawLerpedLineTo : function(g, v, startLerp, endLerp) {
+                var dx = v.x - this.y;
+                var dy = v.y - this.y;
+
+                g.line(this.x + dx * startLerp, this.y + dy * startLerp, this.x + dx * endLerp, this.y + dy * endLerp);
+            },
+
             drawArrow : function(g, v, m) {
                 g.line(this.x, this.y, v.x * m + this.x, v.y * m + this.y);
             },

@@ -52,38 +52,18 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
             touch.history[i] = new Vector(0, 0, 0);
         }
 
-        var universeView;
-
-        var setUniverseView = function(view) {
-            universeView = view;
-            touch.center.setTo(view.dimensions.width / 2, view.dimensions.height / 2);
-
-            touch.setoUniversePosition = universeView.setoUniversePosition;
-
-        };
-
-        var controlUpdateFunction = [];
-
-        var onControl = function(f) {
-            controlUpdateFunction.push(f);
-        };
-
+        //=====
         var initTouchFunctions = function() {
 
-            universeDiv.click(function(e) {
-                var p = toRelative(this, e);
-
-            });
-
-            universeDiv.mousemove(function(e) {
+            // Move the primary touch/mouse to this positon
+            var touchMove = function(p) {
 
                 var w = universeView.dimensions.width;
                 var h = universeView.dimensions.height;
 
-                var p = toRelative(this, e);
                 // Find the offset since the last movement
-                touch.lastOffset.setTo(p[0] + touch.currentPosition.x, p[1] + touch.currentPosition.y);
-                touch.currentPosition.setTo(p[0] - w / 2, p[1] - h / 2);
+                touch.lastOffset.setTo(p.x + touch.currentPosition.x, p.y + touch.currentPosition.y);
+                touch.currentPosition.setTo(p.x - w / 2, p.y - h / 2);
                 touch.currentUniversePosition.setTo(touch.currentPosition);
                 touch.transformScreenToUniverse(touch.currentUniversePosition);
 
@@ -105,34 +85,79 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
 
                 }
                 controlUpdated();
+            };
 
-            });
-
-            universeDiv.mouseup(function(e) {
+            var touchUp = function(p) {
                 touch.pressed = false;
-                var p = toRelative(this, e);
                 touch.dragOffset.mult(0);
-                touch.lastReleased.setTo(p[0], p[1]);
+                touch.lastReleased.setTo(p);
 
                 // If there is an active tool, pass the event to it
                 if (touch.activeTool !== undefined) {
                     touch.activeTool.touchUp(touch);
                 }
-            });
+            };
 
-            universeDiv.mousedown(function(e) {
+            var touchDown = function(p) {
                 touch.pressed = true;
-                var p = toRelative(this, e);
-                touch.lastPressed.setTo(p[0], p[1])
+
+                touch.lastPressed.setTo(p)
 
                 if (touch.activeTool !== undefined) {
                     touch.activeTool.touchDown(touch);
                 }
 
-            });
+            };
 
             var hammertime = universeDiv.hammer();
+            hammertime.on("touch", function(ev) {
+                var p = new Vector(ev.gesture.center.pageX, ev.gesture.center.pageY);
+                var relPos = pagePositionToRelativePosition(universeDiv, p);
 
+                touch.lastAction = "touch";
+                touch.lastActionOutput = relPos;
+                touchDown(relPos);
+
+            });
+
+            hammertime.on("drag", function(ev) {
+                var p = new Vector(ev.gesture.center.pageX, ev.gesture.center.pageY);
+                var relPos = pagePositionToRelativePosition(universeDiv, p);
+
+                touch.lastAction = "drag";
+                touch.lastActionOutput = relPos;
+                touchMove(relPos);
+
+            });
+
+            hammertime.on("release", function(ev) {
+                var p = new Vector(ev.gesture.center.pageX, ev.gesture.center.pageY);
+                var relPos = pagePositionToRelativePosition(universeDiv, p);
+
+                touch.lastAction = "release";
+                touch.lastActionOutput = relPos;
+                touchUp(relPos);
+            });
+
+            touch.lastAction = "none";
+
+        };
+        //=====
+
+        var universeView;
+
+        var setUniverseView = function(view) {
+            universeView = view;
+            touch.center.setTo(view.dimensions.width / 2, view.dimensions.height / 2);
+
+            touch.setoUniversePosition = universeView.setoUniversePosition;
+
+        };
+
+        var controlUpdateFunction = [];
+
+        var onControl = function(f) {
+            controlUpdateFunction.push(f);
         };
 
         var controlUpdated = function() {
@@ -141,14 +166,14 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
             });
         };
 
-        var toRelative = function(div, e) {
+        var pagePositionToRelativePosition = function(div, pagePos) {
 
             //   var parentOffset = $(div).parent().offset();
             var parentOffset = $(div).offset();
             //or $(this).offset(); if you really just want the current element's offset
-            var relX = e.pageX - parentOffset.left;
-            var relY = e.pageY - parentOffset.top;
-            return [relX, relY];
+
+            var relPos = new Vector(pagePos.x - parentOffset.left, pagePos.y - parentOffset.top);
+            return relPos;
         };
 
         //=======================================================

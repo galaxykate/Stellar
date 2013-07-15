@@ -20,11 +20,6 @@ define(['modules/views/game_view', 'modules/controllers/game_controller', 'modul
         // Hook the universe view to the universe, so it knows what to draw
         gameView.universeView.setUniverse(universe);
 
-        gameView.universeView.onUpdate(function(time) {
-            universe.update(time);
-
-        });
-
         // Give the game controller access to the universe view so that it
         //  can find objects by screen position
         gameController.universeController.setUniverseView(gameView.universeView);

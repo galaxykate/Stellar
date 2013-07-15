@@ -43,20 +43,19 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         var randomState = function() {
             return states[Math.floor(Math.random() * 2)];
         };
-        
 
         // Make the star class
         //  Extend the star
         var Star = UParticle.extend({
 
-            init : function(universe) {
-                this._super(universe);
+            init : function() {
+                this._super();
                 this.state = randomState();
                 this.radius = Math.random() * 40 + 20;
 
                 this.initFace();
-				this.temperature = Math.random*3000;
-				this.burningFuel = true;
+                this.temperature = Math.random * 3000;
+                this.burningFuel = true;
             },
 
             initFace : function() {
@@ -65,31 +64,35 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             drawBackground : function(g, options) {
                 if (stellarGame.drawStars) {
-                    this._super(g, options);
+                    //    this._super(g, options);
                 }
             },
 
             drawMain : function(g, options) {
                 // Do all the other drawing
-                if (stellarGame.drawStars) {
-                    this._super(g, options);
+                /*
+                 if (stellarGame.drawStars) {
+                 this._super(g, options);
 
-                    if (stellarGame.drawFaces)
-                        this.face.draw(g);
-                }
+                 if (stellarGame.drawFaces)
+                 this.face.draw(g);
+                 }
+                 */
 
+                this.drawAsDot(g);
             },
 
             drawOverlay : function(g, options) {
                 if (stellarGame.drawStars) {
-                    this._super(g, options);
+                    //   this._super(g, options);
                 }
             },
 
-            update : function(time) {
-                this._super(time);
-                this.debugOutput(this.state.name);
-                this.face.update(time, this.radius, this.radius);
+            update : function(time) {/*
+                 this._super(time);
+                 this.debugOutput(this.state.name);
+                 this.face.update(time, this.radius, this.radius);
+                 */
             }
         });
 

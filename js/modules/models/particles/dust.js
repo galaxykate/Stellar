@@ -15,7 +15,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "up
 
                 this._super(universe);
                 this.siphonable = true;
-
             },
 
             drawBackground : function(g, options) {

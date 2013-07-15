@@ -19,7 +19,6 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
 
         var activeQuadrants = [];
         var activeObjects = [];
-        var updateFunctions = [];
 
         var time = {
             total : 0,
@@ -39,10 +38,6 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
 
         };
 
-        var onUpdate = function(f) {
-            updateFunctions.push(f);
-        };
-
         var update = function(currentTime) {
 
             // make sure that the ellapsed time is neither to high nor too low
@@ -54,10 +49,9 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
             time.total = currentTime;
             utilities.debugOutput("Update " + time.total.toFixed(2) + " fps: " + (1 / time.ellapsed).toFixed(2));
 
-            // Update all the extra update functions
-            $.each(updateFunctions, function(index, f) {
-                f.call(undefined, time);
-            });
+        
+            universe.update(time, activeObjects);
+
         };
 
         var addDrawingUtilities = function(g) {
@@ -116,10 +110,6 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
             // do update stuff
             update(g.millis() * .001);
 
-            $.each(activeObjects, function(index, obj) {
-                obj.update(time);
-            });
-
             // Draw eaach layer in order
             drawLayer(g, {
                 layer : "bg",
@@ -163,8 +153,10 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
             $.each(activeObjects, function(index, obj) {
                 // figure out where this object is, and translate appropriately
                 g.pushMatrix();
-                if (obj.position !== undefined) {
+
+                if (!obj.drawUntransformed && obj.position !== undefined) {
                     setToScreenPosition(p, obj.position);
+
                     g.translate(p.x, p.y);
 
                 }
@@ -176,7 +168,6 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
         };
 
         var getTouchableAt = function(p) {
-            // utilities.debugOutput("Get touchable at " + p);
 
             var touchables = [];
             var target = new Vector(p.x + camera.center.x, p.y + camera.center.y, 0);
@@ -191,8 +182,7 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
                 if (obj !== undefined) {
 
                     var d = obj.position.getDistanceTo(target);
-                    // utilities.debugOutput(obj + ": " + Math.floor(d));
-                    //  utilities.debugOutput(obj + ": " + d);
+
                     if (obj.radius)
                         d -= obj.radius;
                     if (d < minDist) {
@@ -203,8 +193,6 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
                 }
 
             });
-            //          utilities.debugOutput("...done<br> ");
-            // utilities.debugArrayOutput(touchables);
 
             return touchables;
 
@@ -240,7 +228,6 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
             },
             transformScreenToUniverse : transformScreenToUniverse,
             toWorldPosition : toWorldPosition,
-            onUpdate : onUpdate,
 
             getTouchableAt : getTouchableAt,
         };

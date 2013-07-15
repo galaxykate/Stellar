@@ -123,9 +123,12 @@ define(["modules/models/vector", "uparticle", "kcolor"], function(Vector, UParti
                 this.direction.setTo(stellarGame.touch.getOffsetToHistory(5));
                 var d = this.direction.magnitude();
                 //this.direction.mult(-.4);
-                this.direction.mult(-Math.pow(d, .5) / d);
-                var d = stellarGame.touch.currentPosition.magnitude();
-                this.direction.addMultiple(stellarGame.touch.currentPosition, .0002 * d);
+                if (d !== 0) {
+                    this.direction.mult(-Math.pow(d, .5) / d);
+                }
+
+                var edgeDistance = stellarGame.touch.currentPosition.magnitude();
+                this.direction.addMultiple(stellarGame.touch.currentPosition, .0002 * edgeDistance);
 
                 stellarGame.universe.addScrollingMovement(this.direction);
             },

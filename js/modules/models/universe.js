@@ -92,7 +92,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
         function draw(g, options) {
 
             if (options.layer === 'bg') {
-                drawBackgroundStars(g);
+                //  drawBackgroundStars(g);
             }
 
             if (options.layer === 'overlay') {
@@ -120,30 +120,37 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
             console.log("GENERATE REGION");
             // Pick some random locations in the region
-            var density = .003;
+            var density = .005;
             var count = Math.ceil(region.w * region.h * density * density);
             console.log(count);
             var w2 = region.w / 2;
             var h2 = region.h / 2;
             var p = new Vector();
+
+            var particles = [];
             for (var i = 0; i < count; i++) {
                 p.setTo(utilities.random(-w2, w2) + region.center.x, utilities.random(-h2, h2) + region.center.y);
 
-                var obj;
+                var obj = new particleTypes.Star();
 
-                if (Math.random() > .5) {
-                    //console.log("1");
-                    obj = new particleTypes.Trailhead();
-                } else if (Math.random() > .5) {
-                    //console.log("2");
-                    obj = new particleTypes.Star();
-                } else {
-                    //console.log("3");
-                    obj = new particleTypes.Critter();
-                }
+                particles.push(obj);
+
                 obj.position.setTo(p);
 
                 spawn(obj);
+            }
+
+            for (var i = 0; i < count; i++) {
+                var offset = Math.ceil(Math.random() * (count - 1));
+                var offset2 = Math.ceil(Math.random() * (count - 1));
+                var p0 = particles[i];
+                var p1 = particles[(i + offset) % particles.length];
+                var p2 = particles[(i + offset2) % particles.length];
+                var spring = new particleTypes.Spring(p0, p1);
+                var spring2 = new particleTypes.Spring(p0, p2);
+
+                spawn(spring);
+                spawn(spring2);
             }
 
         }
@@ -153,15 +160,43 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
             quadTree.insert(object);
         }
 
-        function update(time) {
+        function update(time, activeObjects) {
             stellarGame.time.universeTime = time.total;
 
             var theta = 10 * Math.sin(.01 * time.total);
             camera.center.addMultiple(camera.scrollingMovement, time.ellapsed);
             camera.scrollingMovement.mult(.98);
+            utilities.debugOutput("LastAction:" + stellarGame.touch.lastAction);
+            utilities.debugOutput(stellarGame.touch.lastActionOutput);
+
             utilities.debugOutput("Camera center: " + camera.center);
             utilities.debugOutput("Current tool: " + stellarGame.touch.activeTool);
 
+            // begin the update on all active objects
+            //  Zero out the forces
+
+            $.each(activeObjects, function(index, obj) {
+                obj.beginUpdate(time);
+            });
+
+            //  Add all the spring forces and gravity
+            $.each(activeObjects, function(index, obj) {
+                obj.addForces(time);
+            });
+
+            // Change the velocity and position
+            $.each(activeObjects, function(index, obj) {
+                obj.updatePosition(time);
+            });
+
+            // Finish the update on all active objects
+            //   Ease springs
+            $.each(activeObjects, function(index, obj) {
+                obj.finishUpdate(time);
+            });
+
+            // Verify that objects are in the correct quadrant
+            // Remove objects that should be removed
             quadTree.cleanup();
         };
 

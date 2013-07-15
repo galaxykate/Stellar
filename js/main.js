@@ -126,6 +126,7 @@ require.config({
         'toolTypes' : 'modules/models/tools/tool_types',
         'tool' : 'modules/models/tools/tool',
         'uparticle' : 'modules/models/particles/uparticle',
+        'spring' : 'modules/models/particles/spring',
         'kcolor' : 'modules/models/kcolor'
 
     },
