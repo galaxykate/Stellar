@@ -17,7 +17,9 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         // all other elements will convert on a 4-to-1 ratio
         var MADEUPSTUFFAMOUNT = .01;
         // until more research is done on this
-
+        
+        var CUTOFFAMOUNT = 50;
+		var HEATSCALAR = 100;
         // Private functions
 
         // Which elements are actually active in this game?
@@ -102,6 +104,16 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
             this.setTotalMass();
             target.setTotalMass();
 
+        };
+        
+        // Transfer a specific amount of elements to the target
+        ElementSet.prototype.transferAmountsTo = function(target, amounts) {
+            for (var i = 0; i < amounts.length; i++) {
+                this.elementQuantity[i] -= amounts[i];
+				target.elementQuantity[i] += amounts[i];
+
+            }
+
             this.setTotalMass();
             target.setTotalMass();
 
@@ -127,9 +139,16 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 
             }
             this.setTotalMass();
-            target.setTotalMass();
 
         };
+        
+        ElementSet.prototype.clearAllElements = function(){
+        	for (var i = 0; i < activeElements.length; i++) {
+                this.elementQuantity[i] = 0;
+            }
+            
+            this.setTotalMass();
+        }
 
         //===============================================================
         //===============================================================
@@ -154,47 +173,74 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 
         ElementSet.prototype.burnSomeFuel = function(temp) {
         	var amountToRemove = 0;
+        	var heatGenerated = 0;
         	var burning = false;
         	if(temp >= PPCHAINREACTIONTEMP){
-        		if(this.elementQuantity[0] > 4){
+        		if(this.elementQuantity[0] > CUTOFFAMOUNT){ // should be > 4
         			burning = true;
         			amountToRemove = this.elementQuantity[0]*PPAMOUNT;
         			this.elementQuantity[0] -= amountToRemove;
         			this.elementQuantity[1] += amountToRemove/4;
-        			utilities.debugOutput("REMOVING SOME HYDROGEN?: " + amountToRemove);
+        			//utilities.debugOutput("REMOVING SOME HYDROGEN?: " + amountToRemove);
+        			heatGenerated += HEATSCALAR;
         		}
         	}
         	//utilities.debugOutput("Element Quantity: " + this.elementQuantity);
         	
         	if(temp >= TAPREACTIONTEMP) {
-        		if(this.elementQuantity[1] > 3){
+        		if(this.elementQuantity[1] > CUTOFFAMOUNT){ // should be > 3
         			burning = true;
         			amountToRemove = this.elementQuantity[1]*TAPAMOUNT;
         			this.elementQuantity[1] -= amountToRemove;
         			this.elementQuantity[2] += amountToRemove/4;
-        			console.log("REMOVING SOME HELIUM?: " + amountToRemove);
+        			//utilities.debugOutput("REMOVING SOME HELIUM?: " + amountToRemove);
+        			heatGenerated += HEATSCALAR*2;
         		}
         	}
         	
         	for(var i = 2; i < activeElements.length-1; i++){
         		if(temp >= MADEUPSTUFFTEMP){
-	        		if(this.elementQuantity[i] > 4){
+	        		if(this.elementQuantity[i] > CUTOFFAMOUNT){ // should be > 4
 	        			burning = true;
 	        			amountToRemove = this.elementQuantity[i]*MADEUPSTUFFAMOUNT;
 	        			this.elementQuantity[i] -= amountToRemove;
 	        			this.elementQuantity[i+1] += amountToRemove/4;
-	        			console.log("REMOVING SOME OTHER ELEMENT " + i + ", " + amountToRemove);
+	        			//utilities.debugOutput("REMOVING SOME OTHER ELEMENT " + i + ", " + amountToRemove);
+	        			heatGenerated += HEATSCALAR*3;
 	        		}
         		}
         	}
         	
-        	if (burning === false) {
-        		//console.log("OH SHIT WE RAN OUT OF ELEMENTS!")
-        		//utilities.debugOutput("EXPLODE EXPLODE EXPLODE");
-        		this.parent.temperature = -10000;
-        	}
+        	this.setTotalMass();
+        	return heatGenerated;
         	
         }
+        
+        /* triggers when a supernova occurs
+         * densityPerc: The percent of elements, from least dense to most dense. 1 = 100%, sheds some of all elements the star contains
+         * 				Provides a hard cut-off point of the other two functions.
+         * amtPerc: The percent of the least dense element to toss out. 1 = 100%, sheds all of the that density the star contains
+         * amtDegradePerc: The percentage subtracted from amtPerc from each low-dense element to the next higher-dense element. 
+         * 					0% = all amtPerc is carried over to the next highest element
+         * 
+         * For example: 1, 1, 0: throws all elements of the star off
+         * 				1, .5, .5: throws 50% of H, 25% of He, 12.5% of C, etc until the end of the elements list
+         * 				.5, .1, .1: throws 10% of H, 9% of He, 8.1% of C, etc until we've gone through HALF of elements the star contains
+         */
+        ElementSet.prototype.calcShedElements = function(densityPerc, amtPerc, amtDegradePerc) {
+        	var numElementsToShed = Math.floor(densityPerc*(activeElements.length-1));
+        	var curAmtPercToShed = amtPerc;
+        	var amtToShed = [];
+        	for(var i = 0; i <= numElementsToShed; i++){
+        		amtToShed.push(this.elementQuantity[i] * curAmtPercToShed);
+        		curAmtPercToShed *= amtDegradePerc;
+        	}
+        	return amtToShed;
+        };
+        
+        //===============================================================
+        //=========================   drawing   ========================
+        //===============================================================
 
         ElementSet.prototype.draw = function(g, radius) {
             var totalRange = 6;

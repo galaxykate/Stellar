@@ -36,9 +36,11 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.debugOutputLines = [];
 
                 // For ranges of surface temperatuers, visit https://en.wikipedia.org/wiki/Stellar_classification
+
                 this.temperature = 0;
                 // Kelvin
-                this.burningFuel = false;
+                this.tempGenerated = 100;
+                // Kelvin
 
             },
 
@@ -115,9 +117,23 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 var nx = this.position.x * noiseScale;
                 var ny = this.position.y * noiseScale;
                 var t = time.total * .1;
+                var ellapsed = time.ellapsed;
                 var theta = 16 * noise.noise2D(nx + t + this.idNumber * 39, ny + t);
                 var r = 190;
                 // this.totalForce.addPolar(r, theta);
+
+                this.velocity.addMultiple(this.totalForce, ellapsed);
+                this.position.addMultiple(this.velocity, ellapsed);
+                this.velocity.mult(this.drag);
+
+                //DEBUG CHECKING
+                if (this.DEBUGPOSITION) {
+                    utilities.debugOutput(this.idNumber + "pos: " + this.position);
+                }
+                if (this.DEBUGVELOCITY) {
+                    utilities.debugOutput(this.idNumber + "vel: " + this.velocity);
+
+                }
 
                 this.updateElements();
 
@@ -133,17 +149,10 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             updateElements : function() {
                 // Do something with the new element amounts
                 //this.elements.setTotalMass(); // this is set by elements.siphon()
+
                 if (this.elements.totalMass === 0) {
                     this.remove();
                 }
-                if (this.burnFuel) {
-                    this.elements.burnSomeFuel(this.temperature);
-                }
-
-                if (this.temperature === -10000) {
-                    this.remove();
-                }
-
             },
 
             initAsParticle : function() {
