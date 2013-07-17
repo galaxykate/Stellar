@@ -30,7 +30,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 var tool = this;
                 // Release all the elements as a dust cloud
 
-                if (touch.overObjects.length > 0) {
+                if (touch.overObjects.length > 0 && touch.overObjects[0].acceptsDust) {
                     tool.elements.transferTo(touch.overObjects[0].elements, 1);
 
                 } else {

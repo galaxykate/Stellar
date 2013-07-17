@@ -105,7 +105,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         		//console.log("new Dust(star) pos, vel: " + newDustObj.position + ", " + newDustObj.velocity);
         		// optionally adjust drag?
         		//newDustObj.DEBUGPOSITION = true;
-        		newDustObj.DEBUGVELOCITY = true;
+        		//newDustObj.DEBUGVELOCITY = true;
         		
         		stellarGame.universe.spawn(newDustObj);
         	}
@@ -134,6 +134,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 				this.internalGravity;
 				// outwardForce will be a function of the reactions
 				this.outwardForce;
+				
+				this.acceptsDust = true;
             },
 
             initFace : function() {
@@ -168,7 +170,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.debugOutput(this.state.name);
                 updateDustBurning(this);
                 
-                utilities.debugOutput("radius: " + this.radius);
+                //utilities.debugOutput("radius: " + this.radius);
                 this.radius = Math.pow(this.elements.totalMass, .5);
                 
                 this.face.update(time, this.radius, this.radius);
