@@ -31,15 +31,20 @@ define(["inheritance", "modules/models/vector", "modules/models/popup"], functio
                     height: hei,
                     // ---------------------------------------------
                     // Control stuff
+                    click: function() {
+                    	
+                    },
                     mousedown: function() {
-                    	console.log("mousedown on popupdiv"); 
+                    	//console.log("mousedown on popupdiv"); 
                     	$(this).width(hoverWid);
                     	$(this).height(hoverHei);
+                    	$(this).css({ opacity: 1 });
                     },
                     mouseleave: function() {
-                    	console.log("mouseleave on popupdiv"); 
+                    	//console.log("mouseleave on popupdiv"); 
                     	$(this).width(wid);
                     	$(this).height(hei);
+                    	$(this).css({ opacity: 0 });
                     }
 
                     // ---------------------------------------------
