@@ -5,7 +5,7 @@
 // Organize the game
 // Singleton pattern from here: http://stackoverflow.com/questions/1479319/simplest-cleanest-way-to-implement-singleton-in-javascript
 
-define(['modules/views/game_view', 'modules/controllers/game_controller', 'modules/models/universe', 'modules/models/inventory', 'modules/views/popup_view'], function(gameView, gameController, universe, Inventory, popupView) {
+define(['modules/views/game_view', 'modules/controllers/game_controller', 'modules/models/universe', 'modules/models/inventory', 'modules/models/popup'], function(gameView, gameController, universe, Inventory, Popup) {
     var game = {};
 
     var startGame = function() {
@@ -33,11 +33,21 @@ define(['modules/views/game_view', 'modules/controllers/game_controller', 'modul
         game.inventory = new Inventory(universe);
         game.inventory.createPaletteDiv($("#controls"));
         
-        game.testPopUp = new popupView();
+        /*game.testPopUp = new popupView();
         var universeWidth = gameView.universeView.dimensions.width;
         var universeHeight = gameView.universeView.dimensions.height;
         game.testPopUp.createPopupDiv($("#universe"), 0, 0, 20, universeHeight, 200, universeHeight);
-
+		*/
+		
+		game.testPopup = new Popup("#universe");
+		var universeWidth = gameView.universeView.dimensions.width;
+        var universeHeight = gameView.universeView.dimensions.height;
+        game.testPopup.addState("closed", 0, 0, 20, universeHeight, 0.1);
+        game.testPopup.addState("open", 0, 0, 200, universeHeight, 1);
+        game.testPopup.addTransition("open", "closed", "mouseleave");
+        game.testPopup.addTransition("closed", "open", "mousedown");
+        game.testPopup.setState("closed");
+		
         stellarGame.ready = true;
 
     };
