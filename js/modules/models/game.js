@@ -18,7 +18,7 @@ define(['modules/views/game_view', 'modules/controllers/game_controller', 'modul
         console.log("START GAME");
 
         // Hook the universe view to the universe, so it knows what to draw
-        gameView.universeView.setUniverse(universe);
+        gameView.universeView.init(universe);
 
         // Give the game controller access to the universe view so that it
         //  can find objects by screen position

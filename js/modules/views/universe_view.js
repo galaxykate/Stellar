@@ -4,18 +4,18 @@
 
 // Display the Universe
 // It's using a singleton pattern
-define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
+define(["processing", "modules/models/vector", "three"], function(PROCESSING, Vector, THREE) {
     console.log("Init universe view");
 
     return (function() {
+
         var dimensions = {
             width : 600,
             height : 400
         };
 
-        var universe;
-
         var processing;
+        var universe;
 
         var activeQuadrants = [];
         var activeObjects = [];
@@ -49,7 +49,9 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
             time.total = currentTime;
             utilities.debugOutput("Update " + time.total.toFixed(2) + " fps: " + (1 / time.ellapsed).toFixed(2));
 
-        
+            var angle = Math.PI / 2 - .1 - camera.zoom;
+            camera.setOrbit(camera.center, 300 + camera.distance * 1000, Math.PI / 2, Math.PI + angle);
+
             universe.update(time, activeObjects);
 
         };
@@ -69,6 +71,8 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
             g.background(.55, .8, .1);
             g.pushMatrix();
             g.translate(g.width / 2, g.height / 2);
+
+            drawThreeTest(g);
 
             var view = this;
 
@@ -216,16 +220,158 @@ define(["processing", "modules/models/vector"], function(PROCESSING, Vector) {
                 }
             };
         };
-        processing = new Processing(canvas, initProcessing);
+
+        function init(u) {
+            universe = u;
+            camera = universe.getCamera();
+            processing = new Processing(canvas, initProcessing);
+            createThreeCamera();
+        };
+
+        //============================================================================
+        //============================================================================
+        //============================================================================
+        //============================================================================
+        // Create a camera from Three.js
+        function createThreeCamera() {
+            // set the scene size
+            var WIDTH = dimensions.width, HEIGHT = dimensions.height;
+
+            // set some camera attributes
+            var VIEW_ANGLE = 45, ASPECT = WIDTH / HEIGHT, NEAR = 0.1, FAR = 10000;
+
+            // create a WebGL renderer, camera
+            // and a scene
+
+            camera.threeCamera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+            camera.threeCamera.position.set(300, 200, 30);
+
+            camera.setOrbit = function(center, r, theta, phi) {
+                this.threeCamera.position.set(center.x + r * Math.cos(theta) * Math.cos(phi), center.y + r * Math.sin(theta) * Math.cos(phi), center.z + r * Math.sin(phi));
+                this.threeCamera.up = new THREE.Vector3(0, 0, 1);
+                this.threeCamera.lookAt(center);
+            };
+
+            var scene, renderer, threeCamera;
+            threeCamera = camera.threeCamera;
+            camera.testRender = function() {
+
+                renderer.render(scene, threeCamera);
+            };
+
+            camera.setOrbit(new Vector(), 1200, 1.2, .6);
+
+            // Create a test scene
+            scene = new THREE.Scene();
+
+            // add the camera to the scene
+            scene.add(camera.threeCamera);
+
+            // start the renderer
+
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize(WIDTH, HEIGHT);
+
+            // attach the render-supplied DOM element
+            $("#three_window").append(renderer.domElement);
+
+            // set up the sphere vars
+            var radius = 50, segments = 16, rings = 16;
+
+            // create a new mesh with
+            // sphere geometry - we will cover
+            // the sphereMaterial next!
+            // create the sphere's material
+            var sphereMaterial = new THREE.MeshLambertMaterial({
+                color : 0xCC0000
+            });
+
+            var sphere = new THREE.Mesh(new THREE.CubeGeometry(200, 200, 200), sphereMaterial);
+
+            // add the sphere to the scene
+            scene.add(sphere);
+
+            var pointLight = new THREE.PointLight(0xFFFFFF);
+
+            // set its position
+            pointLight.position.x = 320;
+            pointLight.position.y = 250;
+            pointLight.position.z = 330;
+
+            // add to the scene
+            scene.add(pointLight);
+
+            // draw!
+
+            var frame = 0;
+            camera.testRender();
+
+            // shim layer with setTimeout fallback
+            window.requestAnimFrame = (function() {
+                return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame ||
+                function(callback) {
+                    window.setTimeout(callback, 1000 / 60);
+                };
+            })();
+
+            (function animloop() {
+                frame++;
+                requestAnimFrame(animloop);
+                camera.testRender();
+            })();
+
+        };
+
+        function drawThreeTest(g) {
+
+            var detail = 4;
+            var spacing = 60;
+            g.noStroke();
+            var screenPos = new Vector();
+            var worldPos = new Vector();
+            for (var i = 0; i <= detail; i++) {
+                for (var j = 0; j <= detail; j++) {
+                    for (var k = 0; k <= detail; k++) {
+                        worldPos.setTo((i - detail / 2) * spacing, (j - detail / 2) * spacing, (k - detail / 2) * spacing);
+
+                        convertToScreenPosition(worldPos, screenPos);
+                        g.fill(.9 * i / detail + .04, j / detail, k / detail);
+                        var d = screenPos.z / 1000;
+                        d = Math.pow(d, 2);
+                        var r = 10 / d;
+                        g.ellipse(screenPos.x, screenPos.y, r, r);
+                        //  g.text(Math.round(screenPos.z), screenPos.x + 5, screenPos.y + 5);
+                    }
+                }
+            }
+        };
+
+        var projector = new THREE.Projector();
+        var threeVector = new THREE.Vector3();
+        var convertToScreenPosition = function(p, screenPos) {
+            var d = p.getDistanceTo(camera.threeCamera.position);
+
+            p.cloneInto(threeVector)
+            var threeScreen = projector.projectVector(threeVector, camera.threeCamera);
+            var scale = .5;
+            screenPos.setTo(threeScreen.x * dimensions.width * scale, -threeScreen.y * dimensions.height * scale, d);
+        };
+
+        //============================================================================
+        //============================================================================
+        //============================================================================
+        //============================================================================
+
+        function setZoom(zoom, distance) {
+            camera.zoom = zoom;
+            camera.distance = distance;
+        };
 
         return {
+            init : init,
             dimensions : dimensions,
 
-            setUniverse : function(u) {
-                universe = u;
-                camera = universe.getCamera();
-
-            },
+            setZoom : setZoom,
             transformScreenToUniverse : transformScreenToUniverse,
             toWorldPosition : toWorldPosition,
 

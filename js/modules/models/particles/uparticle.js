@@ -78,7 +78,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 var t = time.total * .03;
                 var theta = 20 * noise.noise2D(nx + t + this.idNumber * 39, ny + t);
                 var r = this.mass * 60;
-                this.drag = .99;
+
                 this.totalForce.addPolar(r, theta);
             },
 
@@ -86,7 +86,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 var t = time.ellapsed;
                 this.velocity.addMultiple(this.totalForce, t);
                 this.position.addMultiple(this.velocity, t);
-                utilities.debugOutput(this.position);
             },
 
             finishUpdate : function(time) {

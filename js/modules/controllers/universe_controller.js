@@ -177,6 +177,23 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
         };
 
         //=======================================================
+        // Add UI components
+
+        var addUI = function() {
+            $("#zoom_slider").slider({
+                orientation : "vertical",
+                range : "min",
+                min : .01,
+                max : 1,
+                value : .2,
+                step : .01,
+                slide : function(event, ui) {
+                    var distance = Math.pow(ui.value, 3);
+                    universeView.setZoom(distance, ui.value);
+                }
+            });
+        }
+        //=======================================================
         // Initialize the universe controller
 
         console.log("START UNIVERSE CONTROLLER");
@@ -185,6 +202,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
         var init = function() {
             stellarGame.touch = touch;
             initTouchFunctions();
+            addUI();
         };
 
         return {

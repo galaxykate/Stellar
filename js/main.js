@@ -113,6 +113,7 @@ var utilities = {
 
 require.config({
     paths : {
+        'three' : 'libs/three',
         'jQuery' : 'libs/jquery-1.10.1',
         'jQueryUI' : 'libs/jquery-ui',
         'jQueryUITouchPunch' : 'libs/jquery.ui.touch-punch',
@@ -146,17 +147,22 @@ require.config({
         'underscore' : {
             exports : '_'
         },
+
         'processing' : {
             exports : 'Processing'
         },
+
         'inheritance' : {
             exports : 'Inheritance'
+        },
+        'three' : {
+            exports : 'THREE'
         },
 
     }
 });
 
-require(['jQueryUI', 'noise', 'modules/models/game'], function($, Noise, GAME) {
+require(['jQueryUI', 'noise', 'modules/models/game'], function(JQUERY, Noise, GAME) {
 
     utilities.noiseInstance = new Noise();
     GAME.startGame();

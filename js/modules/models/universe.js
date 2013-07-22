@@ -35,9 +35,10 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
             for (var i = 0; i < backgroundLayers; i++) {
                 backgroundStars[i] = [];
                 var starCount = backgroundStarDensity * (backgroundLayers - i);
+                starCount = 10;
                 for (var j = 0; j < starCount; j++) {
                     var color = new KColor(Math.random(), 1, 1);
-                    backgroundStars[i][j] = [Math.random() * 800, Math.random() * 800, Math.random() * .2, Math.random() * 10 + 2, color];
+                    backgroundStars[i][j] = [utilities.random(-12000, 12000), utilities.random(-12000, 12000), utilities.random(0, 10), 5, color];
                 }
             }
             console.log("made background stars");
@@ -50,35 +51,40 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
                 for (var j = 0; j < backgroundStars[i].length; j++) {
 
-                    var x = backgroundStars[i][j][0];
-                    var y = backgroundStars[i][j][1];
-                    var r = backgroundStars[i][j][3];
+                    var x = backgroundStars[i][j][0] - camera.center.x;
+                    var y = backgroundStars[i][j][1] - camera.center.y;
+                    var z = backgroundStars[i][j][2] + Math.pow(4 - i, 2) * 200 + 100;
+                    var scale = camera.zoom / (camera.zoom + z);
+
+                    var loopBoxWidth = 300;
+                    var loopBoxHeight = 200;
+
+                    x = ((x % loopBoxWidth) + loopBoxWidth) % loopBoxWidth - loopBoxWidth / 2;
+                    y = ((y % loopBoxHeight) + loopBoxHeight) % loopBoxHeight - loopBoxHeight / 2;
+                    // center the stars around 0, 0
+
                     var color = backgroundStars[i][j][4];
 
                     // Offset the position
-                    var z = i + 5 + backgroundStars[i][j][2];
-                    r *= .2 * i * Math.pow(z, .5);
-                    var parallax = .1 * (z + .01);
-                    x -= camera.angle.x * parallax;
-                    y -= camera.angle.y * parallax;
-                    x -= camera.center.x * parallax;
-                    y -= camera.center.y * parallax;
+                    /*
+                     x *= scale;
+                     y *= scale;
+                     */
+                    var r = backgroundStars[i][j][3] * 10 / (z + camera.zoom);
 
-                    // loop around the edges
-                    x = (x % g.width);
-                    y = (y % g.height);
-                    if (x < 0)
-                        x += g.width;
-                    if (y < 0)
-                        y += g.height;
-                    x -= g.width / 2;
-                    y -= g.height / 2;
+                    /*x -= camera.angle.x * parallax;
+                     y -= camera.angle.y * parallax;
+                     x -= camera.center.x * parallax;
+                     y -= camera.center.y * parallax;
+                     */
 
-                    //  g.fill(.1 + .32 * i, .5, 1, .3);
-                    color.fill(g, 0, -.8);
+                    g.fill((.1 + .0032 * z) % 1, 1, 1);
+                    //color.fill(, 0, -.8);
                     g.ellipse(x, y, r, r);
-                    g.fill(1, 0, 1);
-                    g.ellipse(x, y, r * .1 + 1, r * .1 + 1);
+                    g.text(scale, x + r, y + r);
+                    g.text(scale, x + r, y + r);
+                    //  g.fill(1, 0, 1);
+                    // g.ellipse(x, y, r * .1 + 1, r * .1 + 1);
 
                 }
             }
@@ -92,7 +98,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
         function draw(g, options) {
 
             if (options.layer === 'bg') {
-                //  drawBackgroundStars(g);
+               // drawBackgroundStars(g);
             }
 
             if (options.layer === 'overlay') {
@@ -120,7 +126,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
             console.log("GENERATE REGION");
             // Pick some random locations in the region
-            var density = .005;
+            var density = .000;
             var count = Math.ceil(region.w * region.h * density * density);
             console.log(count);
             var w2 = region.w / 2;
@@ -140,18 +146,22 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
                 spawn(obj);
             }
 
-            for (var i = 0; i < count; i++) {
-                var offset = Math.ceil(Math.random() * (count - 1));
-                var offset2 = Math.ceil(Math.random() * (count - 1));
-                var p0 = particles[i];
-                var p1 = particles[(i + offset) % particles.length];
-                var p2 = particles[(i + offset2) % particles.length];
-                var spring = new particleTypes.Spring(p0, p1);
-                var spring2 = new particleTypes.Spring(p0, p2);
+            /*
+             //Spawn springs
 
-                spawn(spring);
-                spawn(spring2);
-            }
+             for (var i = 0; i < count; i++) {
+             var offset = Math.ceil(Math.random() * (count - 1));
+             var offset2 = Math.ceil(Math.random() * (count - 1));
+             var p0 = particles[i];
+             var p1 = particles[(i + offset) % particles.length];
+             var p2 = particles[(i + offset2) % particles.length];
+             var spring = new particleTypes.Spring(p0, p1);
+             var spring2 = new particleTypes.Spring(p0, p2);
+
+             spawn(spring);
+             spawn(spring2);
+             }
+             */
 
         }
 
@@ -170,6 +180,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
             utilities.debugOutput(stellarGame.touch.lastActionOutput);
 
             utilities.debugOutput("Camera center: " + camera.center);
+            utilities.debugOutput("Camera zoom: " + camera.zoom);
             utilities.debugOutput("Current tool: " + stellarGame.touch.activeTool);
 
             // begin the update on all active objects
@@ -236,6 +247,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
             spawn : spawn,
             update : update,
             getCamera : getCamera,
+
             addScrollingMovement : addScrollingMovement,
             init : init,
         };
