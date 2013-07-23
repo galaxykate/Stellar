@@ -24,7 +24,6 @@ define(["inheritance", "modules/models/vector"], function(Inheritance, Vector) {
               	//var div = $("#" + divID);
               	//console.log(div);
               	
-              	// FOR EACH ACTION: MAKE SURE THERE IS A CLEAR IN THE NEXT FUNCTION
               	switch(action){
               		case "mousedown":
               			div.mousedown(function() {

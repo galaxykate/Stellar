@@ -13,6 +13,7 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
 				console.log("Init a popup!!!");
 				this.states = [];
 				this.transitions = [];
+				this.contents = [];
 				this.view = new PopupView(parentString);
 				this.controller = new PopupController();
 				this.activeState = null;
@@ -20,6 +21,10 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
             	
             },
             
+            addContents : function(goodies) {
+            	var newGoodies = goodies.setParentDivID(this.view.divID);
+            	this.contents.push(newGoodies);
+            },
             
             
             addState : function(name, x, y, width, height, opa) {
