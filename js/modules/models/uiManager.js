@@ -29,12 +29,16 @@ define(['modules/views/game_view', "modules/models/popup", "modules/models/popup
 	        
 	        var contents = new PopupContents();
 	        contents.initAsElementHolder();
-	        playerInventory.addContents(contents);
+	        playerInventory.addContents("playerElements", contents);
 	    };
-
+	    
+	    function getPlayerInventory() {
+	    	return playerInventory;
+	    };
 
         return {
             init : init,
+            getPlayerInventory : getPlayerInventory
         };
 
     })();

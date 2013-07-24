@@ -16,13 +16,16 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
                 "id" : id
             };
             
-			var div = $('<div/>', this.options);
+			var div = $('<div/>', options);
 			
-			var parent = $(parentID)
-			parent.append(div);
-			console.log(parent);
+			var parent = $("#" + parentID)
+			parent.append(div); 
 			
 			console.log('appending ' + id + " to " + parentID);
+			
+			//console.log(parent);
+			//console.log(div);
+
     	};
     	
     	

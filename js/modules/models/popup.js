@@ -21,9 +21,11 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
             	
             },
             
-            addContents : function(goodies) {
-            	var newGoodies = goodies.setParentDivID(this.view.divID);
-            	this.contents.push(newGoodies);
+            addContents : function(name, goodies) {
+            	goodies.setParentDivID(this.view.divID);
+            	console.log("goodies! ");
+            	console.log(goodies);
+            	this.contents[name] = goodies;
             },
             
             
