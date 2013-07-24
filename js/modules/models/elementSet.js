@@ -107,8 +107,8 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 
         };
         
-        // Siphon off 1 element by name...slowly
-        ElementSet.prototype.siphonOneByName = function(target, elementName, rate) {
+        // Siphon off 1 element by name and percentage
+        ElementSet.prototype.siphonOneByName = function(target, elementName, pct) {
         	var index;
             for (var i = 0; i < activeElements.length; i++) {
                 if(activeElements[i].name === elementName){
@@ -117,7 +117,8 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 
            	}
 
-            var siphonAmt = Math.min(10*rate, target.elementQuantity[index]);
+            var siphonAmt = Math.max(1, target.elementQuantity[index] * pct);
+            siphonAmt = Math.min(1, target.elementQuantity[index]);
             utilities.debugOutput("Siphoning " + siphonAmt);
 
             this.elementQuantity[index] += siphonAmt;
@@ -403,7 +404,8 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
             
             var span = $('<span/>', options);
             if(elementAmount <= 0){
-            	span.hide();
+            	//span.hide();
+            	span.css({ opacity: .2 });
             	//console.log("hiding span " + elementName);
             }
             
@@ -417,10 +419,12 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
             span.html(elementName + ": " + elementAmount + "<br>");
             
             if(elementAmount <= 0){
-            	span.hide();
+            	//span.hide();
+            	span.css({ opacity: .2 });
             	//console.log("hiding span " + elementName);
             } else {
-            	span.show();
+            	//span.show();
+            	span.css({ opacity: 1 });
             	//console.log("showing span " + elementName);
             }
 
