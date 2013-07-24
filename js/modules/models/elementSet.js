@@ -334,10 +334,20 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         };
         
         ElementSet.prototype.createSpanForElement = function(parentID, elementID, elementName, elementAmount){
+        	var suckFrom;
+        	
     		var options = {
                 html : elementName + ": " + elementAmount + "<br>",
                 "class" : "element",
-                "id" : this.parentIDFromUI + "_" + elementID
+                "id" : this.parentIDFromUI + "_" + elementID,
+                
+                // ========= controller stuff ===========
+                mousedown : function() {
+                	console.log("mouse down on div " + this.id);
+                },
+                mouseup : function() {
+                	console.log("mouse up on div " + this.id);
+                },
             };
             
             var span = $('<span/>', options);
@@ -364,6 +374,8 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
             }
 
     	};
+
+        
 
         return ElementSet;
     })();
