@@ -129,7 +129,7 @@ define(["modules/models/vector", "uparticle", "kcolor"], function(Vector, UParti
 
                 var edgeDistance = stellarGame.touch.currentPosition.magnitude();
                 this.direction.addMultiple(stellarGame.touch.currentPosition, .0002 * edgeDistance);
-
+                this.direction.y *= -1;
                 stellarGame.universe.addScrollingMovement(this.direction);
             },
 

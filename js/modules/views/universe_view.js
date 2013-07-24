@@ -49,8 +49,8 @@ define(["processing", "modules/models/vector", "three"], function(PROCESSING, Ve
             time.total = currentTime;
             utilities.debugOutput("Update " + time.total.toFixed(2) + " fps: " + (1 / time.ellapsed).toFixed(2));
 
-            var angle = Math.PI / 2 - .1 - camera.zoom;
-            camera.setOrbit(camera.center, 300 + camera.distance * 1000, Math.PI / 2, Math.PI + angle);
+            var angle = -Math.PI / 2 - .1 - camera.zoom;
+            camera.setOrbit(camera.center, 300 + camera.distance * 1000, -Math.PI / 2, Math.PI + angle);
 
             universe.update(time, activeObjects);
 
@@ -127,6 +127,19 @@ define(["processing", "modules/models/vector", "three"], function(PROCESSING, Ve
                 layer : "overlay",
             });
 
+            // test points
+            var sides = 10;
+            var points = [];
+            for (var i = 0; i < sides; i++) {
+                var r = 200 * (1 + Math.sin(i));
+                var theta = 2 * Math.PI * i / sides;
+                points[i] = new Vector();
+                points[i].setToPolar(r, theta);
+            }
+            g.fill(1, .2, 1, .3);
+            g.stroke(1);
+            drawShape(g, points);
+
             // Draw the touch
             var touch = stellarGame.touch;
 
@@ -139,30 +152,20 @@ define(["processing", "modules/models/vector", "three"], function(PROCESSING, Ve
 
         };
 
-        var setoUniversePosition = function(p, screenPos) {
-            p.setTo(screenPos);
-            p.add(camera.center);
-        };
-
-        var setToScreenPosition = function(p, objPos) {
-            p.setTo(objPos);
-            p.sub(camera.center);
-
-        };
-
         var drawLayer = function(g, options) {
-            var p = new Vector(0, 0);
+            var screenPos = new Vector(0, 0);
 
             universe.draw(g, options);
             $.each(activeObjects, function(index, obj) {
+
                 // figure out where this object is, and translate appropriately
                 g.pushMatrix();
 
                 if (!obj.drawUntransformed && obj.position !== undefined) {
-                    setToScreenPosition(p, obj.position);
+                    convertToScreenPosition(obj.position, screenPos);
 
-                    g.translate(p.x, p.y);
-
+                    g.translate(screenPos.x, screenPos.y);
+                    options.scale = Math.pow(500 / screenPos.z, 2);
                 }
                 obj.draw(g, options);
                 g.popMatrix();
@@ -259,7 +262,7 @@ define(["processing", "modules/models/vector", "three"], function(PROCESSING, Ve
                 renderer.render(scene, threeCamera);
             };
 
-            camera.setOrbit(new Vector(), 1200, 1.2, .6);
+            camera.setOrbit(new Vector(0, 0, 0), 1200, 1.2, .6);
 
             // Create a test scene
             scene = new THREE.Scene();
@@ -346,6 +349,26 @@ define(["processing", "modules/models/vector", "three"], function(PROCESSING, Ve
             }
         };
 
+        var drawShape = function(g, points) {
+            var screenPos = new Vector();
+            g.beginShape();
+            for (var i = 0; i < points.length; i++) {
+                convertToScreenPosition(points[i], screenPos);
+                 screenPos.vertex(g);
+                utilities.debugOutput(points[i]);
+                var r = 300;
+                var theta = 2 * i * Math.PI / points.length;
+               // g.vertex(r * Math.cos(theta), r * Math.sin(theta));
+            }
+            g.endShape();
+        };
+
+        //============================================================================
+        //============================================================================
+        //============================================================================
+        //============================================================================
+        // Converting position
+
         var projector = new THREE.Projector();
         var threeVector = new THREE.Vector3();
         var convertToScreenPosition = function(p, screenPos) {
@@ -355,6 +378,11 @@ define(["processing", "modules/models/vector", "three"], function(PROCESSING, Ve
             var threeScreen = projector.projectVector(threeVector, camera.threeCamera);
             var scale = .5;
             screenPos.setTo(threeScreen.x * dimensions.width * scale, -threeScreen.y * dimensions.height * scale, d);
+        };
+
+        var setoUniversePosition = function(p, screenPos) {
+            p.setTo(screenPos);
+            p.add(camera.center);
         };
 
         //============================================================================

@@ -28,7 +28,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 this.position.setToPolar(Math.random() * 200 + 100, Math.random() * 100);
 
-                this.velocity.addPolar(Math.random() * .3, Math.random() * 100);
+                // this.velocity.addPolar(Math.random() * .3, Math.random() * 100);
 
                 this.initAsElementContainer();
 
@@ -72,6 +72,8 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             },
 
             addForces : function(time) {
+
+                // Adding a noise force
                 var noiseScale = .0040;
                 var nx = this.position.x * noiseScale;
                 var ny = this.position.y * noiseScale;
@@ -79,7 +81,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 var theta = 20 * noise.noise2D(nx + t + this.idNumber * 39, ny + t);
                 var r = this.mass * 60;
 
-                this.totalForce.addPolar(r, theta);
+                //       this.totalForce.addPolar(r, theta);
             },
 
             updatePosition : function(time) {
@@ -217,6 +219,8 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 })
             },
             draw : function(g, options) {
+                g.pushMatrix();
+                g.scale(options.scale, options.scale);
 
                 switch(options.layer) {
                     case "bg":
@@ -233,6 +237,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                         break;
 
                 }
+                g.popMatrix();
             },
 
             //======================================================================

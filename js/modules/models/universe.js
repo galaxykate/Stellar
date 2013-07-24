@@ -18,6 +18,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
         var toAdd = [];
 
+        // Make a quad tree for the universe
         function makeUniverseTree() {
             console.log("Make universe tree");
             var r = 200;
@@ -26,7 +27,6 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
             for (var i = 0; i < 0; i++) {
                 quadTree.insert(new Vector((Math.random() - .5) * 400, (Math.random() - .5) * 400));
             }
-
         };
 
         // These stars loop
@@ -98,7 +98,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
         function draw(g, options) {
 
             if (options.layer === 'bg') {
-               // drawBackgroundStars(g);
+                // drawBackgroundStars(g);
             }
 
             if (options.layer === 'overlay') {
@@ -126,7 +126,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
             console.log("GENERATE REGION");
             // Pick some random locations in the region
-            var density = .000;
+            var density = .007;
             var count = Math.ceil(region.w * region.h * density * density);
             console.log(count);
             var w2 = region.w / 2;
