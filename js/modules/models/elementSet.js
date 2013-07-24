@@ -95,11 +95,34 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
                 });
 
                 var siphonAmt = Math.min(150, target.elementQuantity[elem]);
+                //utilities.debugOutput("Siphoning " + siphonAmt);
 
                 this.elementQuantity[elem] += siphonAmt;
                 target.elementQuantity[elem] -= siphonAmt
 
             }
+
+            this.setTotalMass();
+            target.setTotalMass();
+
+        };
+        
+        // Siphon off 1 element by name...slowly
+        ElementSet.prototype.siphonOneByName = function(target, elementName, rate) {
+        	var index;
+            for (var i = 0; i < activeElements.length; i++) {
+                if(activeElements[i].name === elementName){
+                	index = i;
+                }
+
+           	}
+
+            var siphonAmt = Math.min(10*rate, target.elementQuantity[index]);
+            utilities.debugOutput("Siphoning " + siphonAmt);
+
+            this.elementQuantity[index] += siphonAmt;
+            target.elementQuantity[index] -= siphonAmt
+
 
             this.setTotalMass();
             target.setTotalMass();
@@ -316,8 +339,9 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         // ===============================================================
         
         ElementSet.prototype.addAllElementsToADiv = function(parentID){
-        	//$(parentID)
+        	var elementSet = this;
         	this.parentIDFromUI = parentID;
+        	
         	var parent = $("#" + parentID);
             parent.mouseleave(function() {
             	console.log("leaving the parent " + parentID);
@@ -351,26 +375,26 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
                 // ========= controller stuff ===========
                 mousedown : function() {
                 	//console.log("mouse down on div " + this.id);
-                	console.log("var mousedown: true, siphoning: true, " + elementName);
+                	//console.log("var mousedown: true, siphoning: true, " + elementName);
                 	elementSet.parent.varMouseDown = true;
                 	elementSet.parent.siphoning = true;
                 	elementSet.parent.siphonElement = elementName;
                 },
                 mouseup : function() {
                 	//console.log("mouse up on div " + this.id);
-                	console.log("var mousedown: false, siphoning: false");
+                	//console.log("var mousedown: false, siphoning: false");
                 	elementSet.parent.varMouseDown = false;
                 	elementSet.parent.siphoning = false;
                 },
                 mouseleave: function() {
                 	//console.log("mouse leave on div " + this.id);
-                	console.log("var siphoning: false ");
+                	//console.log("var siphoning: false ");
                 	elementSet.parent.siphoning = false;
                 },
                 mouseenter: function() {
                 	//console.log("this.mousedown ==? " + this.mousedown);
                 	if(elementSet.parent.varMouseDown){
-                		console.log("var siphoning: true, " + elementName);
+                		//console.log("var siphoning: true, " + elementName);
                 		elementSet.parent.siphoning = true;
                 		elementSet.parent.siphonElement = elementName;
                 	}

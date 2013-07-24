@@ -86,7 +86,8 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 g.text(this.elements.totalMass, 5, 15);
 
                 if (this.mode === MOVE) {
-                    if (stellarGame.touch.pressed) {
+                	// Removing touch pressed for now for UI interaction
+                    //if (stellarGame.touch.pressed) {
 
                         this.elements.drawAsDustCloud(g, 20);
 
@@ -115,7 +116,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
                         }
 
-                    }
+                    //}
                 }
 
                 if (this.mode === COLLECT) {
