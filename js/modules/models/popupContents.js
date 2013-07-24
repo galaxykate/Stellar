@@ -42,6 +42,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             initAsElementHolder : function() {
             	this.elementsHolder = new UParticle();
             	this.elementsHolder.initAsElementContainer();
+            	this.elementsHolder.siphoning = false;
             	//console.log("new uparticle: " + this.elementsHolder);
             },
             
@@ -64,8 +65,24 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             	}
             	// grab the div and do some fancy insertions?!?!?!?
             	// Or grab the view and do it there
-            }
+            },
             
+            updateElementsDrawAndUpdate : function() {
+            	var contents = this;
+            	contents.elementsHolder.draw = function() {
+            		// Should be empty! Probably
+            	};
+            	contents.elementsHolder.update = function() {
+            		if(contents.elementsHolder.siphoning){
+            			// siphon selected Element
+            			utilities.debugOutput("SIPHONING... " + contents.elementsHolder.siphonElement);
+            		}
+            	};
+            },
+            
+            addElementsToUniverse : function() {
+            	stellarGame.universe.spawn(this.elementsHolder);
+            },
  
             
         });

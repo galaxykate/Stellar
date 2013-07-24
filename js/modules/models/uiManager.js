@@ -29,6 +29,8 @@ define(['modules/views/game_view', "modules/models/popup", "modules/models/popup
 	        
 	        var contents = new PopupContents();
 	        contents.initAsElementHolder();
+	        contents.updateElementsDrawAndUpdate();
+	        contents.addElementsToUniverse();
 	        playerInventory.addContents("playerElements", contents);
 	    };
 	    
