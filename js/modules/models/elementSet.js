@@ -310,6 +310,29 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 
             }
         };
+        
+        // ==================== View Stuff ========================
+        
+        ElementSet.prototype.addAllElementsToADiv = function(parentID){
+        	//$(parentID)
+        	for(var i = 0; i < activeElements.length; i++) {
+        		if(this.elementQuantity[i] > 0){
+        			this.createSpanForElement(parentID, activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i]);
+        		}
+        	}
+        };
+        
+        ElementSet.prototype.createSpanForElement = function(parentID, elementID, elementName, elementAmount){
+    		var options = {
+                html : elementName + ": " + elementAmount + "<br>",
+                "class" : "element",
+                "id" : elementID
+            };
+            
+            var span = $('<span/>', this.options);
+			$(parentID).append(span);
+			console.log('appending ' + elementID + " to " + parentID);
+    	};
 
         return ElementSet;
     })();
