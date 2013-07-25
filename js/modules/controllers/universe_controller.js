@@ -180,6 +180,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
         // Add UI components
 
         var addUI = function() {
+
             $("#zoom_slider").slider({
                 orientation : "vertical",
                 range : "min",
@@ -190,6 +191,19 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
                 slide : function(event, ui) {
                     var distance = Math.pow(ui.value, 3);
                     universeView.setZoom(distance, ui.value);
+                }
+            });
+
+            $("#rotation_slider").slider({
+                orientation : "vertical",
+                range : "min",
+                min : .01,
+                max : 7,
+                value : 0,
+                step : .1,
+                slide : function(event, ui) {
+
+                    universeView.setRotation(ui.value);
                 }
             });
         }

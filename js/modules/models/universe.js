@@ -103,8 +103,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
             if (options.layer === 'overlay') {
                 g.pushMatrix();
-                g.translate(-camera.center.x, -camera.center.y);
-                //  quadTree.drawTree(g);
+                quadTree.drawTree(g, options);
                 g.popMatrix();
             }
 
@@ -126,7 +125,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
             console.log("GENERATE REGION");
             // Pick some random locations in the region
-            var density = .007;
+            var density = .009;
             var count = Math.ceil(region.w * region.h * density * density);
             console.log(count);
             var w2 = region.w / 2;
@@ -222,6 +221,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
                 angle : new Vector(0, 0, 0),
                 center : new Vector(0, 0, 0),
                 zoom : 1,
+                rotation: -Math.PI,
                 scrollingMovement : new Vector(20, 0, 0),
 
             };

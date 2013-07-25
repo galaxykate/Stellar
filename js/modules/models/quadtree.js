@@ -6,13 +6,13 @@
 
 define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
     var quadrantCount = 0;
-    var maxLevels = 8;
+    var maxLevels = 5;
     var quadrantOffsets = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
     var quadrantIndices = [[0, 1], [3, 2]];
 
     // Make the star class
     //  Extend the star
-    var maxRadius = 30000;
+    var maxRadius = 3000;
     var minRadius = maxRadius / (Math.pow(2, maxLevels - 1));
     console.log(minRadius);
 
@@ -47,7 +47,6 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
             }
 
         },
-
         createChild : function(quadrant) {
             this.children[quadrant] = new QuadTree(this, quadrant);
 
@@ -56,7 +55,6 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
         remove : function(p) {
 
         },
-
         getQuadrantIndex : function(p) {
             // Get the quadrant
             var dx = p.x - this.center.x;
@@ -116,13 +114,6 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
 
             if (g !== undefined && this.level === 0) {
 
-                g.fill(.55, .3, 1, .2);
-                g.rectMode(g.RADIUS);
-                g.rect(region.center.x, region.center.y, region.w / 2, region.h / 2);
-
-                g.fill(1, 1, 1);
-
-                g.ellipse(region.center.x, region.center.y, 10, 10);
             }
 
             if (this.intersects(region)) {
@@ -155,6 +146,29 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
             this.top = this.center.y - radius;
             this.bottom = this.center.y + radius;
 
+            var border = 6 * this.level;
+            this.corners = [new Vector(this.left + border, this.top + border), new Vector(this.right - border, this.top + border), new Vector(this.right - border, this.bottom - border), new Vector(this.left + border, this.bottom - border)];
+
+        },
+
+        inCameraView : function(camera) {
+            // Get angles to all the corners
+
+            for (var i = 0; i < 4; i++) {
+                // determine whether this corner is within the sweep of the camera
+                var corner = this.corners[i];
+                var offset = camera.orbitPosition.getOffsetTo(corner);
+                var angle = offset.getAngle() - camera.orbitTheta;
+
+                angle = (angle % (2 * Math.PI) + 10 * Math.PI) % (2 * Math.PI);
+                this.angle = angle;
+                var sweep = .3;
+                var centerAngle = Math.PI;
+                if (angle < centerAngle + sweep && angle > centerAngle - sweep)
+                    return true;
+            }
+
+            return false;
         },
 
         intersects : function(region) {
@@ -165,58 +179,47 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
 
         //
 
-        draw : function(g, weight) {
+        draw : function(g, options) {
             g.rectMode(g.RADIUS);
 
             var h = (this.level * .231 + .1) % 1;
-            g.strokeWeight(weight);
+            g.strokeWeight(1);
+            if (this.inCameraView(options.camera)) {
+                g.strokeWeight(4);
+
+            }
+
             g.stroke(h, 1, 1);
             g.noFill();
             var r = this.radius - this.level * .2;
-            g.rect(this.center.x, this.center.y, r, r);
-            g.text(this.idNumber, this.center.x - r + 3, this.center.y - r + 12);
+            options.drawShape(g, this.corners);
+            //  options.drawText(g, this.angle, this.center, 0, 0);
 
         },
 
-        drawTree : function(g) {
-            g.rectMode(g.RADIUS);
-
-            if (this.level === 0) {
-                /*
-                 this.getQuadrantsInRegion({
-                 center : stellarGame.touch.lastHover,
-                 w : 150,
-                 h : 100
-                 }, g);
-                 */
-
-            }
-            g.strokeWeight(1);
-            g.stroke(1, 0, 1);
-            g.noFill();
-            // g.fill(0, 0, 0, .1);
-
+        drawTree : function(g, options) {
             var h = (this.level * .231 + .1) % 1;
             var r = this.radius - this.level * 2;
-            this.draw(g, 1);
+            this.draw(g, options);
 
             if (this.children !== undefined) {
                 for (var i = 0; i < 4; i++) {
                     if (this.children[i] !== undefined)
-                        this.children[i].drawTree(g);
+                        this.children[i].drawTree(g, options);
                 }
             }
 
             if (this.contents !== undefined) {
+                /*
+                 g.fill((this.idNumber * .128) % 1, .4, 1);
 
-                g.fill((this.idNumber * .128) % 1, .4, 1);
+                 g.noStroke();
+                 g.text(this.contents.length, this.center.x - 5, this.center.y + 5);
+                 $.each(this.contents, function(index, item) {
 
-                g.noStroke();
-                g.text(this.contents.length, this.center.x - 5, this.center.y + 5);
-                $.each(this.contents, function(index, item) {
-
-                    item.position.drawCircle(g, 4);
-                });
+                 item.position.drawCircle(g, 4);
+                 });
+                 */
             }
         },
 

@@ -50,7 +50,7 @@ define(["processing", "modules/models/vector", "three"], function(PROCESSING, Ve
             utilities.debugOutput("Update " + time.total.toFixed(2) + " fps: " + (1 / time.ellapsed).toFixed(2));
 
             var angle = -Math.PI / 2 - .1 - camera.zoom;
-            camera.setOrbit(camera.center, 300 + camera.distance * 1000, -Math.PI / 2, Math.PI + angle);
+            camera.setOrbit(camera.center, 300 + camera.distance * 1000, camera.rotation, Math.PI + angle);
 
             universe.update(time, activeObjects);
 
@@ -72,7 +72,7 @@ define(["processing", "modules/models/vector", "three"], function(PROCESSING, Ve
             g.pushMatrix();
             g.translate(g.width / 2, g.height / 2);
 
-            drawThreeTest(g);
+            //  drawThreeTest(g);
 
             var view = this;
 
@@ -113,32 +113,21 @@ define(["processing", "modules/models/vector", "three"], function(PROCESSING, Ve
 
             // do update stuff
             update(g.millis() * .001);
+            var options = {
+                layer : "bg",
+                drawShape : drawShape,
+                drawText : drawText,
+                camera : camera
+            };
 
             // Draw eaach layer in order
-            drawLayer(g, {
-                layer : "bg",
-            });
+            drawLayer(g, options);
 
-            drawLayer(g, {
-                layer : "main",
-            });
+            options.layer = "main";
+            drawLayer(g, options);
 
-            drawLayer(g, {
-                layer : "overlay",
-            });
-
-            // test points
-            var sides = 10;
-            var points = [];
-            for (var i = 0; i < sides; i++) {
-                var r = 200 * (1 + Math.sin(i));
-                var theta = 2 * Math.PI * i / sides;
-                points[i] = new Vector();
-                points[i].setToPolar(r, theta);
-            }
-            g.fill(1, .2, 1, .3);
-            g.stroke(1);
-            drawShape(g, points);
+            options.layer = "overlay";
+            drawLayer(g, options);
 
             // Draw the touch
             var touch = stellarGame.touch;
@@ -153,20 +142,25 @@ define(["processing", "modules/models/vector", "three"], function(PROCESSING, Ve
         };
 
         var drawLayer = function(g, options) {
-            var screenPos = new Vector(0, 0);
 
+            var screenPos = new Vector(0, 0);
+            options.screenPos = screenPos;
             universe.draw(g, options);
+
             $.each(activeObjects, function(index, obj) {
 
                 // figure out where this object is, and translate appropriately
                 g.pushMatrix();
 
+                convertToScreenPosition(obj.position, options.screenPos);
+                options.scale = Math.pow(500 / screenPos.z, 1);
                 if (!obj.drawUntransformed && obj.position !== undefined) {
-                    convertToScreenPosition(obj.position, screenPos);
 
                     g.translate(screenPos.x, screenPos.y);
-                    options.scale = Math.pow(500 / screenPos.z, 2);
+                    g.scale(options.scale, options.scale);
+
                 }
+
                 obj.draw(g, options);
                 g.popMatrix();
 
@@ -239,6 +233,7 @@ define(["processing", "modules/models/vector", "three"], function(PROCESSING, Ve
         function createThreeCamera() {
             // set the scene size
             var WIDTH = dimensions.width, HEIGHT = dimensions.height;
+            var createTestScene = false;
 
             // set some camera attributes
             var VIEW_ANGLE = 45, ASPECT = WIDTH / HEIGHT, NEAR = 0.1, FAR = 10000;
@@ -250,9 +245,15 @@ define(["processing", "modules/models/vector", "three"], function(PROCESSING, Ve
             camera.threeCamera.position.set(300, 200, 30);
 
             camera.setOrbit = function(center, r, theta, phi) {
+                camera.orbitDistance = r;
+                camera.orbitTheta = theta;
+                camera.orbitPhi = phi;
+                camera.orbitPosition = new Vector(center);
+                camera.orbitPosition.addSpherical(r, theta, phi);
                 this.threeCamera.position.set(center.x + r * Math.cos(theta) * Math.cos(phi), center.y + r * Math.sin(theta) * Math.cos(phi), center.z + r * Math.sin(phi));
                 this.threeCamera.up = new THREE.Vector3(0, 0, 1);
                 this.threeCamera.lookAt(center);
+
             };
 
             var scene, renderer, threeCamera;
@@ -263,12 +264,12 @@ define(["processing", "modules/models/vector", "three"], function(PROCESSING, Ve
             };
 
             camera.setOrbit(new Vector(0, 0, 0), 1200, 1.2, .6);
-
-            // Create a test scene
             scene = new THREE.Scene();
 
             // add the camera to the scene
             scene.add(camera.threeCamera);
+
+            // Create a test scene
 
             // start the renderer
 
@@ -307,7 +308,6 @@ define(["processing", "modules/models/vector", "three"], function(PROCESSING, Ve
             // draw!
 
             var frame = 0;
-            camera.testRender();
 
             // shim layer with setTimeout fallback
             window.requestAnimFrame = (function() {
@@ -339,9 +339,8 @@ define(["processing", "modules/models/vector", "three"], function(PROCESSING, Ve
 
                         convertToScreenPosition(worldPos, screenPos);
                         g.fill(.9 * i / detail + .04, j / detail, k / detail);
-                        var d = screenPos.z / 1000;
-                        d = Math.pow(d, 2);
-                        var r = 10 / d;
+
+                        var r = 2 * spacing * 126 / screenPos.z;
                         g.ellipse(screenPos.x, screenPos.y, r, r);
                         //  g.text(Math.round(screenPos.z), screenPos.x + 5, screenPos.y + 5);
                     }
@@ -354,13 +353,20 @@ define(["processing", "modules/models/vector", "three"], function(PROCESSING, Ve
             g.beginShape();
             for (var i = 0; i < points.length; i++) {
                 convertToScreenPosition(points[i], screenPos);
-                 screenPos.vertex(g);
+                screenPos.vertex(g);
                 utilities.debugOutput(points[i]);
                 var r = 300;
                 var theta = 2 * i * Math.PI / points.length;
-               // g.vertex(r * Math.cos(theta), r * Math.sin(theta));
+                // g.vertex(r * Math.cos(theta), r * Math.sin(theta));
             }
-            g.endShape();
+            g.endShape(g.CLOSE);
+        };
+
+        var drawText = function(g, text, center, xOffset, yOffset) {
+            var screenPos = new Vector();
+            convertToScreenPosition(center, screenPos);
+            g.text(text, screenPos.x + xOffset, screenPos.y + yOffset);
+
         };
 
         //============================================================================
@@ -395,11 +401,17 @@ define(["processing", "modules/models/vector", "three"], function(PROCESSING, Ve
             camera.distance = distance;
         };
 
+        function setRotation(angle) {
+            camera.rotation = angle
+
+        };
+
         return {
             init : init,
             dimensions : dimensions,
 
             setZoom : setZoom,
+            setRotation : setRotation,
             transformScreenToUniverse : transformScreenToUniverse,
             toWorldPosition : toWorldPosition,
 

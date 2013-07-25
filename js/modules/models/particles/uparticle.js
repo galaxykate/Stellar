@@ -219,9 +219,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 })
             },
             draw : function(g, options) {
-                g.pushMatrix();
-                g.scale(options.scale, options.scale);
-
+             
                 switch(options.layer) {
                     case "bg":
                         this.drawBackground(g, options);
@@ -237,7 +235,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                         break;
 
                 }
-                g.popMatrix();
             },
 
             //======================================================================

@@ -56,6 +56,13 @@ define(["three"], function(THREE) {
                 this.x += r * Math.cos(theta);
                 this.y += r * Math.sin(theta);
             },
+
+            addSpherical : function(r, theta, phi) {
+                this.x += r * Math.cos(theta) * Math.cos(phi);
+                this.y += r * Math.sin(theta) * Math.cos(phi);
+                this.z += r * Math.sin(phi);
+            },
+
             setToPolar : function(r, theta) {
                 this.x = r * Math.cos(theta);
                 this.y = r * Math.sin(theta);
@@ -76,7 +83,7 @@ define(["three"], function(THREE) {
                 this.y = v0.y * m + v1.y * m1;
                 this.z = v0.z * m + v1.z * m1;
             },
-            
+
             setTo : function(x, y, z) {
                 // Just in case this was passed a vector
                 if (x.x !== undefined) {
@@ -135,6 +142,10 @@ define(["three"], function(THREE) {
             },
             getOffsetTo : function(v) {
                 return new Vector(v.x - this.x, v.y - this.y, v.z - this.z);
+            },
+
+            getAngle : function() {
+                return Math.atan2(this.y, this.x);
             },
 
             //===========================================================
