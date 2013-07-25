@@ -18,6 +18,7 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
 				this.controller = new PopupController();
 				this.activeState = null;
 				this.view.createPopupDiv(0, 0, 0, 0);
+				this.hasCloseDiv = false;
             	
             },
             
@@ -31,8 +32,8 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
             
             addState : function(name, x, y, width, height, opa) {
             	var state = {
-            		"top": x,
-            		"left": y,
+            		"top": y,
+            		"left": x,
             		"width": width,
             		"height": height,
             		"opacity": opa
@@ -71,9 +72,27 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
 	            		this.controller.setActionDimensionChange(this.view.divID, this, output.to, output.action, to.width, to.height, to.opacity);
 	            	}
 		        }
+		        
+		        if(this.hasCloseDiv){
+		        	this.view.updateCloseButtonWidth(this.states[this.activeState].width);
+		        	
+		        	if(this.activeState === "closed"){
+		        		this.view.hideCloseButton();
+		        		this.controller.clearActions(this.view.divID + "_close");
+		        	} else {
+		        		this.view.showCloseButton();
+		        		this.controller.setActionDimensionChange(this.view.divID + "_close", this, "closed", "click");
+		        	}
+		        }
             },
             
-            
+            addCloseDiv : function() {
+            	// Adds a close button div that automatically is added to every "non-closed" state
+            	this.view.createCloseButtonDiv();
+            	this.hasCloseDiv = true;
+            	
+            	//
+            },
             
             
         });

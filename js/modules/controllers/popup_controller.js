@@ -24,23 +24,46 @@ define(["inheritance", "modules/models/vector"], function(Inheritance, Vector) {
               	//var div = $("#" + divID);
               	//console.log(div);
               	
+              	// If width, height, and opacity are not set, do not change them
+              	if(width === undefined) width = div.width();
+              	if(height === undefined) height = div.height();
+              	if(opa === undefined) opa = div.css("opacity");
+              	
+              	// event.target.id check prevents bubbling of events. Perhaps make this an option?
               	switch(action){
               		case "mousedown":
-              			div.mousedown(function() {
-		                	console.log(action + " on " + divID); 
-		                	$(this).width(width);
-		                	$(this).height(height);
-		                	$(this).css({ opacity: opa });
-		                	popupModule.setState(stateName);
+              			div.mousedown(function(event) {
+              				if(divID === event.target.id){
+			                	console.log(action + " on " + divID); 
+			                	$(this).width(width);
+			                	$(this).height(height);
+			                	$(this).css({ opacity: opa });
+			                	popupModule.setState(stateName);
+		                	}
 		              	});
               			break;
               		case "mouseleave":
-              			div.mouseleave(function() {
-		                	console.log(action + " on " + divID); 
-		                	$(this).width(width);
-		                	$(this).height(height);
-		                	$(this).css({ opacity: opa });
-		                	popupModule.setState(stateName);
+              			div.mouseleave(function(event) {
+              				if(divID === event.target.id){
+			                	console.log(action + " on " + divID); 
+			                	$(this).width(width);
+			                	$(this).height(height);
+			                	$(this).css({ opacity: opa });
+			                	popupModule.setState(stateName);
+			                }
+		              	});
+              			break;
+              		case "click":
+              			div.click(function(event) {
+              				console.log("div id " + divID + " ==? " + event.target.id)
+              				if(divID === event.target.id){
+			                	console.log(action + " on " + divID + ", transitioning to " + stateName); 
+			                	console.log("clicked: " + event.target.id);
+			                	$(this).width(width);
+			                	$(this).height(height);
+			                	$(this).css({ opacity: opa });
+			                	popupModule.setState(stateName);
+		                	}
 		              	});
               			break;
               		default:

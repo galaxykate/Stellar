@@ -8,12 +8,14 @@ define(['modules/views/game_view', "modules/models/popup", "modules/models/popup
 
     return (function() {
     	var playerInventory;
+    	var infoScreen;
 
         function init() {
             console.log("INIT UI");
 
 
             makeInventoryPopup();
+            makeMainMenu();
         };
         
         function makeInventoryPopup() {
@@ -32,6 +34,27 @@ define(['modules/views/game_view', "modules/models/popup", "modules/models/popup
 	        contents.updateElementsDrawAndUpdate();
 	        contents.addElementsToUniverse();
 	        playerInventory.addContents("playerElements", contents);
+	        
+	    };
+	    
+	    function makeMainMenu() {
+	    	infoScreen = new Popup("#universe");
+	    	
+	    	var universeWidth = gameView.universeView.dimensions.width;
+	    	var universeHeight = gameView.universeView.dimensions.height;
+	    	
+	    	infoScreen.addState("closed", universeWidth-40, 0, 20, 20, 0.5);
+	    	infoScreen.addState("open", 20, 20, universeWidth-50, universeHeight-50, 1);
+	    	//infoScreen.addTransition("open", "closed", "click");
+	    	infoScreen.addTransition("closed", "open", "click");
+	    	infoScreen.setState("closed");
+	    	infoScreen.addCloseDiv();
+	    	
+	    	var menu = new PopupContents();
+	    	infoScreen.addContents("menu", menu);
+	    	
+	    	var stats = new PopupContents();
+	    	infoScreen.addContents("stats", stats);
 	    };
 	    
 	    function getPlayerInventory() {

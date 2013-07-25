@@ -40,8 +40,8 @@ define(["inheritance"], function(Inheritance) {
                     html : "Pop Up<br>",
                     "class" : "popup",
                     "id" : this.divID,
-                    top: x,
-                    left: y,
+                    top: y,
+                    left: x,
                     width: wid,
                     height: hei,
                     opacity: opa
@@ -51,6 +51,45 @@ define(["inheritance"], function(Inheritance) {
 				
 				this.appendPopupDiv();
 
+           	},
+           	
+           	createCloseButtonDiv : function() {
+           		var div = $("#" + this.divID);
+           		console.log("DIV.WIDTH(): " + div.width());
+           		var closeOptions = {
+           			html : "Close",
+                    "class" : "closeButton",
+                    "id" : this.divID + "_close",
+                    top: 0,
+                    left: div.width()-20,
+                    width: 20,
+                    height: 20,
+                    
+           		};
+           		var closeDiv = $('<div/>', closeOptions);
+           		closeDiv.hide(); // Start it out invisible because the updates don't happen by this point
+           		
+           		div.append(closeDiv);
+           		
+           	},
+           	
+           	updateCloseButtonWidth : function(width) {
+           		//var headDiv = $("#" + this.divID);
+           		var closeDiv = $("#" + this.divID + "_close");
+           		
+           		//console.log("DIV.WIDTH(): " + headDiv.width());
+           		//closeDiv.css('left', headDiv.width()-20 + 'px');
+           		closeDiv.css('left', width-20 + 'px');
+           	},
+           	
+           	showCloseButton : function(){
+           		var closeDiv = $("#" + this.divID + "_close");
+           		closeDiv.show();
+           	},
+           	
+           	hideCloseButton : function() {
+           		var closeDiv = $("#" + this.divID + "_close");
+           		closeDiv.hide();
            	},
             
             updatePopupDiv : function(x, y, wid, hei, opa) {
