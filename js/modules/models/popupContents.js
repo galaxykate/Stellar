@@ -78,7 +78,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             			utilities.debugOutput("SIPHONING... " + contents.elementsHolder.siphonElement);
             			// stellargame.touch.activeTool
             			//console.log(stellarGame.touch.activeTool);
-            			stellarGame.touch.activeTool.elements.siphonOneByName(contents.elementsHolder.elements, contents.elementsHolder.siphonElement, .05);
+            			stellarGame.touch.activeTool.elements.siphonOneByName(contents.elementsHolder.elements, contents.elementsHolder.siphonElement, .01);
             			contents.elementsHolder.elements.updateAllElementsInDiv(); 
             		}
             	};

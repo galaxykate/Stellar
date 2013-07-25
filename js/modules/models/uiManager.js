@@ -24,9 +24,9 @@ define(['modules/views/game_view', "modules/models/popup", "modules/models/popup
 	        var universeHeight = gameView.universeView.dimensions.height;
 	        
 	        playerInventory.addState("closed", 0, 0, 20, universeHeight, 0.1);
-	        playerInventory.addState("open", 0, 0, 200, universeHeight, 1);
-	        playerInventory.addTransition("open", "closed", "mouseleave");
-	        playerInventory.addTransition("closed", "open", "mousedown");
+	        playerInventory.addState("open", 0, 0, 150, universeHeight, 1);
+	        playerInventory.addTransition("open", "closed", "mouseleave", true);
+	        playerInventory.addTransition("closed", "open", "mousedown", true);
 	        playerInventory.setState("closed");
 	        
 	        var contents = new PopupContents();
@@ -46,7 +46,7 @@ define(['modules/views/game_view', "modules/models/popup", "modules/models/popup
 	    	infoScreen.addState("closed", universeWidth-40, 0, 20, 20, 0.5);
 	    	infoScreen.addState("open", 20, 20, universeWidth-50, universeHeight-50, 1);
 	    	//infoScreen.addTransition("open", "closed", "click");
-	    	infoScreen.addTransition("closed", "open", "click");
+	    	infoScreen.addTransition("closed", "open", "click", false);
 	    	infoScreen.setState("closed");
 	    	infoScreen.addCloseDiv();
 	    	

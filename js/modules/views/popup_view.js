@@ -57,7 +57,7 @@ define(["inheritance"], function(Inheritance) {
            		var div = $("#" + this.divID);
            		console.log("DIV.WIDTH(): " + div.width());
            		var closeOptions = {
-           			html : "Close",
+           			html : "X",
                     "class" : "closeButton",
                     "id" : this.divID + "_close",
                     top: 0,

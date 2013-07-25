@@ -118,7 +118,7 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
            	}
 
             var siphonAmt = Math.max(1, target.elementQuantity[index] * pct);
-            siphonAmt = Math.min(1, target.elementQuantity[index]);
+            if(target.elementQuantity[index] < siphonAmt) siphonAmt = target.elementQuantity[index];
             utilities.debugOutput("Siphoning " + siphonAmt);
 
             this.elementQuantity[index] += siphonAmt;

@@ -18,7 +18,7 @@ define(["inheritance", "modules/models/vector"], function(Inheritance, Vector) {
              * http://api.jquery.com/category/events/
              */
             
-            setActionDimensionChange : function(divID, popupModule, stateName, action, width, height, opa) {
+            setActionDimensionChange : function(divID, popupModule, stateName, action, width, height, opa, bubble) {
             	var div = $("#" + divID);
               	//div.html("RAWR!!!!");
               	//var div = $("#" + divID);
@@ -33,7 +33,7 @@ define(["inheritance", "modules/models/vector"], function(Inheritance, Vector) {
               	switch(action){
               		case "mousedown":
               			div.mousedown(function(event) {
-              				if(divID === event.target.id){
+              				if(bubble || (!bubble && divID === event.target.id)){
 			                	console.log(action + " on " + divID); 
 			                	$(this).width(width);
 			                	$(this).height(height);
@@ -44,7 +44,7 @@ define(["inheritance", "modules/models/vector"], function(Inheritance, Vector) {
               			break;
               		case "mouseleave":
               			div.mouseleave(function(event) {
-              				if(divID === event.target.id){
+              				if(bubble || (!bubble && divID === event.target.id)){
 			                	console.log(action + " on " + divID); 
 			                	$(this).width(width);
 			                	$(this).height(height);
@@ -55,10 +55,12 @@ define(["inheritance", "modules/models/vector"], function(Inheritance, Vector) {
               			break;
               		case "click":
               			div.click(function(event) {
-              				console.log("div id " + divID + " ==? " + event.target.id)
-              				if(divID === event.target.id){
+              				//console.log("div id " + divID + " ==? " + event.target.id)
+              				console.log("bubble? : " + bubble);
+              				console.log("other test? : " + (!bubble && divID === event.target.id));
+              				if(bubble || (!bubble && divID === event.target.id)){
 			                	console.log(action + " on " + divID + ", transitioning to " + stateName); 
-			                	console.log("clicked: " + event.target.id);
+			                	//console.log("clicked: " + event.target.id);
 			                	$(this).width(width);
 			                	$(this).height(height);
 			                	$(this).css({ opacity: opa });
