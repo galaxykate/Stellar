@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(['modules/views/game_view', "modules/models/popup", "modules/models/popupContents"], function(gameView, Popup, PopupContents) {
+define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui/popupContents"], function(gameView, Popup, PopupContents) {
 
     return (function() {
     	var playerInventory;

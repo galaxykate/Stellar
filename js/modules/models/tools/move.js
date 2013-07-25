@@ -4,7 +4,7 @@
 
 // UParticle-inherited class
 
-define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", "particleTypes", "modules/models/uiManager"], function(Vector, KColor, Tool, ElementSet, particleTypes, uiManager) {
+define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", "particleTypes", "modules/models/ui/uiManager"], function(Vector, KColor, Tool, ElementSet, particleTypes, uiManager) {
     return (function() {
         var minDustMass = 10;
         //========================================================

@@ -5,7 +5,7 @@
 // Organize the game
 // Singleton pattern from here: http://stackoverflow.com/questions/1479319/simplest-cleanest-way-to-implement-singleton-in-javascript
 
-define(['modules/views/game_view', 'modules/controllers/game_controller', 'modules/models/universe', 'modules/models/inventory', 'modules/models/uiManager'], function(gameView, gameController, universe, Inventory, uiManager) {
+define(['modules/views/game_view', 'modules/controllers/game_controller', 'modules/models/universe', 'modules/models/inventory', 'modules/models/ui/uiManager'], function(gameView, gameController, universe, Inventory, uiManager) {
     var game = {};
 
     var startGame = function() {
