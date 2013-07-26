@@ -45,6 +45,7 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
             } else {
                 this.contents = [];
             }
+            
 
         },
 
@@ -54,7 +55,8 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
         },
 
         remove : function(p) {
-
+			// Whenever this gets implemented
+			stellarGame.statistics.numItemsInQuadTree--;
         },
 
         getQuadrantIndex : function(p) {
@@ -105,6 +107,8 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
 
             var quadrant = this.getQuadrant(p, maxLevels, true);
             quadrant.contents.push(obj);
+            
+            stellarGame.statistics.numItemsInQuadTree++;
         },
 
         // Find all the quadrants that are bounded by this region

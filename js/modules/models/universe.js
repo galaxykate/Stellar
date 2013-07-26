@@ -31,10 +31,11 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
         // These stars loop
         function makeBackgroundStars() {
-
             for (var i = 0; i < backgroundLayers; i++) {
                 backgroundStars[i] = [];
                 var starCount = backgroundStarDensity * (backgroundLayers - i);
+                stellarGame.statistics.bgStarCount += starCount;
+                
                 for (var j = 0; j < starCount; j++) {
                     var color = new KColor(Math.random(), 1, 1);
                     backgroundStars[i][j] = [Math.random() * 800, Math.random() * 800, Math.random() * .2, Math.random() * 10 + 2, color];
@@ -119,6 +120,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
         function generateRegion(region) {
 
             console.log("GENERATE REGION");
+            
             // Pick some random locations in the region
             var density = .003;
             var count = Math.ceil(region.w * region.h * density * density);
@@ -174,6 +176,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
         function init() {
             console.log("INIT UNIVERSE");
+            initStatistics();
 
             camera = {
                 angle : new Vector(0, 0, 0),
@@ -186,6 +189,14 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
             makeBackgroundStars();
             makeUniverseTree();
             generateStartRegion();
+        };
+        
+        function initStatistics() {
+        	stellarGame.statistics.numberOfTrails = 0;
+            stellarGame.statistics.numberOfStars = 0;
+            stellarGame.statistics.numberOfCritters = 0;
+            stellarGame.statistics.numberOfDust = 0;
+            stellarGame.statistics.bgStarCount = 0;
         };
 
         function getCamera() {

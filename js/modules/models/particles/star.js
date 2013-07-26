@@ -136,6 +136,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 				this.outwardForce;
 				
 				this.acceptsDust = true;
+				stellarGame.statistics.numberOfStars++;
             },
 
             initFace : function() {

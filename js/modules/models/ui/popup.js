@@ -24,8 +24,8 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
             
             addContents : function(name, goodies) {
             	goodies.setParentDivID(this.view.divID);
-            	console.log("goodies! ");
-            	console.log(goodies);
+            	//console.log("goodies! ");
+            	//console.log(goodies);
             	this.contents[name] = goodies;
             },
             
@@ -36,11 +36,16 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
             		"left": x,
             		"width": width,
             		"height": height,
-            		"opacity": opa
+            		"opacity": opa,
+            		contents : [] // names of the contents
             	};
             	
             	this.states[name] = state;
             	console.log("adding popup state: " + name);
+            },
+            
+            addContentsToState : function(stateName, contentsName){
+            	this.states[stateName].contents.push(contentsName);
             },
             
             addTransition : function(nameFrom, nameTo, action, bubble){

@@ -54,7 +54,12 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    	infoScreen.addContents("menu", menu);
 	    	
 	    	var stats = new PopupContents();
+	    	stats.initStatisticsHTMLHolder();
 	    	infoScreen.addContents("stats", stats);
+	    };
+	    
+	    function generateUniverseStatistics(){
+	    	
 	    };
 	    
 	    function getPlayerInventory() {

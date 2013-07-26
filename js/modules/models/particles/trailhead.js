@@ -12,7 +12,7 @@ define(["modules/models/vector", "uparticle", particleTypePath + "dust"], functi
             init : function(universe) {
                 this._super(universe);
                 this.radius = Math.random() * 20 + 10;
-
+				stellarGame.statistics.numberOfTrails++;
             },
 
             drawBackground : function(g, options) {

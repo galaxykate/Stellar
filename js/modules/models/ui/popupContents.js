@@ -6,6 +6,7 @@
 
 define(["inheritance", "modules/models/vector", "uparticle", "modules/models/elementSet"], function(Inheritance, Vector, UParticle, ElementSet) {
     return (function() {
+    	var htmlCount = 0;
     	
     	// ========================================
     	// View stuff
@@ -28,9 +29,29 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
 
     	};
     	
+    	function wrapStatisticsIntoHTML(divID){
+    		var html = "";
+    		var div = $("#" + divID);
+    		
+    		html += "Number of items 'inserted' into quadtree: " + stellarGame.statistics.numItemsInQuadTree + "<br>";
+    		html += "Number of Dust Trails Ever Created: " + stellarGame.statistics.numberOfTrails + "<br>";
+    		html += "Number of Critters Ever Created: " + stellarGame.statistics.numberOfCritters + "<br>";
+    		html += "Number of Dust Ever Created: " + stellarGame.statistics.numberOfDust + "<br>";
+    		html += "Number of Big Stars Ever Created: " + stellarGame.statistics.numberOfStars + "<br><br>";
+    		html += "Number of Background Stars: " + stellarGame.statistics.bgStarCount + "<br>";
+    		
+    		div.html(html);
+    		//console.log("Setting html");
+    		//console.log(div);
+    	};
     	
+    	function emptHTMLContents(divID){
+    		var div = $("#" + divID);
+    		div.html = "";
+    	};
     	
     	// =========================================
+    	
 
         var PopupContents = Class.extend({
 
@@ -44,6 +65,10 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             	this.elementsHolder.initAsElementContainer();
             	this.elementsHolder.siphoning = false;
             	//console.log("new uparticle: " + this.elementsHolder);
+            },
+            
+            initStatisticsHTMLHolder : function() {
+            	this.liveHTMLHolder = true;
             },
             
             // Only call after attached to a parent: needs parentDivID
@@ -62,6 +87,27 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             		createDivForAllElements(this.parentDivID, this.elementsHolderID);
             		
             		this.updateIndividualElements();
+            	} else if (this.liveHTMLHolder !== undefined) {
+            		this.htmlHolderID = this.parentDivID + "_html" + htmlCount;
+            		
+            		htmlCount++;
+            		
+            		// ========================================
+    				// View stuff
+    				
+    				var id = this.htmlHolderID;
+    				var options = {
+		                "id" : this.htmlHolderID
+		            };
+		            
+					var div = $('<div/>', options);
+					var parent = $("#" + this.parentDivID)
+					parent.append(div); 
+					
+					setInterval(function(){wrapStatisticsIntoHTML(id)},1000);
+    				
+    				// ========================================
+            		
             	}
             	// grab the div and do some fancy insertions?!?!?!?
             	// Or grab the view and do it there

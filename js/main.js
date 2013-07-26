@@ -13,6 +13,11 @@ var stellarGame = {
         universeTime : 0,
         gameTime : 0,
     },
+    
+    // For display purposes!
+    statistics : {
+    	numItemsInQuadTree : 0,
+    },
 };
 
 var utilities = {
