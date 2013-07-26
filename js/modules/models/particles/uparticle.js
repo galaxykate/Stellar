@@ -35,7 +35,8 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 // For ranges of surface temperatuers, visit https://en.wikipedia.org/wiki/Stellar_classification
                 this.temperature = 0; // Kelvin
                 this.tempGenerated = 100; // Kelvin
-
+				
+				this.lifeSpans = [];
             },
 
             setRadius : function(r) {
@@ -102,8 +103,10 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 }
 
                 this.updateElements();
-                
-                //console.log("position/velocity of " + this.idNumber + ": " + this.position + ", " + this.velocity);
+                /*
+                for(var i = 0; i < this.lifespans.length; i++){
+                	this.lifespans[i].update();
+                }*/
             },
 
             // Give this object a bunch of elements

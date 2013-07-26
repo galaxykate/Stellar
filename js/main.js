@@ -131,7 +131,8 @@ require.config({
         'toolTypes' : 'modules/models/tools/tool_types',
         'tool' : 'modules/models/tools/tool',
         'uparticle' : 'modules/models/particles/uparticle',
-        'kcolor' : 'modules/models/kcolor'
+        'kcolor' : 'modules/models/kcolor',
+        'lifespan' : 'modules/models/lifespan',
 
     },
     shim : {

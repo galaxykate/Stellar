@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(["inheritance", "modules/models/vector", "modules/models/face", "modules/models/elementSet", "uparticle", particleTypePath + "dust"], function(Inheritance, Vector, Face, ElementSet, UParticle, Dust) {
+define(["inheritance", "modules/models/vector", "modules/models/face", "modules/models/elementSet", "uparticle", particleTypePath + "dust", 'lifespan'], function(Inheritance, Vector, Face, ElementSet, UParticle, Dust, Lifespan) {
     return (function() {
 
         var states = [{
@@ -113,7 +113,31 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         	star.burningFuel = false;
 
         };
-
+		
+		var startLifeSpan = function(star){
+			
+			var starBaseRadius = star.radius;
+			var wiggleRoom = star.radius / 2;
+			star.lifespan = new Lifespan(10000);
+			
+			var lifespanUpdate = function(){
+				if(star.lifespan.figuredPctCompleted < .5){
+					// Grow up to wiggleRoom
+					star.radius = starBaseRadius + ((figuredPctCompleted*2) * wiggleRoom); 
+				} else {
+					// shrink back down to starBaseRadius
+					star.radius = starBaseRadius + ((1 - (figuredPctCompleted*2)) * wiggleRoom);
+				}
+			};
+			
+			var lifespanOnEnd = function(){
+				star.startLifeSpan(star);
+			};
+			
+			star.lifespan.onUpdate(lifespanUpdate);
+			// Repeating loop?! Hope it doesn't break!
+			star.lifespan.onEnd(lifespanOnEnd);
+		};
         
 
         // Make the star class
@@ -136,6 +160,9 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 				this.outwardForce;
 				
 				this.acceptsDust = true;
+				
+				//startLifeSpan(this);
+				
 				stellarGame.statistics.numberOfStars++;
             },
 
