@@ -10,7 +10,7 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
         var Popup = Class.extend({
 
             init : function(parentString) {
-				console.log("Init a popup!!!");
+				//console.log("Init a popup!!!");
 				this.states = [];
 				this.transitions = [];
 				this.contents = [];
@@ -41,7 +41,7 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
             	};
             	
             	this.states[name] = state;
-            	console.log("adding popup state: " + name);
+            	//console.log("adding popup state: " + name);
             },
             
             addContentsToState : function(stateName, contentsName){
@@ -62,9 +62,9 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
             setState : function(name) {
             	this.activeState = name;
             	// set the view and controller
-            	console.log("setting state name : " + name);
-            	console.log(this.states);
-            	console.log(this.states[name]);
+            	//console.log("setting state name : " + name);
+            	//console.log(this.states);
+            	//console.log(this.states[name]);
             	// set top, left, width, height in view
             	this.view.updatePopupDiv(this.states[name].top, this.states[name].left, this.states[name].width, this.states[name].height, this.states[name].opacity);
             	

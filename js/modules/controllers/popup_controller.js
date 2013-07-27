@@ -10,7 +10,7 @@ define(["inheritance", "modules/models/vector"], function(Inheritance, Vector) {
         var PopupController = Class.extend({
 
             init : function() {
-				console.log("Init a popup controller!!!");
+				//console.log("Init a popup controller!!!");
 				
             },
             
@@ -34,7 +34,7 @@ define(["inheritance", "modules/models/vector"], function(Inheritance, Vector) {
               		case "mousedown":
               			div.mousedown(function(event) {
               				if(bubble || (!bubble && divID === event.target.id)){
-			                	console.log(action + " on " + divID); 
+			                	//console.log(action + " on " + divID); 
 			                	$(this).width(width);
 			                	$(this).height(height);
 			                	$(this).css({ opacity: opa });
@@ -45,7 +45,7 @@ define(["inheritance", "modules/models/vector"], function(Inheritance, Vector) {
               		case "mouseleave":
               			div.mouseleave(function(event) {
               				if(bubble || (!bubble && divID === event.target.id)){
-			                	console.log(action + " on " + divID); 
+			                	//console.log(action + " on " + divID); 
 			                	$(this).width(width);
 			                	$(this).height(height);
 			                	$(this).css({ opacity: opa });
@@ -56,10 +56,10 @@ define(["inheritance", "modules/models/vector"], function(Inheritance, Vector) {
               		case "click":
               			div.click(function(event) {
               				//console.log("div id " + divID + " ==? " + event.target.id)
-              				console.log("bubble? : " + bubble);
-              				console.log("other test? : " + (!bubble && divID === event.target.id));
+              				//console.log("bubble? : " + bubble);
+              				//console.log("other test? : " + (!bubble && divID === event.target.id));
               				if(bubble || (!bubble && divID === event.target.id)){
-			                	console.log(action + " on " + divID + ", transitioning to " + stateName); 
+			                	//console.log(action + " on " + divID + ", transitioning to " + stateName); 
 			                	//console.log("clicked: " + event.target.id);
 			                	$(this).width(width);
 			                	$(this).height(height);

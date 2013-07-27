@@ -345,8 +345,8 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         	
         	var parent = $("#" + parentID);
             parent.mouseleave(function() {
-            	console.log("leaving the parent " + parentID);
-            	console.log("var mousedown: false");
+            	//console.log("leaving the parent " + parentID);
+            	//console.log("var mousedown: false");
             	elementSet.parent.varMouseDown = false;
             });
         	
