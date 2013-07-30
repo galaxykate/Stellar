@@ -2,7 +2,7 @@
  * @author April
  */
 
-// Its the Universe!
+// NOTE: Runs on universeTime
 
 define(["inheritance"], function(Inheritance) {
     return (function() {
@@ -20,19 +20,26 @@ define(["inheritance"], function(Inheritance) {
                 this.finished = false;
                 this.onUpdatePcts = [];
                 this.lifespan = lifeDuration; // In game time
+                //console.log("lifespan initiated: " + this.idNumber + " with duration " + this.lifespan);
             },
             
             // =============== custom functions to be set by the implementer ==============
             onStart : function(func){
             	this.onStartFunction = func;
+            	//console.log("lifespan " + this.idNumber + " onStart!");
+            	//console.log(func);
             },
             
             onEnd : function(func){
             	this.onEndFunction = func;
+            	//console.log("lifespan " + this.idNumber + " onEnd!");
+            	//console.log(func);
             },
             
             onUpdate: function(func){
             	this.onUpdateFunction = func;
+            	//console.log("lifespan " + this.idNumber + " onUpdate!");
+            	//console.log(func);
             },
             
             // pct is on a 0-1 scale
@@ -47,9 +54,10 @@ define(["inheritance"], function(Inheritance) {
             
             // =============== action items ==============
             start : function(){
-            	this.startTime = stellarGame.time.gameTime;
+            	this.startTime = stellarGame.time.universeTime;
             	this.duration = 0;
-            	this.propsedEndTime = this.startTime + this.lifespan;
+            	console.log("... " + this.startTime + ", " + this.lifespan);
+            	this.proposedEndTime = this.startTime + this.lifespan;
             	
             	if(this.onStartFunction !== undefined){
             		this.onStartFunction();
@@ -58,6 +66,7 @@ define(["inheritance"], function(Inheritance) {
             	}
             	
             	this.started = true;
+            	//console.log("lifespan " + this.idNumber + " started!: " + this.startTime + ", " + this.duration + ", " + this.proposedEndTime);
             },
             
             update: function(){
@@ -69,9 +78,10 @@ define(["inheritance"], function(Inheritance) {
             	// Update only updates a non-finished lifespan
             	if(this.finished === false){
 	            	// update time variables
-	            	this.duration = stellarGame.time.gameTime - this.startTime;
-	            	this.figuredPctCompleted = this.duration/this.proposedEndTime;
+	            	this.duration = stellarGame.time.universeTime - this.startTime;
+	            	this.figuredPctCompleted = this.duration/this.lifespan;
 	            	
+	            	//utilities.debugOutput("lifespan " + this.idNumber + " updating...! " + utilities.roundNumber(this.duration) + ", " + utilities.roundNumber(this.figuredPctCompleted*100, 0) + "%");
 	            	// If we have passed any thresholds for specific pct progress and not yet triggered it, TRIGGER IT!
 	            	for(var i = 0; i < this.onUpdatePcts.length; i++){
 	            		if(this.onUpdatePcts[i].percent <= this.figuredPctCompleted && this.onUpdatePcts[i].triggered === false){
@@ -90,7 +100,7 @@ define(["inheritance"], function(Inheritance) {
 						// If we have run the course of our duration, FINISH IT!
 						console.log("notice (lifeSpan): finishing lifespan");
 						console.log(this);
-						end();
+						this.end();
 					}
             	}
             },
@@ -112,6 +122,17 @@ define(["inheritance"], function(Inheritance) {
             		}
             	}
             },
+            
+            restart : function() {
+            	this.started = false;
+                this.finished = false;
+                
+                for(var i = 0; i < this.onUpdatePcts.length; i++){
+                	this.onUpdatePcts[i].triggered = false;
+            	}
+                
+                console.log("~~~ lifespan " + this.idNumber + " restarted ~~~");
+            }
 
 
         });

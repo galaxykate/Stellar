@@ -115,28 +115,49 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         };
 		
 		var startLifeSpan = function(star){
-			
-			var starBaseRadius = star.radius;
-			var wiggleRoom = star.radius / 2;
-			star.lifespan = new Lifespan(10000);
-			
+			star.lifespan = new Lifespan(5);
+			var startStarRadius = star.radius;
 			var lifespanUpdate = function(){
+				var startStarRadius = calcStarSizeOfElements(star);
+				var maxWiggleRoom = startStarRadius * .5;
 				if(star.lifespan.figuredPctCompleted < .5){
 					// Grow up to wiggleRoom
-					star.radius = starBaseRadius + ((figuredPctCompleted*2) * wiggleRoom); 
+					star.radiusModifier = (star.lifespan.figuredPctCompleted*2) * maxWiggleRoom; 
+					//utilities.debugOutput("setting star radius (up): " + utilities.roundNumber(star.radiusModifier));
 				} else {
 					// shrink back down to starBaseRadius
-					star.radius = starBaseRadius + ((1 - (figuredPctCompleted*2)) * wiggleRoom);
+					star.radiusModifier = maxWiggleRoom + ((1 - (star.lifespan.figuredPctCompleted*2)) * maxWiggleRoom);
+					//utilities.debugOutput("setting star radius (down): " + utilities.roundNumber(star.radiusModifier));
 				}
 			};
 			
 			var lifespanOnEnd = function(){
-				star.startLifeSpan(star);
+				
+				// Remove the star lifespan. May skip if this is too annoying.
+				//var index = star.lifespans.indexOf(star.lifespan);
+				//star.lifespans.splice(index, 1);
+				
+				//star.startLifeSpan(star);
+				//console.log("trying to restart life span?");
+				star.lifespan.restart();
+			};
+			
+			var lifespanOnStart = function(){
+				//star.lifespans.push(star.lifespan);
+				//console.log("starting lifespan!");
 			};
 			
 			star.lifespan.onUpdate(lifespanUpdate);
 			// Repeating loop?! Hope it doesn't break!
 			star.lifespan.onEnd(lifespanOnEnd);
+			star.lifespan.onStart(lifespanOnStart);
+			
+			star.lifespans.push(star.lifespan);
+			
+		};
+		
+		var calcStarSizeOfElements = function(star){
+			return Math.pow(star.elements.totalMass, .5);
 		};
         
 
@@ -161,7 +182,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 				
 				this.acceptsDust = true;
 				
-				//startLifeSpan(this);
+				startLifeSpan(this);
+				this.radiusModifier = 0;
 				
 				stellarGame.statistics.numberOfStars++;
             },
@@ -200,7 +222,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 updateDustBurning(this);
                 
                 //utilities.debugOutput("radius: " + this.radius);
-                this.radius = Math.pow(this.elements.totalMass, .5);
+                this.radius = calcStarSizeOfElements(this) + this.radiusModifier;
                 
                 this.face.update(time, this.radius, this.radius);
                 

@@ -113,7 +113,17 @@ var utilities = {
             return Math.random() * (arguments[1] - arguments[0]) + arguments[0];
 
         return Math.random();
+    },
+    
+    roundNumber : function(num, places) {
+    	// default 2 decimal places
+    	if(places === undefined){
+    		return parseFloat(Math.round(num * 100) / 100).toFixed(2);
+    	} else {
+    		return parseFloat(Math.round(num * 100) / 100).toFixed(places);
+    	}
     }
+    
 };
 
 require.config({

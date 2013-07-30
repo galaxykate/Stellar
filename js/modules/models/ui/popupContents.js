@@ -22,7 +22,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
 			var parent = $("#" + parentID)
 			parent.append(div); 
 			
-			console.log('appending ' + id + " to " + parentID);
+			//console.log('appending ' + id + " to " + parentID);
 			
 			//console.log(parent);
 			//console.log(div);
@@ -56,7 +56,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
         var PopupContents = Class.extend({
 
             init : function() {
-				console.log("a set of popupContents initiated");
+				//console.log("a set of popupContents initiated");
             	
             },
             
@@ -83,7 +83,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             	this.parentDivID = str;
             	if(this.elementsHolder !== undefined){
             		this.elementsHolderID = this.parentDivID + "_elements";
-            		console.log("SetParentID of elementsHolder: " + this.elementsHolderID);
+            		//console.log("SetParentID of elementsHolder: " + this.elementsHolderID);
             		createDivForAllElements(this.parentDivID, this.elementsHolderID);
             		
             		this.updateIndividualElements();
