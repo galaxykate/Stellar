@@ -87,10 +87,11 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
                 if (this.mode === MOVE) {
                 	// Removing touch pressed for now for UI interaction
-                    //if (stellarGame.touch.pressed) {
+                    //
 
-                        this.elements.drawAsDustCloud(g, 20);
-
+                    this.elements.drawAsDustCloud(g, 20);
+						
+						if (stellarGame.touch.pressed) {
                         // Draw a spiral
                         g.stroke(1, 0, 1, .8);
 
@@ -116,7 +117,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
                         }
 
-                    //}
+                    }
                 }
 
                 if (this.mode === COLLECT) {

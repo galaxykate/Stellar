@@ -133,7 +133,10 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
                 var obj;
 
-                if (Math.random() > .5) {
+                if (Math.random() > .1) {
+                    //console.log("1");
+                    obj = new particleTypes.Sparkle();
+                } else if (Math.random() > .5) {
                     //console.log("1");
                     obj = new particleTypes.Trailhead();
                 } else if (Math.random() > .5) {
@@ -197,6 +200,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
             stellarGame.statistics.numberOfCritters = 0;
             stellarGame.statistics.numberOfDust = 0;
             stellarGame.statistics.bgStarCount = 0;
+            stellarGame.statistics.numberofSparkles = 0;
         };
 
         function getCamera() {
