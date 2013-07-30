@@ -4,37 +4,47 @@
 
 // UParticle-inherited class
 
-define(["modules/models/vector", "uparticle"], function(Vector, UParticle) {
+define(["modules/models/vector", "uparticle", 'lifespan'], function(Vector, UParticle, Lifespan) {
     return (function() {
     	
-    	var startLifeSpan = function(sparkle){
+    	var startLifespan = function(sparkle){
 			
 			var sparkleMaxOpacity = sparkle.maxOpacity;
-			var duration = 10000;
-			var updateOpacityAmount = sparkleMaxOpacity/duration;
+			var duration = (Math.random() * 2) + .5; // duration is in seconds
 			
 			sparkle.lifespan = new Lifespan(duration);
 			
 			var lifespanUpdate = function(){
-				sparkle.opacityOffset -= updateOpacityAmount;
+				
+				sparkle.opacityOffset = sparkle.lifespan.figuredPctCompleted * (-sparkleMaxOpacity);
+				//utilities.debugOutput("updating opacity: " + sparkle.opacityOffset);
 			};
 			
 			var lifespanOnEnd = function(){
-				// remove the sparkle
+				// remove the sparkles... will this crash?!
+				sparkle.remove();
 			};
 			
 			sparkle.lifespan.onUpdate(lifespanUpdate);
 			sparkle.lifespan.onEnd(lifespanOnEnd);
+			sparkle.lifespans.push(sparkle.lifespan);
 		};
 
         var Sparkle = UParticle.extend({
 
-            init : function(universe) {
+            init : function(universe, parent) {
                 this._super(universe);
 				this.scale = .7;
 				this.baseOpacity = .2;
-				this.maxOpacity = 1 + baseOpacity;
+				this.maxOpacity = 1 + this.baseOpacity;
                 this.opacityOffset = 0;
+				if(parent !== undefined){
+                	this.parent = parent;
+                }
+				
+				this.type = "sparkle";
+				
+				startLifespan(this);
 				
 				stellarGame.statistics.numberofSparkles++;
             },
@@ -42,7 +52,7 @@ define(["modules/models/vector", "uparticle"], function(Vector, UParticle) {
             drawBackground : function(g, options) {
 				this.idColor.fill(g, -.8, .5);
                 g.noStroke();
-                g.ellipse(0, 0, this.radius, this.radius);
+                //g.ellipse(0, 0, this.radius, this.radius);
 
             },
 

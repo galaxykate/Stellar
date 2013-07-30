@@ -48,7 +48,16 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             },
 
             remove : function() {
-                this.deleted = true;
+            	// only run delete code ONCE.
+            	if(this.deleted === undefined || this.deleted === false){
+	                this.deleted = true;
+	                
+	                // update the parents holding this object
+	                if(this.parent !== undefined){
+	                	this.parent.handleDeleteOf(this);
+	                	console.log("I AM DELETED");
+	                }
+                }
             },
 
             debugOutput : function(d) {
@@ -121,6 +130,8 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 //this.elements.setTotalMass(); // this is set by elements.siphon()
                 if(this.elements.totalMass === 0){
                 	this.remove();
+                	// removal of this happence twice for some reason. Not sure why!
+                	//console.log("CALLING THIS.REMOVE");
                	}
 
             },

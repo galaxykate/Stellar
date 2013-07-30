@@ -56,13 +56,13 @@ define(["inheritance"], function(Inheritance) {
             start : function(){
             	this.startTime = stellarGame.time.universeTime;
             	this.duration = 0;
-            	console.log("... " + this.startTime + ", " + this.lifespan);
+            	//console.log("... " + this.startTime + ", " + this.lifespan);
             	this.proposedEndTime = this.startTime + this.lifespan;
             	
             	if(this.onStartFunction !== undefined){
             		this.onStartFunction();
             	} else {
-            		console.log("notice (lifeSpan): custom onStartFunction not set");
+            		//console.log("notice (lifeSpan): custom onStartFunction not set");
             	}
             	
             	this.started = true;
@@ -82,6 +82,7 @@ define(["inheritance"], function(Inheritance) {
 	            	this.figuredPctCompleted = this.duration/this.lifespan;
 	            	
 	            	//utilities.debugOutput("lifespan " + this.idNumber + " updating...! " + utilities.roundNumber(this.duration) + ", " + utilities.roundNumber(this.figuredPctCompleted*100, 0) + "%");
+	            	
 	            	// If we have passed any thresholds for specific pct progress and not yet triggered it, TRIGGER IT!
 	            	for(var i = 0; i < this.onUpdatePcts.length; i++){
 	            		if(this.onUpdatePcts[i].percent <= this.figuredPctCompleted && this.onUpdatePcts[i].triggered === false){
@@ -93,13 +94,13 @@ define(["inheritance"], function(Inheritance) {
 	            	if(this.onUpdateFunction !== undefined){
 	            		this.onUpdateFunction();
 	            	} else {
-	            		console.log("notice (lifeSpan): custom onUpdateFunction not set");
+	            		//console.log("notice (lifeSpan): custom onUpdateFunction not set");
 	            	}
 	            	
 					if(this.figuredPctCompleted >= 1){
 						// If we have run the course of our duration, FINISH IT!
-						console.log("notice (lifeSpan): finishing lifespan");
-						console.log(this);
+						//console.log("notice (lifeSpan): finishing lifespan");
+						//console.log(this);
 						this.end();
 					}
             	}
@@ -111,7 +112,7 @@ define(["inheritance"], function(Inheritance) {
             	if(this.onEndFunction !== undefined){
             		this.onEndFunction();
             	} else {
-            		console.log("notice (lifeSpan): custom onEndFunction not set");
+            		//console.log("notice (lifeSpan): custom onEndFunction not set");
             	}
             	
             	// If we have passed any thresholds for specific pct progress and not yet triggered it, ERROR!
@@ -131,7 +132,7 @@ define(["inheritance"], function(Inheritance) {
                 	this.onUpdatePcts[i].triggered = false;
             	}
                 
-                console.log("~~~ lifespan " + this.idNumber + " restarted ~~~");
+                //console.log("~~~ lifespan " + this.idNumber + " restarted ~~~");
             }
 
 

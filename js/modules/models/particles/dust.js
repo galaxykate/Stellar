@@ -11,11 +11,15 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "up
         //  Extend the star
         var Dust = UParticle.extend({
 
-            init : function(universe) {
+            init : function(universe, parent) {
 
                 this._super(universe);
                 this.siphonable = true;
+                if(parent !== undefined){
+                	this.parent = parent;
+                }
 				stellarGame.statistics.numberOfDust++;
+				this.type = "dust";
             },
 
             drawBackground : function(g, options) {

@@ -133,10 +133,10 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
                 var obj;
 
-                if (Math.random() > .1) {
+                if (Math.random() > .9) {
                     //console.log("1");
                     obj = new particleTypes.Sparkle();
-                } else if (Math.random() > .5) {
+                } else if (Math.random() > .1) {
                     //console.log("1");
                     obj = new particleTypes.Trailhead();
                 } else if (Math.random() > .5) {
