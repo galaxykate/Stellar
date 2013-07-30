@@ -30,20 +30,10 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
                 return this.currentPosition.getOffsetTo(p);
             },
 
-            currentUniversePosition : new Vector(0, 0),
+            currentPlanePosition : new Vector(0, 0),
             currentPosition : new Vector(0, 0),
             center : new Vector(0, 0),
             overObjects : [],
-
-            toWorldPosition : function(p) {
-                return universeView.toWorldPosition(p);
-
-            },
-
-            transformScreenToUniverse : function(p) {
-                return universeView.transformScreenToUniverse(p);
-
-            },
 
             pressed : false,
         };
@@ -63,9 +53,8 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
 
                 // Find the offset since the last movement
                 touch.lastOffset.setTo(p.x + touch.currentPosition.x, p.y + touch.currentPosition.y);
-                touch.currentPosition.setTo(p.x - w / 2, p.y - h / 2);
-                touch.currentUniversePosition.setTo(touch.currentPosition);
-                touch.transformScreenToUniverse(touch.currentUniversePosition);
+                touch.currentPosition.setTo(p.x - w / 2, -p.y +  h / 2);
+                universeView.projectToPlanePosition(touch.currentPosition, touch.currentPlanePosition);
 
                 touch.historyIndex = (touch.historyIndex + 1) % maxHistory;
                 touch.history[touch.historyIndex] = touch.currentPosition.clone();
@@ -181,31 +170,46 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
 
         var addUI = function() {
 
+            var zoomDefault = .2;
+            function setZoom(value) {
+                var distance = Math.pow(value, 3);
+                universeView.setCamera({
+                    distance : distance,
+                    zoom : value
+                });
+            };
             $("#zoom_slider").slider({
                 orientation : "vertical",
                 range : "min",
                 min : .01,
                 max : 1,
-                value : .2,
+                value : zoomDefault,
                 step : .01,
                 slide : function(event, ui) {
-                    var distance = Math.pow(ui.value, 3);
-                    universeView.setZoom(distance, ui.value);
+                    setZoom(ui.value);
                 }
             });
+            setZoom(zoomDefault);
 
+            var rotationDefault = .2;
             $("#rotation_slider").slider({
                 orientation : "vertical",
                 range : "min",
                 min : .01,
                 max : 7,
-                value : 0,
+                value : rotationDefault,
                 step : .1,
                 slide : function(event, ui) {
 
-                    universeView.setRotation(ui.value);
+                    universeView.setCamera({
+                        rotation : ui.value,
+                    });
                 }
             });
+            universeView.setCamera({
+                rotation : rotationDefault
+            });
+
         }
         //=======================================================
         // Initialize the universe controller

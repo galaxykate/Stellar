@@ -16,8 +16,7 @@ define(["modules/views/universe_view"], function(universeView) {
         initializeUI();
 
         return {
-            // public interface: these attributes are visible in the returned object
-            universeView : universeView,
+        
         };
     })();
 

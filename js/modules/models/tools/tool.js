@@ -90,7 +90,7 @@ define(["modules/models/vector", "uparticle", "kcolor"], function(Vector, UParti
             },
 
             // Draw the cursor for this tool into graphics g, at point p
-            drawCursor : function(g, p) {
+            drawCursor : function(g, p, scale) {
                 var noise = utilities.noiseInstance;
                 g.noFill();
                 this.idColor.stroke(g, .3, 1);
@@ -123,13 +123,17 @@ define(["modules/models/vector", "uparticle", "kcolor"], function(Vector, UParti
                 this.direction.setTo(stellarGame.touch.getOffsetToHistory(5));
                 var d = this.direction.magnitude();
                 //this.direction.mult(-.4);
-                if (d !== 0) {
-                    this.direction.mult(-Math.pow(d, .5) / d);
-                }
 
-                var edgeDistance = stellarGame.touch.currentPosition.magnitude();
-                this.direction.addMultiple(stellarGame.touch.currentPosition, .0002 * edgeDistance);
-                this.direction.y *= -1;
+                if (d === 0 || d === NaN) {
+                    console.log("DIRECTION MAGNITUDE ERROR: " + d);
+                    d = .00001;
+                }
+                this.direction.mult(-Math.pow(d, .5) / d);
+                var d = stellarGame.touch.currentPosition.magnitude();
+                this.direction.addMultiple(stellarGame.touch.currentPosition, .0002 * d);
+
+                //utilities.debugOutput("direction: " + this.direction);
+
                 stellarGame.universe.addScrollingMovement(this.direction);
             },
 

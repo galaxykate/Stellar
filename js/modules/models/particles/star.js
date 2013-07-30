@@ -124,14 +124,17 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.radius = Math.random() * 40 + 20;
 
                 this.initFace();
-                this.temperature = Math.random() * 4000 + 1000;
-                //console.log("star " + this.idNumber + " temp: " + this.temperature);
-                this.burningFuel = true;
 
-                // internal gravity will be a function of mass
-                this.internalGravity
-                // outwardForce will be a function of the reactions
-                this.outwardForce
+				this.temperature = Math.random()*4000 + 1000;
+				//console.log("star " + this.idNumber + " temp: " + this.temperature);
+				this.burningFuel = true;
+				
+				// internal gravity will be a function of mass
+				this.internalGravity;
+				// outwardForce will be a function of the reactions
+				this.outwardForce;
+				
+				this.acceptsDust = true;
             },
 
             initFace : function() {

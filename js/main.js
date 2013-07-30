@@ -26,6 +26,10 @@ var utilities = {
         return v;
     },
 
+    within : function(val, min, max) {
+        return (val >= min) && (val <= max);
+    },
+
     // Inefficient, fix someday
     // the weight is determined by the function getWeight(index, item, list)
     getWeightedRandom : function(array) {
@@ -128,7 +132,8 @@ require.config({
         'tool' : 'modules/models/tools/tool',
         'uparticle' : 'modules/models/particles/uparticle',
         'spring' : 'modules/models/particles/spring',
-        'kcolor' : 'modules/models/kcolor'
+        'kcolor' : 'modules/models/kcolor',
+        'edge' : 'modules/models/edge',
 
     },
     shim : {

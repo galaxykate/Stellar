@@ -4,7 +4,7 @@
 
 // UParticle-inherited class
 
-define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", "particleTypes"], function(Vector, KColor, Tool, ElementSet, particleTypes) {
+define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", "particleTypes", "modules/models/uiManager"], function(Vector, KColor, Tool, ElementSet, particleTypes, uiManager) {
     return (function() {
         var minDustMass = 10;
         //========================================================
@@ -30,16 +30,26 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 var tool = this;
                 // Release all the elements as a dust cloud
 
-                if (touch.overObjects.length > 0) {
+                if (touch.overObjects.length > 0 && touch.overObjects[0].acceptsDust) {
                     tool.elements.transferTo(touch.overObjects[0].elements, 1);
 
                 } else {
                     if (tool.elements.totalMass > minDustMass) {
-                        var dust = new particleTypes.Dust();
                         // Transfer 100% of the elements to the new dust cloud
+                        /*
+                        var dust = new particleTypes.Dust();
                         tool.elements.transferTo(dust.elements, 1);
                         dust.position.setTo(touch.currentUniversePosition);
                         stellarGame.universe.spawn(dust);
+                        */
+                        // Transfer 100% of the elements to the new popup Inventory!
+                        var playerInventory = uiManager.getPlayerInventory();
+                        //console.log(uiManager);
+                        //console.log(playerInventory);
+                        //console.log(playerInventory.contents);
+                        tool.elements.transferTo(playerInventory.contents["playerElements"].elementsHolder.elements, 1);
+                        playerInventory.contents["playerElements"].elementsHolder.elements.updateAllElementsInDiv();
+
                     }
                 }
             },
@@ -55,23 +65,26 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
                 $.each(touch.overObjects, function(index, obj) {
                     if (obj.siphonable)
-                    tool.elements.siphon(obj.elements, 1);
+                        tool.elements.siphon(obj.elements, 1);
 
                 });
 
             },
-            drawCursor : function(g, p) {
+            drawCursor : function(g, p, scale) {
+
                 var t = stellarGame.time.universeTime;
+
+                g.pushMatrix();
+                g.translate(p.x, p.y);
+                g.scale(scale);
 
                 g.strokeWeight(2);
                 g.stroke(1, 0, 1, .8);
                 g.fill(1, 0, 1, .4);
-                g.ellipse(p.x, p.y, 10, 10);
+                g.ellipse(0, 0, 10, 10);
 
-                g.pushMatrix();
                 this.drawDirection(g, p);
 
-                g.translate(p.x, p.y);
                 g.fill(1, 0, 1);
                 g.text(this.elements.totalMass, 5, 15);
 

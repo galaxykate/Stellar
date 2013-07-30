@@ -117,6 +117,18 @@ define(["three"], function(THREE) {
 
             //===========================================================
             //===========================================================
+            // Complex geometry
+
+            dot : function(v) {
+                return v.x * this.x + v.y * this.y + v.z * this.z;
+            },
+
+            getAngleTo : function(v) {
+                return Math.acos(this.dot(v) / (this.magnitude() * v.magnitude()));
+            },
+
+            //===========================================================
+            //===========================================================
             // Add and sub and mult and div functions
 
             add : function(v) {
@@ -143,7 +155,6 @@ define(["three"], function(THREE) {
             getOffsetTo : function(v) {
                 return new Vector(v.x - this.x, v.y - this.y, v.z - this.z);
             },
-
             getAngle : function() {
                 return Math.atan2(this.y, this.x);
             },
@@ -198,7 +209,7 @@ define(["three"], function(THREE) {
             //===========================================================
 
             toString : function() {
-                return "(" + this.x.toFixed(2) + ", " + this.y.toFixed(2) + ", " + this.z.toFixed(2) + ")";
+                return "(" + this.x.toFixed(0) + ", " + this.y.toFixed(0) + ", " + this.z.toFixed(0) + ")";
             },
         };
 

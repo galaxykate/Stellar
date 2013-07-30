@@ -92,7 +92,7 @@ body {
 	z-index: 25;
 	position: absolute;
 	top: 10px;
-	right: 10px;
+	right: 5px;
 	width: 8px;
 	height: 100px;
 	background-color: rgba(160, 170, 250, 1);

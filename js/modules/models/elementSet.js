@@ -310,6 +310,72 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 
             }
         };
+        
+        // ===============================================================
+        // ==================== View Stuff ========================
+        // ===============================================================
+        
+        ElementSet.prototype.addAllElementsToADiv = function(parentID){
+        	//$(parentID)
+        	this.parentIDFromUI = parentID;
+        	for(var i = 0; i < activeElements.length; i++) {
+        		//if(this.elementQuantity[i] > 0){
+        			this.createSpanForElement(parentID, activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i]);
+        		//}
+        	}
+        };
+        
+        // Only call once all elements have been added to the parent div!
+        ElementSet.prototype.updateAllElementsInDiv = function(){
+        	
+        	for(var i = 0; i < activeElements.length; i++) {
+        		this.updateSpanForElement(activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i]);
+        	}
+        };
+        
+        ElementSet.prototype.createSpanForElement = function(parentID, elementID, elementName, elementAmount){
+        	var suckFrom;
+        	
+    		var options = {
+                html : elementName + ": " + elementAmount + "<br>",
+                "class" : "element",
+                "id" : this.parentIDFromUI + "_" + elementID,
+                
+                // ========= controller stuff ===========
+                mousedown : function() {
+                	console.log("mouse down on div " + this.id);
+                },
+                mouseup : function() {
+                	console.log("mouse up on div " + this.id);
+                },
+            };
+            
+            var span = $('<span/>', options);
+            if(elementAmount <= 0){
+            	span.hide();
+            	//console.log("hiding span " + elementName);
+            }
+            
+            var parent = $("#" + parentID);
+			parent.append(span);
+
+    	};
+    	
+    	ElementSet.prototype.updateSpanForElement = function(elementID, elementName, elementAmount){
+            var span = $("#" + this.parentIDFromUI + "_" + elementID);
+            span.html(elementName + ": " + elementAmount + "<br>");
+            
+            if(elementAmount <= 0){
+            	span.hide();
+            	//console.log("hiding span " + elementName);
+            } else {
+            	span.show();
+            	//console.log("showing span " + elementName);
+            }
+
+    	};
+
+        
 
         return ElementSet;
     })();

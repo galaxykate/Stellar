@@ -6,31 +6,38 @@
 
 define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], function(Vector, KColor, QuadTree, particleTypes) {
 
-    return (function() {
+    var Universe = Class.extend({
+        init : function() {
+            backgroundStars = [];
 
-        var backgroundStars = [];
-        var backgroundLayers = 3;
-        var backgroundStarDensity = 10;
+            this.camera = {
+                angle : new Vector(0, 0, 0),
+                center : new Vector(0, 0, 0),
+                zoom : 1,
+                rotation : -Math.PI,
+                scrollingMovement : new Vector(20, 0, 0),
 
-        var camera;
+            };
 
-        var quadTree;
-
-        var toAdd = [];
+            this.makeBackgroundStars();
+            this.makeUniverseTree();
+            this.generateStartRegion();
+        },
 
         // Make a quad tree for the universe
-        function makeUniverseTree() {
-            console.log("Make universe tree");
+        makeUniverseTree : function() {
             var r = 200;
-            quadTree = new QuadTree();
-            console.log(quadTree);
+            this.quadTree = new QuadTree();
             for (var i = 0; i < 0; i++) {
                 quadTree.insert(new Vector((Math.random() - .5) * 400, (Math.random() - .5) * 400));
             }
-        };
+        },
 
         // These stars loop
-        function makeBackgroundStars() {
+        makeBackgroundStars : function() {
+
+            var backgroundLayers = 3;
+            var backgroundStarDensity = 10;
 
             for (var i = 0; i < backgroundLayers; i++) {
                 backgroundStars[i] = [];
@@ -41,10 +48,9 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
                     backgroundStars[i][j] = [utilities.random(-12000, 12000), utilities.random(-12000, 12000), utilities.random(0, 10), 5, color];
                 }
             }
-            console.log("made background stars");
-        };
+        },
 
-        function drawBackgroundStars(g) {
+        drawBackgroundStars : function(g) {
             var cameraPosition
             g.noStroke();
             for (var i = 0; i < backgroundLayers; i++) {
@@ -91,11 +97,11 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
             g.fill(1, 0, 1, .3);
 
-        };
+        },
 
         // Draw the universes background
         // May be camera-dependent, eventually
-        function draw(g, options) {
+        draw : function(g, options) {
 
             if (options.layer === 'bg') {
                 // drawBackgroundStars(g);
@@ -103,37 +109,36 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
             if (options.layer === 'overlay') {
                 g.pushMatrix();
-                quadTree.drawTree(g, options);
+                this.quadTree.drawTree(g, options);
                 g.popMatrix();
             }
 
-        }
+        },
 
-        function generateStartRegion() {
-            generateRegion({
-                center : camera.center,
-                w : 3000,
-                h : 1500
+        generateStartRegion : function() {
+            this.generateRegion({
+                center : new Vector(0, 0, 0),
+                w : 8000,
+                h : 7500
             });
-        };
+        },
 
-        function generateOffscreen() {
+        generateOffscreen : function() {
 
-        }
+        },
 
-        function generateRegion(region) {
+        generateRegion : function(region) {
 
-            console.log("GENERATE REGION");
             // Pick some random locations in the region
             var density = .009;
             var count = Math.ceil(region.w * region.h * density * density);
-            console.log(count);
             var w2 = region.w / 2;
             var h2 = region.h / 2;
             var p = new Vector();
 
             var particles = [];
             for (var i = 0; i < count; i++) {
+
                 p.setTo(utilities.random(-w2, w2) + region.center.x, utilities.random(-h2, h2) + region.center.y);
 
                 var obj = new particleTypes.Star();
@@ -142,7 +147,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
                 obj.position.setTo(p);
 
-                spawn(obj);
+                this.spawn(obj);
             }
 
             /*
@@ -162,24 +167,25 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
              }
              */
 
-        }
+        },
 
-        function spawn(object) {
-            toAdd.push(object);
-            quadTree.insert(object);
-        }
+        spawn : function(object) {
+            this.quadTree.insert(object);
+        },
 
-        function update(time, activeObjects) {
+        update : function(time, activeObjects) {
             stellarGame.time.universeTime = time.total;
 
             var theta = 10 * Math.sin(.01 * time.total);
-            camera.center.addMultiple(camera.scrollingMovement, time.ellapsed);
-            camera.scrollingMovement.mult(.98);
+            this.camera.center.addMultiple(this.camera.scrollingMovement, time.ellapsed);
+            this.camera.scrollingMovement.mult(.98);
+
             utilities.debugOutput("LastAction:" + stellarGame.touch.lastAction);
             utilities.debugOutput(stellarGame.touch.lastActionOutput);
 
-            utilities.debugOutput("Camera center: " + camera.center);
-            utilities.debugOutput("Camera zoom: " + camera.zoom);
+            utilities.debugOutput("Camera center: " + this.camera.center);
+            utilities.debugOutput("Camera zoom: " + this.camera.zoom);
+
             utilities.debugOutput("Current tool: " + stellarGame.touch.activeTool);
 
             // begin the update on all active objects
@@ -207,51 +213,10 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
             // Verify that objects are in the correct quadrant
             // Remove objects that should be removed
-            quadTree.cleanup();
-        };
+            this.quadTree.cleanup();
+        },
+    });
 
-        function getQuadrantsInRegion(region, quads, g) {
-            return quadTree.getQuadrantsInRegion(region, quads, g);
-        };
-
-        function init() {
-            console.log("INIT UNIVERSE");
-
-            camera = {
-                angle : new Vector(0, 0, 0),
-                center : new Vector(0, 0, 0),
-                zoom : 1,
-                rotation: -Math.PI,
-                scrollingMovement : new Vector(20, 0, 0),
-
-            };
-
-            makeBackgroundStars();
-            makeUniverseTree();
-            generateStartRegion();
-        };
-
-        function getCamera() {
-            console.log(camera);
-            return camera;
-        }
-
-        function addScrollingMovement(v) {
-            camera.scrollingMovement.addMultiple(v, 1);
-
-        }
-
-        return {
-            getQuadrantsInRegion : getQuadrantsInRegion,
-            draw : draw,
-            spawn : spawn,
-            update : update,
-            getCamera : getCamera,
-
-            addScrollingMovement : addScrollingMovement,
-            init : init,
-        };
-
-    })();
+    return Universe;
 
 });

@@ -4,72 +4,69 @@
 
 // UParticle-inherited class
 
-define(["inheritance", "modules/models/vector", "modules/models/popup"], function(Tnheritance, Vector, PopupModule) {
+define(["inheritance"], function(Inheritance) {
     return (function() {
+    	var divIDCount = 0;
 
-        var Popup = Class.extend({
+        var PopupView = Class.extend({
 
-            init : function() {
-				console.log("Init a popup_view!!!");
+            init : function(parentString) {
+            	this.divID = "popupdiv_" + divIDCount;
+            	divIDCount++;
+            	
+				//console.log("Init a popup_view!!!");
+				this.parentStr = parentString;
+				// Access parent via $("#universe") er $(this.parentStr)
+            },
+            
+            
+            // Do this after all the controls and states have been set
+            appendPopupDiv : function() {
+            	//console.log(this.div);
+            	$(this.parentStr).append(this.div);
+            	//console.log("appended div " + this.divID + " to: " + this.parentStr);
+            },
+            
+            removePopupDiv : function() {
+            	$(this.parentStr).remove("#" + this.divID);
+            	//console.log("removed div " + this.divID + " from: " + this.parentStr);
             },
 
-			createPopupDiv : function(parent, x, y, wid, hei, hoverWid, hoverHei) {
-				this.xpos = x;
-				this.ypos = y;
-				this.defaultWidth = wid;
-				this.defaultHeight = hei;
-				this.hoverWidth = hoverWid;
-				this.hoverHeight = hoverHei;
-				this.expanded = false;
+			createPopupDiv : function(x, y, wid, hei, opa) {
 				
-                this.popupdiv = $('<div/>', {
+				//this.removePopupDiv();
+				
+                this.options = {
                     html : "Pop Up<br>",
                     "class" : "popup",
+                    "id" : this.divID,
                     top: x,
                     left: y,
                     width: wid,
                     height: hei,
-                    // ---------------------------------------------
-                    // Control stuff
-                    mousedown: function() {
-                    	console.log("mousedown on popupdiv"); 
-                    	$(this).width(hoverWid);
-                    	$(this).height(hoverHei);
-                    },
-                    mouseleave: function() {
-                    	console.log("mouseleave on popupdiv"); 
-                    	$(this).width(wid);
-                    	$(this).height(hei);
-                    }
-
-                    // ---------------------------------------------
-                });
+                    opacity: opa
+                };
                 
-                parent.append(this.popupdiv);
+				this.div = $('<div/>', this.options);
+				
+				this.appendPopupDiv();
 
-                // add all the buttons
-                /*
-                $.each(this.tools, function(index, tool) {
-                    palette.append(tool.createPaletteButton(palette));
-
-                });*/
-
-            },
+           	},
             
-            
-            toggleView : function(){
-            	console.log("toggleview on popupdiv"); 
-            	if(this.expanded){
-            		$(this.popupdiv).width(this.defaultWidth);
-            		$(this.popupdiv).height(this.defaultHeight);
-            	} else {
-            		$(this.popupdiv).width(this.hoverWidth);
-            		$(this.popupdiv).height(this.hoverHeight);
-            	}
+            updatePopupDiv : function(x, y, wid, hei, opa) {
+            	//console.log("updating div " + this.divID);
+            	var div = $("#" + this.divID);
+            	
+            	div.css('top', x + 'px');
+            	div.css('left', y + 'px');
+            	div.css('width', wid + 'px');
+            	div.css('height', hei + 'px');
+            	div.css({ opacity: opa });
+            	
             }
         });
 
-        return Popup;
+        return PopupView;
     })();
 
 });

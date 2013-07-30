@@ -6,13 +6,13 @@
 
 define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
     var quadrantCount = 0;
-    var maxLevels = 5;
+    var maxLevels = 4;
     var quadrantOffsets = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
     var quadrantIndices = [[0, 1], [3, 2]];
 
     // Make the star class
     //  Extend the star
-    var maxRadius = 3000;
+    var maxRadius = 5000;
     var minRadius = maxRadius / (Math.pow(2, maxLevels - 1));
     console.log(minRadius);
 
@@ -40,18 +40,20 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
             this.setBounds();
 
             this.children = [];
-            if (this.level < maxLevels) {
-                //this.createChildren();
-            } else {
+            if (this.isLeaf()) {
                 this.contents = [];
+            } else {
             }
 
+        },
+
+        isLeaf : function() {
+            return this.level >= maxLevels;
         },
         createChild : function(quadrant) {
             this.children[quadrant] = new QuadTree(this, quadrant);
 
         },
-
         remove : function(p) {
 
         },
@@ -71,7 +73,6 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
             var q = quadrantIndices[qy][qx];
             return q;
         },
-
         getQuadrant : function(p, depth, createIfNonexistent) {
 
             if (depth === undefined)
@@ -95,7 +96,6 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
                 return undefined;
 
         },
-
         insert : function(obj) {
             var p = obj;
             if (p.x === undefined)
@@ -104,40 +104,6 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
             var quadrant = this.getQuadrant(p, maxLevels, true);
             quadrant.contents.push(obj);
         },
-
-        // Find all the quadrants that are bounded by this region
-        // {center:VECTOR, w: NUM, h:NUM}
-
-        getQuadrantsInRegion : function(region, quads, g) {
-            if (quads === undefined)
-                quads = [];
-
-            if (g !== undefined && this.level === 0) {
-
-            }
-
-            if (this.intersects(region)) {
-
-                if (this.level === maxLevels) {
-                    quads.push(this);
-                    if (g)
-                        this.draw(g, 5);
-                } else {
-
-                    if (this.children !== undefined) {
-                        for (var i = 0; i < 4; i++) {
-                            if (this.children[i] !== undefined) {
-                                this.children[i].getQuadrantsInRegion(region, quads, g);
-                            }
-                        }
-                    }
-                }
-
-            }
-
-            return quads;
-        },
-
         setBounds : function() {
             var radius = this.radius;
 
@@ -148,29 +114,51 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
 
             var border = 6 * this.level;
             this.corners = [new Vector(this.left + border, this.top + border), new Vector(this.right - border, this.top + border), new Vector(this.right - border, this.bottom - border), new Vector(this.left + border, this.bottom - border)];
-
+            this.screenPosCorners = [new Vector(), new Vector(), new Vector(), new Vector()];
+        },
+        containsPoint : function(p) {
+            return (p.x >= this.left && p.x <= this.right) && (p.y >= this.top && p.y <= this.bottom);
         },
 
-        inCameraView : function(camera) {
-            // Get angles to all the corners
+        compileOnscreenQuadrants : function(onScreenQuads, universeView) {
+            utilities.debugOutput(this);
+            if (this.isOnScreen(universeView)) {
+                if (this.isLeaf())
+                    onScreenQuads.push(this);
+                else if (this.children !== undefined) {
+                    $.each(this.children, function(index, child) {
+                        child.compileOnscreenQuadrants(onScreenQuads, universeView);
+                    });
+                }
 
+            }
+        },
+
+        isOnScreen : function(universeView) {
+
+            // If any of the corners are inside the screenQuad,
+            //  or any of the screenQuad corners are within this
+            // then they overlap.
+
+            // Check whether this quad's corners are in the screenQuad
+            // Convert all these corners to screen position, and if any are on screen, return true
+            var screenPos = new Vector();
             for (var i = 0; i < 4; i++) {
-                // determine whether this corner is within the sweep of the camera
-                var corner = this.corners[i];
-                var offset = camera.orbitPosition.getOffsetTo(corner);
-                var angle = offset.getAngle() - camera.orbitTheta;
-
-                angle = (angle % (2 * Math.PI) + 10 * Math.PI) % (2 * Math.PI);
-                this.angle = angle;
-                var sweep = .3;
-                var centerAngle = Math.PI;
-                if (angle < centerAngle + sweep && angle > centerAngle - sweep)
+                universeView.convertToScreenPosition(this.corners[i], screenPos);
+                if (universeView.isOnScreen(screenPos))
                     return true;
             }
 
+            // Check whether any of the screen quad's (planar) corners are in here
+            // If so, return true
+            for (var i = 0; i < 4; i++) {
+                var corner = universeView.camera.screenQuadCorners[i];
+                if (this.containsPoint(corner))
+                    return true;
+            }
+            utilities.debugOutput("Not on screen");
             return false;
         },
-
         intersects : function(region) {
 
             return !(this.left > region.right || this.right < region.left || this.top > region.bottom || this.bottom < region.top);
@@ -184,7 +172,7 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
 
             var h = (this.level * .231 + .1) % 1;
             g.strokeWeight(1);
-            if (this.inCameraView(options.camera)) {
+            if (this.isOnScreen(options.universeView)) {
                 g.strokeWeight(4);
 
             }
@@ -192,11 +180,10 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
             g.stroke(h, 1, 1);
             g.noFill();
             var r = this.radius - this.level * .2;
-            options.drawShape(g, this.corners);
+            options.universeView.drawShape(g, this.corners);
             //  options.drawText(g, this.angle, this.center, 0, 0);
 
         },
-
         drawTree : function(g, options) {
             var h = (this.level * .231 + .1) % 1;
             var r = this.radius - this.level * 2;
@@ -222,7 +209,6 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
                  */
             }
         },
-
         cleanup : function() {
             if (this.level === maxLevels) {
 
@@ -241,11 +227,9 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
                 }
             }
         },
-
         update : function(time) {
 
         },
-
         toString : function() {
             return "q" + this.idNumber + " " + this.quadrant + " " + this.center + " (lvl " + this.level + ")";
         },

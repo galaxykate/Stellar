@@ -23,10 +23,8 @@ define(toolFiles, function() {
         var length = typeConstructors.length;
         for (var i = 0; i < length; i++) {
             var name = toolKeyNames[i];
-            console.log(name);
             toolTypes[name] = typeConstructors[i];
         }
-        console.log(toolTypes);
         return toolTypes;
     })();
 

@@ -16,8 +16,6 @@ var particleKeyNames = particleTypeNames.map(function(name, index) {
 particleFiles.push("uparticle");
 particleKeyNames.push("UParticle");
 
-console.log(particleFiles);
-console.log(particleKeyNames);
 define(particleFiles, function() {
     var typeConstructors = arguments;
     return (function() {
@@ -27,11 +25,10 @@ define(particleFiles, function() {
         var length = typeConstructors.length;
         for (var i = 0; i < length; i++) {
             var name = particleKeyNames[i];
-            console.log(name);
+        
             particleTypes[name] = typeConstructors[i];
         }
 
-        console.log(particleTypes);
         return particleTypes;
     })();
 
