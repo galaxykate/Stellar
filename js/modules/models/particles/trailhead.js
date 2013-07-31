@@ -6,13 +6,15 @@
 
 define(["modules/models/vector", "uparticle", particleTypePath + "dust", particleTypePath + 'sparkle'], function(Vector, UParticle, Dust, Sparkle) {
     return (function() {
-    	
-    	var SPARKLEEXPLOSIONVELOCITY = 600;
+
     	var explode = function(trailhead){
-    		var numOfSparkles = Math.random() * 10 + 5;
+    		var numOfSparkles = Math.random() * 10 + 10;
     		trailhead.mySparkleCount = Math.floor(numOfSparkles);
+    		
     		for(var i = 0; i < numOfSparkles; i++){
     			var newSparkle = new Sparkle(stellarGame.universe, trailhead);
+    			var SPARKLEEXPLOSIONVELOCITY = Math.random() * 1200 + 300;
+    			newSparkle.drag = .9999;
     			newSparkle.position = trailhead.position.clone();
         		
         		// give it a velocity directly away from the explosion

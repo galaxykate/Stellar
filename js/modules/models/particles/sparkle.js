@@ -10,7 +10,7 @@ define(["modules/models/vector", "uparticle", 'lifespan'], function(Vector, UPar
     	var startLifespan = function(sparkle){
 			
 			var sparkleMaxOpacity = sparkle.maxOpacity;
-			var duration = (Math.random() * 2) + .5; // duration is in seconds
+			var duration = (Math.random() * 2) + .2; // duration is in seconds
 			
 			sparkle.lifespan = new Lifespan(duration);
 			
@@ -34,7 +34,7 @@ define(["modules/models/vector", "uparticle", 'lifespan'], function(Vector, UPar
 
             init : function(universe, parent) {
                 this._super(universe);
-				this.scale = .7;
+				this.scale = .5;
 				this.baseOpacity = .2;
 				this.maxOpacity = 1 + this.baseOpacity;
                 this.opacityOffset = 0;
