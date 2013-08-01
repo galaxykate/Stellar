@@ -31,7 +31,8 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 // Release all the elements as a dust cloud
 
                 if (touch.overObjects.length > 0 && touch.overObjects[0].acceptsDust) {
-                    tool.elements.transferTo(touch.overObjects[0].elements, 1);
+                	// All objects that "acceptDust" must have a .feedDust() public function
+                	touch.overObjects[0].feedDust(touch, tool);
 
                 } else {
                     if (tool.elements.totalMass > minDustMass) {

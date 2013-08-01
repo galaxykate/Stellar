@@ -80,15 +80,11 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         	star.state = states[1];
         	
         	var elemsToShed = star.elements.calcShedElements(1, .5, .5);
-        	//console.log("star " + star.idNumber + " elements: " + star.elements.elementQuantity);
-        	//console.log("star " + star.idNumber + " toShed: " + elemsToShed);
         	var numDustToSpawn = Math.ceil(Math.random() * 5) + 2;
-        	//console.log("star " + star.idNumber + " numDustToSpawn: " + numDustToSpawn);
         	for(var j = 0; j < elemsToShed.length; j++){
         		elemsToShed[j] = elemsToShed[j]/numDustToSpawn;
         	}
 
-        	//star.radius = star.radius * .5; // shrink the star by half. Because.
         	
         	for(var i = 0; i < numDustToSpawn; i++) {
         		// spawn a new dust
@@ -97,16 +93,9 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         		newDustObj.elements.clearAllElements();
         		star.elements.transferAmountsTo(newDustObj.elements, elemsToShed);
         		// place it at the center of the star
-        		
         		newDustObj.position = star.position.clone();
-        		
         		// give it a velocity directly away from the star
         		newDustObj.velocity.setTo(Math.random() * DUSTEXPLOSIONVELOCITY - (DUSTEXPLOSIONVELOCITY/2), Math.random()*DUSTEXPLOSIONVELOCITY - (DUSTEXPLOSIONVELOCITY/2));
-        		//console.log("new Dust(star) pos, vel: " + newDustObj.position + ", " + newDustObj.velocity);
-        		// optionally adjust drag?
-        		//newDustObj.DEBUGPOSITION = true;
-        		//newDustObj.DEBUGVELOCITY = true;
-        		
         		stellarGame.universe.spawn(newDustObj);
         	}
         	
@@ -114,51 +103,50 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
         };
 		
-		var startLifeSpan = function(star){
+		// Dust spirals into the star, star grows into its full size, 
+		// dust shrinks to nothing, transfers all its elements, and dies
+		var startFeedLifeSpan = function(star, dust){
 			star.lifespan = new Lifespan(5);
 			var startStarRadius = star.radius;
+			var sizeToAdd = calcSizeOfElements(dust.elements.totalMass + star.elements.totalMass) - startStarRadius;
+			
 			var lifespanUpdate = function(){
-				var startStarRadius = calcStarSizeOfElements(star);
-				var maxWiggleRoom = startStarRadius * .5;
-				if(star.lifespan.figuredPctCompleted < .5){
-					// Grow up to wiggleRoom
-					star.radiusModifier = (star.lifespan.figuredPctCompleted*2) * maxWiggleRoom; 
-					//utilities.debugOutput("setting star radius (up): " + utilities.roundNumber(star.radiusModifier));
-				} else {
-					// shrink back down to starBaseRadius
-					star.radiusModifier = maxWiggleRoom + ((1 - (star.lifespan.figuredPctCompleted*2)) * maxWiggleRoom);
-					//utilities.debugOutput("setting star radius (down): " + utilities.roundNumber(star.radiusModifier));
-				}
+				star.radius = startStarRadius + (star.lifespan.figuredPctCompleted * sizeToAdd);
+				utilities.debugOutput("star radius modifier: " + star.radiusModifier);
 			};
 			
 			var lifespanOnEnd = function(){
-				
-				// Remove the star lifespan. May skip if this is too annoying.
-				//var index = star.lifespans.indexOf(star.lifespan);
-				//star.lifespans.splice(index, 1);
-				
-				//star.startLifeSpan(star);
-				//console.log("trying to restart life span?");
-				star.lifespan.restart();
+				console.log("radius at startEND: " + calcStarSizeOfElements(star) + " +modifier " + star.radiusModifier);
+				// transfering all elements should make the dust disappear, the star set to its final size
+				dust.elements.transferTo(star.elements, 1);
+				console.log("star should have all dust");
+				console.log("radius at END: " + calcStarSizeOfElements(star) + " +modifier " + star.radiusModifier);
 			};
 			
 			var lifespanOnStart = function(){
-				//star.lifespans.push(star.lifespan);
-				//console.log("starting lifespan!");
+				console.log("radius at start: " + startStarRadius + " modifier " + star.radiusModifier);
+				console.log("calced size of star: " + calcSizeOfElements(star.elements.totalMass));
+				console.log("sizeToAdd: " + sizeToAdd);
+				
 			};
 			
 			star.lifespan.onUpdate(lifespanUpdate);
-			// Repeating loop?! Hope it doesn't break!
 			star.lifespan.onEnd(lifespanOnEnd);
 			star.lifespan.onStart(lifespanOnStart);
 			
 			star.lifespans.push(star.lifespan);
-			
+
 		};
 		
-		var calcStarSizeOfElements = function(star){
-			return Math.pow(star.elements.totalMass, .5);
+		
+		
+		var calcStarSizeOfElements = function(elementHolder){
+			return calcSizeOfElements(elementHolder.elements.totalMass);
 		};
+		
+		var calcSizeOfElements = function(amount) {
+			return Math.pow(amount, .5);
+		}
         
 
         // Make the star class
@@ -168,7 +156,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             init : function(universe) {
                 this._super(universe);
                 this.state = states[0]; // turning off random states
-                this.radius = Math.random() * 40 + 20;
+                this.radius = calcStarSizeOfElements(this);
 
                 this.initFace();
 				this.temperature = Math.random()*4000 + 1000;
@@ -181,8 +169,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 				this.outwardForce;
 				
 				this.acceptsDust = true;
-				
-				startLifeSpan(this);
+
 				this.radiusModifier = 0;
 				
 				stellarGame.statistics.numberOfStars++;
@@ -201,7 +188,15 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             drawMain : function(g, options) {
                 // Do all the other drawing
                 if (stellarGame.drawStars) {
-                    this._super(g, options);
+                    //this._super(g, options);
+                    this.idColor.fill(g, (Math.sin(stellarGame.time.universeTime + this.temperature))/4 - .25);
+	                g.noStroke();
+	                if (this.deleted) {
+	                    g.fill(.2, 0, .4);
+	                    g.stroke(1, 0, 1, .7);
+	                }
+	
+	                g.ellipse(0, 0, this.radius, this.radius);
 
                     if (stellarGame.drawFaces)
                         this.face.draw(g);
@@ -222,16 +217,20 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 updateDustBurning(this);
                 
                 //utilities.debugOutput("radius: " + this.radius);
-                this.radius = calcStarSizeOfElements(this) + this.radiusModifier;
+                //this.radius = calcStarSizeOfElements(this) + this.radiusModifier;
                 
                 this.face.update(time, this.radius, this.radius);
-                
-                
-                /*
-                if(this.temperature === -10000 && this.burningFuel){
-               		//this.remove();
-               		triggerSupernova(this);
-               	}*/
+            },
+            
+            feedDust : function(touch, tool) {
+            	var newDustObj = new Dust();
+            	newDustObj.elements.clearAllElements();
+            	newDustObj.position = new Vector(touch.currentPosition.x, touch.currentPosition.y);
+            	console.log("New dust made at " + newDustObj.position);
+                tool.elements.transferTo(newDustObj.elements, 1);
+                stellarGame.universe.spawn(newDustObj);
+            	
+            	startFeedLifeSpan(this, newDustObj);
             }
         });
 
