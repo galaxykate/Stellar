@@ -36,18 +36,10 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
                 } else {
                     if (tool.elements.totalMass > minDustMass) {
-                    	// Transfer 100% of the elements to the new dust cloud
-                    	/*
-                        var dust = new particleTypes.Dust();
-                        tool.elements.transferTo(dust.elements, 1);
-                        dust.position.setTo(touch.currentUniversePosition);
-                        stellarGame.universe.spawn(dust);
-                        */
+
                        	// Transfer 100% of the elements to the new popup Inventory!
                        	var playerInventory = uiManager.getPlayerInventory();
-                       	//console.log(uiManager);
-                       	//console.log(playerInventory);
-                       	//console.log(playerInventory.contents);
+
                        	tool.elements.transferTo(playerInventory.contents["playerElements"].elementsHolder.elements, 1);
                        	playerInventory.contents["playerElements"].elementsHolder.elements.updateAllElementsInDiv();
                        	

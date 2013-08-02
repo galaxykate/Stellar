@@ -85,7 +85,6 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         		elemsToShed[j] = elemsToShed[j]/numDustToSpawn;
         	}
 
-        	
         	for(var i = 0; i < numDustToSpawn; i++) {
         		// spawn a new dust
         		var newDustObj = new Dust();
@@ -100,41 +99,73 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         	}
         	
         	star.burningFuel = false;
+        	startBurnLifespan(star, star.elements.totalMass);
 
         };
 		
 		// Dust spirals into the star, star grows into its full size, 
 		// dust shrinks to nothing, transfers all its elements, and dies
-		var startFeedLifeSpan = function(star, dust){
-			star.lifespan = new Lifespan(5);
+		var startFeedLifespan = function(star, dust){
+			var lifespan = new Lifespan(2);
 			var startStarRadius = star.radius;
-			var sizeToAdd = calcSizeOfElements(dust.elements.totalMass + star.elements.totalMass) - startStarRadius;
+			var sizeToAdd = calcSizeOfElements(dust.elements.totalMass);
+			var radiusToDust = star.position.getDistanceTo(dust.position);
+			var angleToDust = star.position.getAngleTo(dust.position);
+			console.log("DISTANCE/ANGLE: " + radiusToDust + ", " + angleToDust);
 			
 			var lifespanUpdate = function(){
-				star.radius = startStarRadius + (star.lifespan.figuredPctCompleted * sizeToAdd);
-				utilities.debugOutput("star radius modifier: " + star.radiusModifier);
+				star.radius = startStarRadius + (lifespan.figuredPctCompleted * sizeToAdd);
+				utilities.debugOutput("star radius: " + star.radius);
 			};
 			
 			var lifespanOnEnd = function(){
-				console.log("radius at startEND: " + calcStarSizeOfElements(star) + " +modifier " + star.radiusModifier);
+				console.log("radius at startEND: " + star.radius);
 				// transfering all elements should make the dust disappear, the star set to its final size
 				dust.elements.transferTo(star.elements, 1);
 				console.log("star should have all dust");
-				console.log("radius at END: " + calcStarSizeOfElements(star) + " +modifier " + star.radiusModifier);
+				console.log("radius at END: " + star.radius);
 			};
 			
 			var lifespanOnStart = function(){
-				console.log("radius at start: " + startStarRadius + " modifier " + star.radiusModifier);
-				console.log("calced size of star: " + calcSizeOfElements(star.elements.totalMass));
+				console.log("radius at start: " + startStarRadius);
 				console.log("sizeToAdd: " + sizeToAdd);
 				
 			};
 			
-			star.lifespan.onUpdate(lifespanUpdate);
-			star.lifespan.onEnd(lifespanOnEnd);
-			star.lifespan.onStart(lifespanOnStart);
+			lifespan.onUpdate(lifespanUpdate);
+			lifespan.onEnd(lifespanOnEnd);
+			lifespan.onStart(lifespanOnStart);
 			
-			star.lifespans.push(star.lifespan);
+			star.lifespans.push(lifespan);
+
+		};
+		
+		// Very quick size down as the dust is expelled
+		var startBurnLifespan = function(star, totalMass){
+			var lifespan = new Lifespan(1);
+			var startStarRadius = star.radius;
+			var sizeToRemove = calcSizeOfElements(totalMass);
+			
+			var lifespanUpdate = function(){
+				star.radius = startStarRadius - (lifespan.figuredPctCompleted * sizeToRemove);
+				utilities.debugOutput("star radius: " + star.radius);
+			};
+			
+			var lifespanOnEnd = function(){
+				console.log("radius at END: " + star.radius);
+			};
+			
+			var lifespanOnStart = function(){
+				console.log("radius at start: " + startStarRadius);
+				console.log("sizeToAdd: " + sizeToRemove);
+				
+			};
+			
+			lifespan.onUpdate(lifespanUpdate);
+			lifespan.onEnd(lifespanOnEnd);
+			lifespan.onStart(lifespanOnStart);
+			
+			star.lifespans.push(lifespan);
 
 		};
 		
@@ -225,12 +256,14 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             feedDust : function(touch, tool) {
             	var newDustObj = new Dust();
             	newDustObj.elements.clearAllElements();
-            	newDustObj.position = new Vector(touch.currentPosition.x, touch.currentPosition.y);
-            	console.log("New dust made at " + newDustObj.position);
+            	newDustObj.position = new Vector();
+            	newDustObj.position.setTo(touch.toWorldPosition(touch.currentPosition));
+            	console.log("New dust made at " + newDustObj.position + "+++++++++++++ " + this.position);
+            	
                 tool.elements.transferTo(newDustObj.elements, 1);
                 stellarGame.universe.spawn(newDustObj);
             	
-            	startFeedLifeSpan(this, newDustObj);
+            	startFeedLifespan(this, newDustObj);
             }
         });
 
