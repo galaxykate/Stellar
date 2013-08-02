@@ -9,6 +9,8 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
     return (function() {
 
         // Attach mouse events to the world window
+        var universeView, universe;
+
         var universeDiv = $("#universe_canvas");
         var touch = {
             lastPressed : new Vector(0, 0),
@@ -48,12 +50,15 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
             // Move the primary touch/mouse to this positon
             var touchMove = function(p) {
 
+                universeView.projectToPlanePosition(p, universe.touchCenter.position);
+
                 var w = universeView.dimensions.width;
                 var h = universeView.dimensions.height;
 
                 // Find the offset since the last movement
                 touch.lastOffset.setTo(p.x + touch.currentPosition.x, p.y + touch.currentPosition.y);
-                touch.currentPosition.setTo(p.x - w / 2, -p.y +  h / 2);
+                touch.currentPosition.setTo(p.x - w / 2, -p.y + h / 2);
+              
                 universeView.projectToPlanePosition(touch.currentPosition, touch.currentPlanePosition);
 
                 touch.historyIndex = (touch.historyIndex + 1) % maxHistory;
@@ -133,14 +138,16 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
         };
         //=====
 
-        var universeView;
-
         var setUniverseView = function(view) {
             universeView = view;
             touch.center.setTo(view.dimensions.width / 2, view.dimensions.height / 2);
 
             touch.setoUniversePosition = universeView.setoUniversePosition;
 
+        };
+
+        var setUniverse = function(u) {
+            universe = u;
         };
 
         var controlUpdateFunction = [];
@@ -227,6 +234,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
             init : init,
             onControl : onControl,
             setUniverseView : setUniverseView,
+            setUniverse : setUniverse,
 
         };
     })();

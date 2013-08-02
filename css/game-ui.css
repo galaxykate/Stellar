@@ -137,3 +137,24 @@ body {
 	background-color: rgba(160, 170, 190, 1);
 	box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
 }
+<<<<<<< HEAD
+=======
+
+.closeButton {
+	z-index: 60;
+	position: absolute;
+	padding: 1px;
+	top: 0px;
+	left: 0px;
+	background-color: rgba(225, 50, 50, .6);
+	border-radius: 5px;
+	transition: all 0.22s;
+	overflow: hidden;
+	border: 2px solid rgba(155,25, 25, 1);
+}
+
+.closeButton:hover {
+	background-color: rgba(255, 10, 10, 1);
+	box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+}
+>>>>>>> ee4f449da04fe8b7eb96a4c6261117e8673a04ab

@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(["inheritance", "modules/models/vector", "modules/models/face", "modules/models/elementSet", "uparticle", particleTypePath + "dust"], function(Inheritance, Vector, Face, ElementSet, UParticle, Dust) {
+define(["inheritance", "modules/models/vector", "modules/models/face", "modules/models/elementSet", "uparticle", particleTypePath + "dust", 'lifespan'], function(Inheritance, Vector, Face, ElementSet, UParticle, Dust, Lifespan) {
     return (function() {
 
         var states = [{
@@ -87,30 +87,52 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 elemsToShed[j] = elemsToShed[j] / numDustToSpawn;
             }
 
-            //star.radius = star.radius * .5; // shrink the star by half. Because.
+        };
 
-            for (var i = 0; i < numDustToSpawn; i++) {
-                // spawn a new dust
-                var newDustObj = new Dust();
-                // give it elemsToShed/numDustToSpawn of each element
-                newDustObj.elements.clearAllElements();
-                star.elements.transferAmountsTo(newDustObj.elements, elemsToShed);
-                // place it at the center of the star
+        var startLifeSpan = function(star) {
+            star.lifespan = new Lifespan(5);
+            var startStarRadius = star.radius;
+            var lifespanUpdate = function() {
+                var startStarRadius = calcStarSizeOfElements(star);
+                var maxWiggleRoom = startStarRadius * .5;
+                if (star.lifespan.figuredPctCompleted < .5) {
+                    // Grow up to wiggleRoom
+                    star.radiusModifier = (star.lifespan.figuredPctCompleted * 2) * maxWiggleRoom;
+                    //utilities.debugOutput("setting star radius (up): " + utilities.roundNumber(star.radiusModifier));
+                } else {
+                    // shrink back down to starBaseRadius
+                    star.radiusModifier = maxWiggleRoom + ((1 - (star.lifespan.figuredPctCompleted * 2)) * maxWiggleRoom);
+                    //utilities.debugOutput("setting star radius (down): " + utilities.roundNumber(star.radiusModifier));
+                }
+            };
 
-                newDustObj.position = star.position.clone();
+            var lifespanOnEnd = function() {
 
-                // give it a velocity directly away from the star
-                newDustObj.velocity.setTo(Math.random() * DUSTEXPLOSIONVELOCITY - (DUSTEXPLOSIONVELOCITY / 2), Math.random() * DUSTEXPLOSIONVELOCITY - (DUSTEXPLOSIONVELOCITY / 2));
-                //console.log("new Dust(star) pos, vel: " + newDustObj.position + ", " + newDustObj.velocity);
-                // optionally adjust drag?
-                //newDustObj.DEBUGPOSITION = true;
-                //newDustObj.DEBUGVELOCITY = true;
+                // Remove the star lifespan. May skip if this is too annoying.
+                //var index = star.lifespans.indexOf(star.lifespan);
+                //star.lifespans.splice(index, 1);
 
-                stellarGame.universe.spawn(newDustObj);
-            }
+                //star.startLifeSpan(star);
+                //console.log("trying to restart life span?");
+                star.lifespan.restart();
+            };
 
-            star.burningFuel = false;
+            var lifespanOnStart = function() {
+                //star.lifespans.push(star.lifespan);
+                //console.log("starting lifespan!");
+            };
 
+            star.lifespan.onUpdate(lifespanUpdate);
+            // Repeating loop?! Hope it doesn't break!
+            star.lifespan.onEnd(lifespanOnEnd);
+            star.lifespan.onStart(lifespanOnStart);
+
+            star.lifespans.push(star.lifespan);
+
+        };
+
+        var calcStarSizeOfElements = function(star) {
+            return Math.pow(star.elements.totalMass, .5);
         };
 
         // Make the star class
@@ -125,16 +147,21 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
                 this.initFace();
 
-				this.temperature = Math.random()*4000 + 1000;
-				//console.log("star " + this.idNumber + " temp: " + this.temperature);
-				this.burningFuel = true;
-				
-				// internal gravity will be a function of mass
-				this.internalGravity;
-				// outwardForce will be a function of the reactions
-				this.outwardForce;
-				
-				this.acceptsDust = true;
+                this.temperature = Math.random() * 4000 + 1000;
+                //console.log("star " + this.idNumber + " temp: " + this.temperature);
+                this.burningFuel = true;
+
+                // internal gravity will be a function of mass
+                this.internalGravity
+                // outwardForce will be a function of the reactions
+                this.outwardForce
+
+                this.acceptsDust = true;
+
+                startLifeSpan(this);
+                this.radiusModifier = 0;
+
+                stellarGame.statistics.numberOfStars++;
             },
 
             initFace : function() {
@@ -174,7 +201,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 updateDustBurning(this);
 
                 //utilities.debugOutput("radius: " + this.radius);
-                this.radius = Math.pow(this.elements.totalMass, .5);
+
+                this.radius = calcStarSizeOfElements(this) + this.radiusModifier;
 
                 this.face.update(time, this.radius, this.radius);
 

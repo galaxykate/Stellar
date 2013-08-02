@@ -55,7 +55,8 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
 
         },
         remove : function(p) {
-
+            // Whenever this gets implemented
+            stellarGame.statistics.numItemsInQuadTree--;
         },
         getQuadrantIndex : function(p) {
             // Get the quadrant
@@ -103,6 +104,8 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
 
             var quadrant = this.getQuadrant(p, maxLevels, true);
             quadrant.contents.push(obj);
+
+            stellarGame.statistics.numItemsInQuadTree++;
         },
         setBounds : function() {
             var radius = this.radius;
@@ -121,7 +124,6 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
         },
 
         compileOnscreenQuadrants : function(onScreenQuads, universeView) {
-            utilities.debugOutput(this);
             if (this.isOnScreen(universeView)) {
                 if (this.isLeaf())
                     onScreenQuads.push(this);
@@ -156,7 +158,6 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
                 if (this.containsPoint(corner))
                     return true;
             }
-            utilities.debugOutput("Not on screen");
             return false;
         },
         intersects : function(region) {

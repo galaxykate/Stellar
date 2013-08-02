@@ -5,23 +5,47 @@
 // Its the Universe!
 
 define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], function(Vector, KColor, QuadTree, particleTypes) {
-
+    var backgroundLayers = 3;
+    var backgroundStarDensity = .03;
     var Universe = Class.extend({
         init : function() {
             backgroundStars = [];
 
+            this.touchCenter = new particleTypes.UParticle();
+            this.drawMain = function(g, options) {
+                g.fill(.55, 1, 1);
+                g.noStroke();
+                g.ellipse(0, 0, 50, 50);
+            }
+
             this.camera = {
                 angle : new Vector(0, 0, 0),
-                center : new Vector(0, 0, 0),
+                center : new particleTypes.UParticle(),
                 zoom : 1,
                 rotation : -Math.PI,
-                scrollingMovement : new Vector(20, 0, 0),
+            }
 
+            this.camera.center.drawUntransformed = true;
+            this.camera.center.drawMain = function(g, options) {
+                g.noFill();
+                g.strokeWeight(1);
+                g.stroke(.55, 1, 1);
+                g.ellipse(0, 0, 50, 50);
+
+                var segments = 12;
+                var points = [];
+                for (var i = 0; i < segments; i++) {
+                    points[i] = new Vector(this.position);
+                    points[i].addPolar(30, i * 2 * Math.PI / segments);
+                }
+                options.universeView.drawShape(g, points);
             };
 
             this.makeBackgroundStars();
             this.makeUniverseTree();
             this.generateStartRegion();
+            this.spawn(this.camera.center);
+            this.spawn(this.touchCenter);
         },
 
         // Make a quad tree for the universe
@@ -34,15 +58,13 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
         },
 
         // These stars loop
+
         makeBackgroundStars : function() {
-
-            var backgroundLayers = 3;
-            var backgroundStarDensity = 10;
-
             for (var i = 0; i < backgroundLayers; i++) {
                 backgroundStars[i] = [];
                 var starCount = backgroundStarDensity * (backgroundLayers - i);
-                starCount = 10;
+                stellarGame.statistics.bgStarCount += starCount;
+
                 for (var j = 0; j < starCount; j++) {
                     var color = new KColor(Math.random(), 1, 1);
                     backgroundStars[i][j] = [utilities.random(-12000, 12000), utilities.random(-12000, 12000), utilities.random(0, 10), 5, color];
@@ -51,7 +73,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
         },
 
         drawBackgroundStars : function(g) {
-            var cameraPosition
+
             g.noStroke();
             for (var i = 0; i < backgroundLayers; i++) {
 
@@ -99,6 +121,10 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
         },
 
+        generateOffscreen : function() {
+
+        },
+
         // Draw the universes background
         // May be camera-dependent, eventually
         draw : function(g, options) {
@@ -109,12 +135,38 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
             if (options.layer === 'overlay') {
                 g.pushMatrix();
-                this.quadTree.drawTree(g, options);
+                //this.quadTree.drawTree(g, options);
                 g.popMatrix();
             }
 
         },
 
+        //=======================================================
+        //=======================================================
+        //=======================================================
+        // Updateing
+        update : function(time, activeObjects) {
+            $.each(activeObjects, function(index, obj) {
+                obj.beginUpdate(time);
+            });
+
+            $.each(activeObjects, function(index, obj) {
+                obj.addForces(time);
+            });
+
+            $.each(activeObjects, function(index, obj) {
+                obj.updatePosition(time);
+            });
+
+            $.each(activeObjects, function(index, obj) {
+                obj.finishUpdate(time);
+            });
+        },
+
+        //=======================================================
+        //=======================================================
+        //=======================================================
+        // Generating regions
         generateStartRegion : function() {
             this.generateRegion({
                 center : new Vector(0, 0, 0),
@@ -122,11 +174,6 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
                 h : 7500
             });
         },
-
-        generateOffscreen : function() {
-
-        },
-
         generateRegion : function(region) {
 
             // Pick some random locations in the region
@@ -144,7 +191,6 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
                 var obj = new particleTypes.Star();
 
                 particles.push(obj);
-
                 obj.position.setTo(p);
 
                 this.spawn(obj);
@@ -168,52 +214,23 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
              */
 
         },
-
         spawn : function(object) {
             this.quadTree.insert(object);
         },
+        initStatistics : function() {
+            stellarGame.statistics.numberOfTrails = 0;
+            stellarGame.statistics.numberOfStars = 0;
+            stellarGame.statistics.numberOfCritters = 0;
+            stellarGame.statistics.numberOfDust = 0;
+            stellarGame.statistics.bgStarCount = 0;
+            stellarGame.statistics.numberofSparkles = 0;
+        },
+        getQuadrantsInRegion : function(region, quads, g) {
+            return quadTree.getQuadrantsInRegion(region, quads, g);
+        },
+        addScrollingMovement : function(v) {
+            this.camera.center.velocity.addMultiple(v, 1);
 
-        update : function(time, activeObjects) {
-            stellarGame.time.universeTime = time.total;
-
-            var theta = 10 * Math.sin(.01 * time.total);
-            this.camera.center.addMultiple(this.camera.scrollingMovement, time.ellapsed);
-            this.camera.scrollingMovement.mult(.98);
-
-            utilities.debugOutput("LastAction:" + stellarGame.touch.lastAction);
-            utilities.debugOutput(stellarGame.touch.lastActionOutput);
-
-            utilities.debugOutput("Camera center: " + this.camera.center);
-            utilities.debugOutput("Camera zoom: " + this.camera.zoom);
-
-            utilities.debugOutput("Current tool: " + stellarGame.touch.activeTool);
-
-            // begin the update on all active objects
-            //  Zero out the forces
-
-            $.each(activeObjects, function(index, obj) {
-                obj.beginUpdate(time);
-            });
-
-            //  Add all the spring forces and gravity
-            $.each(activeObjects, function(index, obj) {
-                obj.addForces(time);
-            });
-
-            // Change the velocity and position
-            $.each(activeObjects, function(index, obj) {
-                obj.updatePosition(time);
-            });
-
-            // Finish the update on all active objects
-            //   Ease springs
-            $.each(activeObjects, function(index, obj) {
-                obj.finishUpdate(time);
-            });
-
-            // Verify that objects are in the correct quadrant
-            // Remove objects that should be removed
-            this.quadTree.cleanup();
         },
     });
 

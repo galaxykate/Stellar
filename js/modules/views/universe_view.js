@@ -9,6 +9,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
 
     return (function() {
         var processing;
+
         var universe;
         // attaching the sketchProc function to the canvas
         console.log("START UNIVERSE VIEW");
@@ -80,22 +81,9 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 utilities.debugOutput("Update " + time.total.toFixed(2) + " fps: " + (1 / time.ellapsed).toFixed(2));
 
                 var angle = -Math.PI / 2 - .1 - this.camera.zoom;
-                this.camera.setOrbit(this.camera.center, 300 + this.camera.distance * 1000, this.camera.rotation, Math.PI + angle);
+                this.camera.setOrbit(this.camera.center.position, 300 + this.camera.distance * 1000, this.camera.rotation, Math.PI + angle);
 
-                // Calculate the active regions
-                var border = 120;
-                var region = {
-                    center : this.camera.center,
-                    w : this.dimensions.width + border * 2,
-                    h : this.dimensions.height + border * 2
-                };
-
-                region.left = region.center.x - region.w / 2;
-                region.right = region.center.x + region.w / 2;
-                region.top = region.center.y - region.h / 2;
-                region.bottom = region.center.y + region.h / 2;
-
-                stellarGame.drawQuadTree = true;
+           
                 this.activeQuadrants = [];
 
                 // Compile all of the quadrants that are on screen
@@ -223,6 +211,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 var view = this;
                 var screenPos = new Vector(0, 0);
                 options.screenPos = screenPos;
+                
                 this.universe.draw(g, options);
 
                 $.each(this.activeObjects, function(index, obj) {
@@ -230,6 +219,8 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                     // figure out where this object is, and translate appropriately
                     g.pushMatrix();
 
+                    // convert into the screen positon
+                   
                     view.convertToScreenPosition(obj.position, options.screenPos);
                     options.scale = Math.pow(500 / screenPos.z, 1);
                     if (!obj.drawUntransformed && obj.position !== undefined) {
@@ -241,21 +232,21 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
 
                     obj.draw(g, options);
                     g.popMatrix();
-
                 });
 
             },
+
             getTouchableAt : function(p) {
 
                 var touchables = [];
-                var target = new Vector(p.x + camera.center.x, p.y + camera.center.y, 0);
+                var target = new Vector(p.x + this.camera.center.x, p.y + this.camera.center.y, 0);
 
                 var minDist = 10;
                 // go through all the objects and find the closest (inefficient, but fine for now)
                 // utilities.debugArrayOutput(activeObjects);
 
-                var length = activeObjects.length;
-                $.each(activeObjects, function(index, obj) {
+                var length = this.activeObjects.length;
+                $.each(this.activeObjects, function(index, obj) {
 
                     if (obj !== undefined) {
 
@@ -433,6 +424,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 })();
 
             },
+
             drawThreeTest : function(g) {
 
                 var detail = 4;

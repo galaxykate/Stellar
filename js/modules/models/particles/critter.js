@@ -28,6 +28,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
 				this.face = new Face.Face(this.idColor, this.idNumber);
 				
 				this.emotion = new Emotion.Emotion(universe, this.radius + 20);
+				stellarGame.statistics.numberOfCritters++;
             },
             
             drawBackground: function(g, options) {

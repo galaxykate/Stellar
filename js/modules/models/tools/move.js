@@ -4,7 +4,7 @@
 
 // UParticle-inherited class
 
-define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", "particleTypes", "modules/models/uiManager"], function(Vector, KColor, Tool, ElementSet, particleTypes, uiManager) {
+define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", "particleTypes", "modules/models/ui/uiManager"], function(Vector, KColor, Tool, ElementSet, particleTypes, uiManager) {
     return (function() {
         var minDustMass = 10;
         //========================================================
@@ -89,10 +89,12 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 g.text(this.elements.totalMass, 5, 15);
 
                 if (this.mode === MOVE) {
-                    if (stellarGame.touch.pressed) {
+                	// Removing touch pressed for now for UI interaction
+                    //
 
-                        this.elements.drawAsDustCloud(g, 20);
-
+                    this.elements.drawAsDustCloud(g, 20);
+						
+						if (stellarGame.touch.pressed) {
                         // Draw a spiral
                         g.stroke(1, 0, 1, .8);
 

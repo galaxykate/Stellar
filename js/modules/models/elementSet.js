@@ -95,11 +95,35 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
                 });
 
                 var siphonAmt = Math.min(150, target.elementQuantity[elem]);
+                //utilities.debugOutput("Siphoning " + siphonAmt);
 
                 this.elementQuantity[elem] += siphonAmt;
                 target.elementQuantity[elem] -= siphonAmt
 
             }
+
+            this.setTotalMass();
+            target.setTotalMass();
+
+        };
+        
+        // Siphon off 1 element by name and percentage
+        ElementSet.prototype.siphonOneByName = function(target, elementName, pct) {
+        	var index;
+            for (var i = 0; i < activeElements.length; i++) {
+                if(activeElements[i].name === elementName){
+                	index = i;
+                }
+
+           	}
+
+            var siphonAmt = Math.max(1, target.elementQuantity[index] * pct);
+            if(target.elementQuantity[index] < siphonAmt) siphonAmt = target.elementQuantity[index];
+            utilities.debugOutput("Siphoning " + siphonAmt);
+
+            this.elementQuantity[index] += siphonAmt;
+            target.elementQuantity[index] -= siphonAmt
+
 
             this.setTotalMass();
             target.setTotalMass();
@@ -316,8 +340,16 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         // ===============================================================
         
         ElementSet.prototype.addAllElementsToADiv = function(parentID){
-        	//$(parentID)
+        	var elementSet = this;
         	this.parentIDFromUI = parentID;
+        	
+        	var parent = $("#" + parentID);
+            parent.mouseleave(function() {
+            	//console.log("leaving the parent " + parentID);
+            	//console.log("var mousedown: false");
+            	elementSet.parent.varMouseDown = false;
+            });
+        	
         	for(var i = 0; i < activeElements.length; i++) {
         		//if(this.elementQuantity[i] > 0){
         			this.createSpanForElement(parentID, activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i]);
@@ -334,7 +366,7 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         };
         
         ElementSet.prototype.createSpanForElement = function(parentID, elementID, elementName, elementAmount){
-        	var suckFrom;
+        	var elementSet = this;
         	
     		var options = {
                 html : elementName + ": " + elementAmount + "<br>",
@@ -343,16 +375,37 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
                 
                 // ========= controller stuff ===========
                 mousedown : function() {
-                	console.log("mouse down on div " + this.id);
+                	//console.log("mouse down on div " + this.id);
+                	//console.log("var mousedown: true, siphoning: true, " + elementName);
+                	elementSet.parent.varMouseDown = true;
+                	elementSet.parent.siphoning = true;
+                	elementSet.parent.siphonElement = elementName;
                 },
                 mouseup : function() {
-                	console.log("mouse up on div " + this.id);
+                	//console.log("mouse up on div " + this.id);
+                	//console.log("var mousedown: false, siphoning: false");
+                	elementSet.parent.varMouseDown = false;
+                	elementSet.parent.siphoning = false;
                 },
+                mouseleave: function() {
+                	//console.log("mouse leave on div " + this.id);
+                	//console.log("var siphoning: false ");
+                	elementSet.parent.siphoning = false;
+                },
+                mouseenter: function() {
+                	//console.log("this.mousedown ==? " + this.mousedown);
+                	if(elementSet.parent.varMouseDown){
+                		//console.log("var siphoning: true, " + elementName);
+                		elementSet.parent.siphoning = true;
+                		elementSet.parent.siphonElement = elementName;
+                	}
+                }
             };
             
             var span = $('<span/>', options);
             if(elementAmount <= 0){
-            	span.hide();
+            	//span.hide();
+            	span.css({ opacity: .2 });
             	//console.log("hiding span " + elementName);
             }
             
@@ -366,10 +419,12 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
             span.html(elementName + ": " + elementAmount + "<br>");
             
             if(elementAmount <= 0){
-            	span.hide();
+            	//span.hide();
+            	span.css({ opacity: .2 });
             	//console.log("hiding span " + elementName);
             } else {
-            	span.show();
+            	//span.show();
+            	span.css({ opacity: 1 });
             	//console.log("showing span " + elementName);
             }
 

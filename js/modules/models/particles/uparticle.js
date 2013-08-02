@@ -30,8 +30,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 // this.velocity.addPolar(Math.random() * .3, Math.random() * 100);
 
-                this.initAsElementContainer();
-
+              
                 this.initAsTouchable();
                 this.debugOutputLines = [];
 
@@ -42,6 +41,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.tempGenerated = 100;
                 // Kelvin
 
+                this.lifespans = [];
             },
 
             setRadius : function(r) {
@@ -53,7 +53,16 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             },
 
             remove : function() {
-                this.deleted = true;
+                // only run delete code ONCE.
+                if (this.deleted === undefined || this.deleted === false) {
+                    this.deleted = true;
+
+                    // update the parents holding this object
+                    if (this.parent !== undefined) {
+                        this.parent.handleDeleteOf(this);
+                        console.log("I AM DELETED");
+                    }
+                }
             },
 
             debugOutput : function(d) {
@@ -138,7 +147,12 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 this.updateElements();
 
-                //console.log("position/velocity of " + this.idNumber + ": " + this.position + ", " + this.velocity);
+            
+                //utilities.debugOutput(this.idNumber + " lifespans.length: " + this.lifespans.length);
+                for (var i = 0; i < this.lifespans.length; i++) {
+                    this.lifespans[i].update();
+                }
+             
             },
 
             // Give this object a bunch of elements
@@ -150,7 +164,13 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             updateElements : function() {
                 // Do something with the new element amounts
                 //this.elements.setTotalMass(); // this is set by elements.siphon()
-
+             
+                if (this.elements.totalMass === 0) {
+                    this.remove();
+                    // removal of this happence twice for some reason. Not sure why!
+                    //console.log("CALLING THIS.REMOVE");
+                }
+        
                 if (this.elements.totalMass === 0) {
                     this.remove();
                 }
@@ -204,7 +224,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     g.ellipse(0, 0, this.radius + 10, this.radius + 10);
                 }
 
-                if (stellarGame.drawElements) {
+                if (stellarGame.drawElements && this.elements) {
                     this.elements.draw(g, this.radius);
                 }
 
@@ -218,8 +238,9 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     g.text(line, textX, textY + 12 * (index + 1));
                 })
             },
+            
             draw : function(g, options) {
-             
+
                 switch(options.layer) {
                     case "bg":
                         this.drawBackground(g, options);
