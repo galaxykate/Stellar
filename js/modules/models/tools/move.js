@@ -58,23 +58,26 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
                 $.each(touch.overObjects, function(index, obj) {
                     if (obj.siphonable)
-                    tool.elements.siphon(obj.elements, 1);
+                        tool.elements.siphon(obj.elements, 1);
 
                 });
 
             },
-            drawCursor : function(g, p) {
+            drawCursor : function(g, p, scale) {
+
                 var t = stellarGame.time.universeTime;
+
+                g.pushMatrix();
+                g.translate(p.x, p.y);
+                g.scale(scale);
 
                 g.strokeWeight(2);
                 g.stroke(1, 0, 1, .8);
                 g.fill(1, 0, 1, .4);
-                g.ellipse(p.x, p.y, 10, 10);
+                g.ellipse(0, 0, 10, 10);
 
-                g.pushMatrix();
                 this.drawDirection(g, p);
 
-                g.translate(p.x, p.y);
                 g.fill(1, 0, 1);
                 g.text(this.elements.totalMass, 5, 15);
 

@@ -15,6 +15,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "up
 
                 this._super(universe);
                 this.siphonable = true;
+
                 if(parent !== undefined){
                 	this.parent = parent;
                 }

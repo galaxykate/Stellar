@@ -9,8 +9,8 @@ define(["modules/models/vector", "uparticle"], function(Vector, UParticle) {
 
         var MyParticle = UParticle.extend({
 
-            init : function(universe) {
-                this._super(universe);
+            init : function() {
+                this._super();
                 this.radius = Math.random() * 20 + 10;
 
             },

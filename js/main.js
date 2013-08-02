@@ -13,10 +13,10 @@ var stellarGame = {
         universeTime : 0,
         gameTime : 0,
     },
-    
+
     // For display purposes!
     statistics : {
-    	numItemsInQuadTree : 0,
+        numItemsInQuadTree : 0,
     },
 };
 
@@ -29,6 +29,10 @@ var utilities = {
             v = v2;
         }
         return v;
+    },
+
+    within : function(val, min, max) {
+        return (val >= min) && (val <= max);
     },
 
     // Inefficient, fix someday
@@ -114,20 +118,20 @@ var utilities = {
 
         return Math.random();
     },
-    
+
     roundNumber : function(num, places) {
-    	// default 2 decimal places
-    	if(places === undefined){
-    		return parseFloat(Math.round(num * 100) / 100).toFixed(2);
-    	} else {
-    		return parseFloat(Math.round(num * 100) / 100).toFixed(places);
-    	}
+        // default 2 decimal places
+        if (places === undefined) {
+            return parseFloat(Math.round(num * 100) / 100).toFixed(2);
+        } else {
+            return parseFloat(Math.round(num * 100) / 100).toFixed(places);
+        }
     }
-    
 };
 
 require.config({
     paths : {
+        'three' : 'libs/three',
         'jQuery' : 'libs/jquery-1.10.1',
         'jQueryUI' : 'libs/jquery-ui',
         'jQueryUITouchPunch' : 'libs/jquery.ui.touch-punch',
@@ -141,7 +145,11 @@ require.config({
         'toolTypes' : 'modules/models/tools/tool_types',
         'tool' : 'modules/models/tools/tool',
         'uparticle' : 'modules/models/particles/uparticle',
+
+        'spring' : 'modules/models/particles/spring',
         'kcolor' : 'modules/models/kcolor',
+        'edge' : 'modules/models/edge',
+
         'lifespan' : 'modules/models/lifespan',
 
     },
@@ -161,17 +169,22 @@ require.config({
         'underscore' : {
             exports : '_'
         },
+
         'processing' : {
             exports : 'Processing'
         },
+
         'inheritance' : {
             exports : 'Inheritance'
+        },
+        'three' : {
+            exports : 'THREE'
         },
 
     }
 });
 
-require(['jQueryUI', 'noise', 'modules/models/game'], function($, Noise, GAME) {
+require(['jQueryUI', 'noise', 'modules/models/game'], function(JQUERY, Noise, GAME) {
 
     utilities.noiseInstance = new Noise();
     GAME.startGame();

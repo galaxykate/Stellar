@@ -17,6 +17,7 @@ body {
 }
 
 #universe {
+	z-index: 20;
 	position: relative;
 	float: left;
 	width: 600px;
@@ -25,6 +26,8 @@ body {
 }
 
 #universe_canvas {
+	z-index: 21;
+	position: absolute;
 	width: 600px;
 	height: 400px;
 	background-color: rgba(50, 255, 90, 1);
@@ -85,6 +88,25 @@ body {
 	box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
 }
 
+#zoom_slider {
+	z-index: 25;
+	position: absolute;
+	top: 10px;
+	right: 5px;
+	width: 8px;
+	height: 100px;
+	background-color: rgba(160, 170, 250, 1);
+}
+
+#rotation_slider {
+	z-index: 25;
+	position: absolute;
+	top: 10px;
+	right: 20px;
+	width: 8px;
+	height: 100px;
+	background-color: rgba(160, 170, 250, 1);
+}
 .popup {
 	z-index: 31;
 	position: absolute;
@@ -115,6 +137,8 @@ body {
 	background-color: rgba(160, 170, 190, 1);
 	box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
 }
+<<<<<<< HEAD
+=======
 
 .closeButton {
 	z-index: 60;
@@ -133,3 +157,4 @@ body {
 	background-color: rgba(255, 10, 10, 1);
 	box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
 }
+>>>>>>> ee4f449da04fe8b7eb96a4c6261117e8673a04ab

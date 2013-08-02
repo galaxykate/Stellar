@@ -4,7 +4,7 @@
 
 // Reusable Vector class
 
-define([], function() {
+define(["three"], function(THREE) {
     return (function() {
 
         // Private functions
@@ -40,6 +40,13 @@ define([], function() {
                 return new Vector(this);
             },
 
+            cloneInto : function(v) {
+                v.x = this.x;
+                v.y = this.y;
+                v.z = this.z;
+
+            },
+
             addMultiple : function(v, m) {
                 this.x += v.x * m;
                 this.y += v.y * m;
@@ -49,22 +56,34 @@ define([], function() {
                 this.x += r * Math.cos(theta);
                 this.y += r * Math.sin(theta);
             },
+
+            addSpherical : function(r, theta, phi) {
+                this.x += r * Math.cos(theta) * Math.cos(phi);
+                this.y += r * Math.sin(theta) * Math.cos(phi);
+                this.z += r * Math.sin(phi);
+            },
+
             setToPolar : function(r, theta) {
                 this.x = r * Math.cos(theta);
                 this.y = r * Math.sin(theta);
             },
-
             setToPolarOffset : function(v, r, theta) {
                 this.x = v.x + r * Math.cos(theta);
                 this.y = v.y + r * Math.sin(theta);
                 this.z = v.z;
             },
-            
             setToMultiple : function(v, m) {
                 this.x = v.x * m;
                 this.y = v.y * m;
                 this.z = v.z * m;
             },
+            setToLerp : function(v0, v1, m) {
+                var m1 = 1 - m;
+                this.x = v0.x * m + v1.x * m1;
+                this.y = v0.y * m + v1.y * m1;
+                this.z = v0.z * m + v1.z * m1;
+            },
+
             setTo : function(x, y, z) {
                 // Just in case this was passed a vector
                 if (x.x !== undefined) {
@@ -82,7 +101,6 @@ define([], function() {
             magnitude : function() {
                 return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
             },
-
             constrainMagnitude : function(min, max) {
                 var d = this.magnitude();
                 if (d !== 0) {
@@ -90,7 +108,6 @@ define([], function() {
                     this.mult(d2 / d);
                 }
             },
-
             getDistanceTo : function(p) {
                 var dx = this.x - p.x;
                 var dy = this.y - p.y;
@@ -103,6 +120,18 @@ define([], function() {
                 var dy = this.y - p.y;
                 //var dz = this.z - p.z;
                 return Math.atan2(dy, dx);
+            },
+
+            //===========================================================
+            //===========================================================
+            // Complex geometry
+
+            dot : function(v) {
+                return v.x * this.x + v.y * this.y + v.z * this.z;
+            },
+
+            getAngleTo : function(v) {
+                return Math.acos(this.dot(v) / (this.magnitude() * v.magnitude()));
             },
 
             //===========================================================
@@ -132,6 +161,9 @@ define([], function() {
             },
             getOffsetTo : function(v) {
                 return new Vector(v.x - this.x, v.y - this.y, v.z - this.z);
+            },
+            getAngle : function() {
+                return Math.atan2(this.y, this.x);
             },
 
             //===========================================================
@@ -165,15 +197,26 @@ define([], function() {
             drawLineTo : function(g, v) {
                 g.line(this.x, this.y, v.x, v.y);
             },
+            drawLerpedLineTo : function(g, v, startLerp, endLerp) {
+                var dx = v.x - this.y;
+                var dy = v.y - this.y;
+
+                g.line(this.x + dx * startLerp, this.y + dy * startLerp, this.x + dx * endLerp, this.y + dy * endLerp);
+            },
             drawArrow : function(g, v, m) {
                 g.line(this.x, this.y, v.x * m + this.x, v.y * m + this.y);
             },
 
             //===========================================================
             //===========================================================
+            toThreeVector : function() {
+                return new THREE.Vector3(this.x, this.y, this.z);
+            },
+            //===========================================================
+            //===========================================================
 
             toString : function() {
-                return "(" + this.x.toFixed(2) + ", " + this.y.toFixed(2) + ", " + this.z.toFixed(2) + ")";
+                return "(" + this.x.toFixed(0) + ", " + this.y.toFixed(0) + ", " + this.z.toFixed(0) + ")";
             },
         };
 

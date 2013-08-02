@@ -7,6 +7,7 @@
 define(["modules/models/vector", "uparticle", particleTypePath + "dust", particleTypePath + 'sparkle'], function(Vector, UParticle, Dust, Sparkle) {
     return (function() {
 
+
     	var explode = function(trailhead){
     		var numOfSparkles = Math.random() * 10 + 10;
     		trailhead.mySparkleCount = Math.floor(numOfSparkles);
@@ -29,11 +30,11 @@ define(["modules/models/vector", "uparticle", particleTypePath + "dust", particl
             init : function(universe) {
                 this._super(universe);
                 this.radius = Math.random() * 20 + 10;
-				stellarGame.statistics.numberOfTrails++;
-				this.exploding = false;
-				this.myDust = [];
-				this.dustGoneCounter = 0;
-				this.sparkleGoneCounter = 0;
+                stellarGame.statistics.numberOfTrails++;
+                this.exploding = false;
+                this.myDust = [];
+                this.dustGoneCounter = 0;
+                this.sparkleGoneCounter = 0;
             },
 
             drawBackground : function(g, options) {
@@ -41,6 +42,7 @@ define(["modules/models/vector", "uparticle", particleTypePath + "dust", particl
             },
 
             drawMain : function(g, options) {
+
             	//utilities.debugOutput(this.exploding);
             	if(this.exploding === false){
 	                this.idColor.fill(g, .9, 1);
@@ -112,27 +114,27 @@ define(["modules/models/vector", "uparticle", particleTypePath + "dust", particl
 
             update : function(time) {
                 this._super(time);
-                
+
                 // See if all the dust is gone. If it is, EXPLODE!
                 // Check if there is a line done later...
-                if(this.dustGoneCounter === this.myDust.length && !this.exploding){
-                	this.exploding = true;
-                	explode(this);
+                if (this.dustGoneCounter === this.myDust.length && !this.exploding) {
+                    this.exploding = true;
+                    explode(this);
                 }
                 //utilities.debugOutput(this.sparkleGoneCounter + "==?" + this.mySparkleCount);
-                if(this.sparkleGoneCounter === this.mySparkleCount) {
-                	this.remove();
+                if (this.sparkleGoneCounter === this.mySparkleCount) {
+                    this.remove();
                 }
             },
-            
+
             handleDeleteOf : function(particle) {
-            	//console.log("should increment dustGoneCounter");
-            	if(particle.type === "dust"){
-            		//console.log("incrementing dustGoneCounter");
-            		this.dustGoneCounter++;
-            	} else if (particle.type === "sparkle"){
-            		this.sparkleGoneCounter++;
-            	}
+                //console.log("should increment dustGoneCounter");
+                if (particle.type === "dust") {
+                    //console.log("incrementing dustGoneCounter");
+                    this.dustGoneCounter++;
+                } else if (particle.type === "sparkle") {
+                    this.sparkleGoneCounter++;
+                }
             }
         });
 
