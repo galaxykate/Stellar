@@ -110,25 +110,31 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 			var startStarRadius = star.radius;
 			var sizeToAdd = calcSizeOfElements(dust.elements.totalMass);
 			var radiusToDust = star.position.getDistanceTo(dust.position);
-			var angleToDust = star.position.getAngleTo(dust.position);
-			console.log("DISTANCE/ANGLE: " + radiusToDust + ", " + angleToDust);
+			var curRadiusToDust = radiusToDust;
+			var angleToDust = dust.position.getAngleTo(star.position);
+			//console.log("DISTANCE/ANGLE: " + radiusToDust + ", " + angleToDust);
 			
 			var lifespanUpdate = function(){
 				star.radius = startStarRadius + (lifespan.figuredPctCompleted * sizeToAdd);
-				utilities.debugOutput("star radius: " + star.radius);
+				//utilities.debugOutput("star radius: " + star.radius);
+				curRadiusToDust = radiusToDust * (1-lifespan.figuredPctCompleted);
+				angleToDust += 0.06;
+				dust.scale = 1-lifespan.figuredPctCompleted;
+				//console.log("curDIST/ANGLE and SCALE: " + curRadiusToDust + ", " + angleToDust + " | " + dust.scale);
+				dust.position.setToPolarOffset(star.position, curRadiusToDust, angleToDust);
 			};
 			
 			var lifespanOnEnd = function(){
-				console.log("radius at startEND: " + star.radius);
+				//console.log("radius at startEND: " + star.radius);
 				// transfering all elements should make the dust disappear, the star set to its final size
 				dust.elements.transferTo(star.elements, 1);
-				console.log("star should have all dust");
-				console.log("radius at END: " + star.radius);
+				//console.log("star should have all dust");
+				//console.log("radius at END: " + star.radius);
 			};
 			
 			var lifespanOnStart = function(){
-				console.log("radius at start: " + startStarRadius);
-				console.log("sizeToAdd: " + sizeToAdd);
+				//console.log("radius at start: " + startStarRadius);
+				//console.log("sizeToAdd: " + sizeToAdd);
 				
 			};
 			
