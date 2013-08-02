@@ -119,6 +119,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             		// Should be empty! Probably
             	};
             	contents.elementsHolder.update = function() {
+            		utilities.debugOutput("UPDATING CONTENTS?!");
             		if(contents.elementsHolder.siphoning){
             			// siphon selected Element
             			utilities.debugOutput("SIPHONING... " + contents.elementsHolder.siphonElement);

@@ -101,7 +101,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
             finishUpdate : function(time) {
                 this.velocity.mult(this.drag);
-
+				this.update(time);
             },
 
             update : function(time) {
@@ -145,7 +145,9 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 }
 
-                this.updateElements();
+                if(this.elements !== undefined){
+                	this.updateElements();
+                }
 
             
                 //utilities.debugOutput(this.idNumber + " lifespans.length: " + this.lifespans.length);

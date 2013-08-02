@@ -34,7 +34,7 @@ define(["inheritance", "modules/models/vector"], function(Inheritance, Vector) {
               		case "mousedown":
               			div.mousedown(function(event) {
               				if(bubble || (!bubble && divID === event.target.id)){
-			                	//console.log(action + " on " + divID); 
+			                	//console.log(action + " on " + divID + ", transitioning to " + stateName); 
 			                	$(this).width(width);
 			                	$(this).height(height);
 			                	$(this).css({ opacity: opa });
@@ -45,7 +45,7 @@ define(["inheritance", "modules/models/vector"], function(Inheritance, Vector) {
               		case "mouseleave":
               			div.mouseleave(function(event) {
               				if(bubble || (!bubble && divID === event.target.id)){
-			                	//console.log(action + " on " + divID); 
+			                	//console.log(action + " on " + divID + ", transitioning to " + stateName); 
 			                	$(this).width(width);
 			                	$(this).height(height);
 			                	$(this).css({ opacity: opa });

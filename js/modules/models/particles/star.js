@@ -231,7 +231,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             init : function(universe) {
                 this._super(universe);
-       this.initAsElementContainer();
+       			this.initAsElementContainer();
 
                 this.state = states[0];
                 // turning off random states
