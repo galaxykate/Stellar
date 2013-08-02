@@ -31,25 +31,18 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 // Release all the elements as a dust cloud
 
                 if (touch.overObjects.length > 0 && touch.overObjects[0].acceptsDust) {
-                    tool.elements.transferTo(touch.overObjects[0].elements, 1);
+                	// All objects that "acceptDust" must have a .feedDust() public function
+                	touch.overObjects[0].feedDust(touch, tool);
 
                 } else {
                     if (tool.elements.totalMass > minDustMass) {
-                        // Transfer 100% of the elements to the new dust cloud
-                        /*
-                        var dust = new particleTypes.Dust();
-                        tool.elements.transferTo(dust.elements, 1);
-                        dust.position.setTo(touch.currentUniversePosition);
-                        stellarGame.universe.spawn(dust);
-                        */
-                        // Transfer 100% of the elements to the new popup Inventory!
-                        var playerInventory = uiManager.getPlayerInventory();
-                        //console.log(uiManager);
-                        //console.log(playerInventory);
-                        //console.log(playerInventory.contents);
-                        tool.elements.transferTo(playerInventory.contents["playerElements"].elementsHolder.elements, 1);
-                        playerInventory.contents["playerElements"].elementsHolder.elements.updateAllElementsInDiv();
 
+                       	// Transfer 100% of the elements to the new popup Inventory!
+                       	var playerInventory = uiManager.getPlayerInventory();
+
+                       	tool.elements.transferTo(playerInventory.contents["playerElements"].elementsHolder.elements, 1);
+                       	playerInventory.contents["playerElements"].elementsHolder.elements.updateAllElementsInDiv();
+                       	
                     }
                 }
             },

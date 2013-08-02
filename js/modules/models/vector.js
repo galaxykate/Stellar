@@ -114,6 +114,13 @@ define(["three"], function(THREE) {
                 var dz = this.z - p.z;
                 return Math.sqrt(dx * dx + dy * dy + dz * dz);
             },
+            
+            getAngleTo : function(p) {
+                var dx = this.x - p.x;
+                var dy = this.y - p.y;
+                //var dz = this.z - p.z;
+                return Math.atan2(dy, dx);
+            },
 
             //===========================================================
             //===========================================================

@@ -7,6 +7,19 @@
 define(["inheritance"], function(Inheritance) {
     return (function() {
     	var divIDCount = 0;
+    	
+    	var createAndAppendDiv = function(parentID, options){
+    		var div = $('<div/>', this.options);
+    		appendDiv(parentID, div);
+    	};
+    	
+    	var appendDiv = function(parentID, div){
+    		$("#" + parentID).append(div);
+    	};
+    	
+    	var removeDiv = function(parentID, divID){
+    		$("#" + parentID).remove("#" + divID);
+    	};
 
         var PopupView = Class.extend({
 
