@@ -84,6 +84,18 @@ define(["three"], function(THREE) {
                 this.z = v0.z * m + v1.z * m1;
             },
 
+            setToAddMultiple : function(v0, m0, v1, m1) {
+                this.x = v0.x * m0 + v1.x * m1;
+                this.y = v0.y * m0 + v1.y * m1;
+                this.z = v0.z * m0 + v1.z * m1;
+            },
+
+            setToDifference : function(v0, v1) {
+                this.x = v0.x - v1.x;
+                this.y = v0.y - v1.y;
+                this.z = v0.z - v1.z;
+            },
+
             setTo : function(x, y, z) {
                 // Just in case this was passed a vector
                 if (x.x !== undefined) {
@@ -114,7 +126,7 @@ define(["three"], function(THREE) {
                 var dz = this.z - p.z;
                 return Math.sqrt(dx * dx + dy * dy + dz * dz);
             },
-            
+
             getAngleTo : function(p) {
                 var dx = this.x - p.x;
                 var dy = this.y - p.y;

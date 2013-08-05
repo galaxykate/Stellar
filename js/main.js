@@ -74,7 +74,13 @@ var utilities = {
     debugOutput : function(output) {
         $("#debug_output").append(output + "<br>");
     },
-
+    
+    touchOutput : function(output) {
+        $("#touch_output").append(output + "<br>");
+    },
+  clearTouchOutput : function() {
+        $("#touch_output").html("");
+    },
     debugArrayOutput : function(outputArray) {
         $.each(outputArray, function(index, output) {
             $("#debug_output").append(output + "<br>");

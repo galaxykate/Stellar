@@ -83,12 +83,10 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 var angle = -Math.PI / 2 - .1 - this.camera.zoom;
                 this.camera.setOrbit(this.camera.center.position, 300 + this.camera.distance * 1000, this.camera.rotation, Math.PI + angle);
 
-           
                 this.activeQuadrants = [];
 
                 // Compile all of the quadrants that are on screen
                 this.universe.quadTree.compileOnscreenQuadrants(this.activeQuadrants, this);
-                utilities.debugArrayOutput(this.activeQuadrants);
 
                 // Compile all the active objects
                 this.activeObjects = [];
@@ -139,13 +137,11 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 this.drawLayer(g, options);
 
                 // Draw the debug circles for the camera directions
-                utilities.debugOutput("Forward: " + this.camera.forward);
 
                 // draw the quad
                 g.noStroke();
                 g.fill(.55, 1, 1, .5);
                 this.drawShape(g, this.camera.screenQuadCorners);
-                utilities.debugArrayOutput(this.camera.screenQuadCorners);
 
                 // Test the angle to for the corners
                 var testCenter = new Vector(0, 0, 0);
@@ -189,11 +185,12 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 if (touch.activeTool === undefined) {
 
                 } else {
-                    var screenPos = new Vector();
-                    view.convertToScreenPosition(touch.currentPlanePosition, screenPos);
-                    var scale = 500 / screenPos.z;
-
-                    touch.activeTool.drawCursor(g, screenPos, scale);
+                    utilities.debugOutput("screen: " + touch.screenPosition);
+                    utilities.debugOutput("plane: " + touch.planePosition);
+                    if (touch.planePosition) {
+                        var scale = 500 / touch.screenPosition.z;
+                        touch.activeTool.drawCursor(g, touch.screenPosition, scale);
+                    }
                 }
 
                 // Draw the camera's plane positions
@@ -211,7 +208,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 var view = this;
                 var screenPos = new Vector(0, 0);
                 options.screenPos = screenPos;
-                
+
                 this.universe.draw(g, options);
 
                 $.each(this.activeObjects, function(index, obj) {
@@ -220,7 +217,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                     g.pushMatrix();
 
                     // convert into the screen positon
-                   
+
                     view.convertToScreenPosition(obj.position, options.screenPos);
                     options.scale = Math.pow(500 / screenPos.z, 1);
                     if (!obj.drawUntransformed && obj.position !== undefined) {
@@ -236,12 +233,11 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
 
             },
 
-            getTouchableAt : function(p) {
-
+            getTouchableAt : function(target) {
+                utilities.touchOutput("Get touchable at " + target);
                 var touchables = [];
-                var target = new Vector(p.x + this.camera.center.x, p.y + this.camera.center.y, 0);
 
-                var minDist = 10;
+                var minDist = 40;
                 // go through all the objects and find the closest (inefficient, but fine for now)
                 // utilities.debugArrayOutput(activeObjects);
 
@@ -254,6 +250,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
 
                         if (obj.radius)
                             d -= obj.radius;
+                     
                         if (d < minDist) {
 
                             touchables.push(obj);

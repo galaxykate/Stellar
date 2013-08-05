@@ -22,13 +22,15 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
             this.idNumber = quadrantCount;
             quadrantCount++;
             if (parent === undefined) {
+
+                this.root = this;
                 this.radius = maxRadius;
                 this.level = 0;
 
                 this.quadrant = -1;
                 this.center = new Vector(0, 0);
             } else {
-
+                this.root = parent.root;
                 this.parent = parent;
                 this.radius = parent.radius / 2;
                 this.level = parent.level + 1;
@@ -211,12 +213,30 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
             }
         },
         cleanup : function() {
+            var quad = this;
             if (this.level === maxLevels) {
 
+                // If any object does not belong in here, put it in the correct one
+                var incorrectlyPlaced = [];
                 this.contents = _.reject(this.contents, function(obj) {
+                    if (!quad.containsPoint(obj.position)) {
+
+                        incorrectlyPlaced.push(obj);
+
+                        return true;
+                    }
                     return obj.deleted;
                     //return false;
                 });
+
+                if (incorrectlyPlaced.length > 0) {
+                    console.log("Incorrectly placed: ");
+                    console.log(incorrectlyPlaced);
+
+                    $.each(incorrectlyPlaced, function(index, obj) {
+                        quad.root.insert(obj);
+                    });
+                }
 
             } else {
                 if (this.children !== undefined) {
