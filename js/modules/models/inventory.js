@@ -64,7 +64,7 @@ define(["modules/models/elementSet", "kcolor", "modules/models/vector", "particl
             createPaletteDiv : function(parent) {
                 var palette = $('<div/>', {
                     html : "Palette<br>",
-                    "class" : "palette",
+                    "class" : "palette ui_box",
                 });
                 parent.append(palette);
 

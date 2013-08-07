@@ -200,8 +200,8 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
                 var obj;
 
-                obj = new particleTypes.UParticle();
-                /*
+                //obj = new particleTypes.UParticle();
+                
                  if (Math.random() > .6) {
                  //console.log("1");
                  obj = new particleTypes.Trailhead();
@@ -212,7 +212,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
                  //console.log("3");
                  obj = new particleTypes.Critter();
                  }
-                 */
+                 
 
                 obj.position.setTo(p);
 

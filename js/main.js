@@ -18,6 +18,34 @@ var stellarGame = {
     statistics : {
         numItemsInQuadTree : 0,
     },
+
+    options : {},
+
+    addOption : function(key, defaultValue) {
+
+        this.options[key] = defaultValue;
+
+        // add a div for the checkbox
+        var div = $('<div/>', {
+            id : key + '_checkbox',
+            "class" : "option_checkbox_holder",
+            text : key
+        });
+
+        var checkbox = $('<input/>', {
+            type : "checkbox",
+            name : key,
+        });
+        checkbox.appendTo(div);
+        checkbox.prop('checked', defaultValue);
+
+        checkbox.change(function() {
+            stellarGame.options[key] = this.checked;
+        });
+
+        div.appendTo("#options_panel");
+
+    },
 };
 
 var utilities = {
@@ -74,11 +102,11 @@ var utilities = {
     debugOutput : function(output) {
         $("#debug_output").append(output + "<br>");
     },
-    
+
     touchOutput : function(output) {
         $("#touch_output").append(output + "<br>");
     },
-  clearTouchOutput : function() {
+    clearTouchOutput : function() {
         $("#touch_output").html("");
     },
     debugArrayOutput : function(outputArray) {

@@ -227,8 +227,10 @@ define(["three"], function(THREE) {
             //===========================================================
             //===========================================================
 
-            toString : function() {
-                return "(" + this.x.toFixed(0) + ", " + this.y.toFixed(0) + ", " + this.z.toFixed(0) + ")";
+            toString : function(precision) {
+                if (precision === undefined)
+                precision = 0;
+                return "(" + this.x.toFixed(precision) + ", " + this.y.toFixed(precision) + ", " + this.z.toFixed(precision) + ")";
             },
         };
 
