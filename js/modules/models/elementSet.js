@@ -379,8 +379,8 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
                 
                 // ========= controller stuff ===========
                 mousedown : function() {
-                	//console.log("mouse down on div " + this.id);
-                	//console.log("var mousedown: true, siphoning: true, " + elementName);
+                	console.log("mouse down on div " + this.id);
+                	console.log("var mousedown: true, siphoning: true, " + elementName);
                 	elementSet.parent.varMouseDown = true;
                 	elementSet.parent.siphoning = true;
                 	elementSet.parent.siphonElement = elementName;
@@ -397,9 +397,8 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
                 	elementSet.parent.siphoning = false;
                 },
                 mouseenter: function() {
-                	//console.log("this.mousedown ==? " + this.mousedown);
                 	if(elementSet.parent.varMouseDown){
-                		//console.log("var siphoning: true, " + elementName);
+                		console.log("var siphoning: true, " + elementName);
                 		elementSet.parent.siphoning = true;
                 		elementSet.parent.siphonElement = elementName;
                 	}

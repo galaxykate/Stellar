@@ -14,6 +14,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "up
             init : function(universe, parent) {
 
                 this._super(universe);
+                this.initAsElementContainer();
                 this.siphonable = true;
 
                 if(parent !== undefined){
@@ -33,10 +34,14 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "up
 
             drawMain : function(g, options) {
                 if (stellarGame.drawDust) {
-                    // Do all the other drawing
-                    //  if (stellarGame.drawElements) {
-                    this.elements.drawAsDustCloud(g, this.radius, this.hacktime);
-                    // }
+                    if(this.scale === undefined){
+                    	this.scale = 1;
+                    }
+                	g.pushMatrix();
+                	g.scale(this.scale);
+                	this.elements.drawAsDustCloud(g, this.radius, this.hacktime);
+                	g.popMatrix();
+                
                 }
             },
 

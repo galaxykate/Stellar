@@ -200,12 +200,12 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
                 var obj;
 
-                //    obj = new particleTypes.UParticle();
+                //obj = new particleTypes.UParticle();
 
-                if (Math.random() > .9) {
+                if (Math.random() > .6) {
                     //console.log("1");
                     obj = new particleTypes.Trailhead();
-                } else if (Math.random() > .2) {
+                } else if (Math.random() > .5) {
                     //console.log("2");
                     obj = new particleTypes.Star();
                 } else {

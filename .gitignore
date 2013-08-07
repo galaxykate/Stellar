@@ -2,6 +2,10 @@
 # Can ignore specific files
 .DS_Store
 
-# Can ignore specific files
 
+<<<<<<< HEAD
+# Can ignore specific files
 js/settings_local.js
+=======
+js/settings_local.js
+>>>>>>> e4abd8a8ccab26414ab4b54355b811c72251b467

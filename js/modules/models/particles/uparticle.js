@@ -102,7 +102,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
             finishUpdate : function(time) {
                 this.velocity.mult(this.drag);
-
+				this.update(time);
             },
 
             update : function(time) {
@@ -146,7 +146,9 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 }
 
-                this.updateElements();
+                if(this.elements !== undefined){
+                	this.updateElements();
+                }
 
             
                 for (var i = 0; i < this.lifespans.length; i++) {
