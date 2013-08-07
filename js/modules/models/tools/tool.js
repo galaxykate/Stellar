@@ -109,7 +109,6 @@ define(["modules/models/vector", "uparticle", "kcolor"], function(Vector, UParti
                     g.ellipse(p.x + r * Math.cos(theta), p.y + r * Math.sin(theta), 2, 2);
                 }
 
-                utilities.debugArrayOutput(stellarGame.touch.overObjects);
             },
             toString : function() {
                 return this.label;
@@ -120,21 +119,26 @@ define(["modules/models/vector", "uparticle", "kcolor"], function(Vector, UParti
             // Standard movement
 
             moveWithOffset : function(touch) {
-                this.direction.setTo(stellarGame.touch.getOffsetToHistory(5));
-                var d = this.direction.magnitude();
+
+                this.direction.mult(0);
+
+                var d = touch.planeOffset.magnitude();
                 //this.direction.mult(-.4);
 
                 if (d === 0 || d === NaN) {
                     console.log("DIRECTION MAGNITUDE ERROR: " + d);
                     d = .00001;
                 }
-                this.direction.mult(-Math.pow(d, .5) / d);
-                var d = stellarGame.touch.currentPosition.magnitude();
-                this.direction.addMultiple(stellarGame.touch.currentPosition, .0002 * d);
+                //  this.direction.addMultiple(touch.planeOffset, Math.pow(d, .5) / d);
 
-                //utilities.debugOutput("direction: " + this.direction);
+                // Add some movement based on the edge that we're pointing at
+                var edgeMag = stellarGame.touch.screenPosition.magnitude();
 
+                this.direction.addMultiple(touch.planeCenterOffset, -.1);
+                utilities.touchOutput("Center offset: " + touch.planeCenterOffset);
+   
                 stellarGame.universe.addScrollingMovement(this.direction);
+                
             },
 
             //==========================================================
@@ -145,13 +149,13 @@ define(["modules/models/vector", "uparticle", "kcolor"], function(Vector, UParti
             },
 
             touchMove : function(touch) {
-                this.distanceSinceLastSpawn += touch.lastOffset.magnitude();
+                this.distanceSinceLastSpawn += touch.planeOffset.magnitude();
                 if (this.onMove)
                     this.onMove(touch);
             },
             touchDrag : function(touch) {
 
-                this.distanceSinceLastSpawn += touch.lastOffset.magnitude();
+                this.distanceSinceLastSpawn += touch.planeOffset.magnitude();
                 if (this.onDrag)
                     this.onDrag(touch);
 

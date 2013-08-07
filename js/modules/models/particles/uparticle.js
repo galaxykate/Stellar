@@ -16,6 +16,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
         var UParticle = Class.extend({
             init : function() {
                 this.idNumber = particleCount;
+                this.name = "Anon particle " + this.idNumber;
                 particleCount++;
                 this.idColor = new KColor((this.idNumber * .289 + .31) % 1, 1, 1);
                 this.age = {
@@ -150,7 +151,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 }
 
             
-                //utilities.debugOutput(this.idNumber + " lifespans.length: " + this.lifespans.length);
                 for (var i = 0; i < this.lifespans.length; i++) {
                     this.lifespans[i].update();
                 }

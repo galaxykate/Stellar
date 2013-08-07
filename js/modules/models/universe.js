@@ -11,20 +11,27 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
         init : function() {
             backgroundStars = [];
 
-            this.touchCenter = new particleTypes.UParticle();
-            this.drawMain = function(g, options) {
+            this.touchMarker = new particleTypes.UParticle();
+            this.touchMarker.name = "Touch Marker";
+            this.touchMarker.drawMain = function(g, options) {
                 g.fill(.55, 1, 1);
                 g.noStroke();
+                g.ellipse(0, 0, 20, 20);
+                g.stroke(.55, 1, 1);
+                g.strokeWeight(1);
+                g.noFill();
                 g.ellipse(0, 0, 50, 50);
-            }
+            };
 
             this.camera = {
+
                 angle : new Vector(0, 0, 0),
                 center : new particleTypes.UParticle(),
                 zoom : 1,
                 rotation : -Math.PI,
-            }
+            };
 
+            this.camera.center.name = "Camera";
             this.camera.center.drawUntransformed = true;
             this.camera.center.drawMain = function(g, options) {
                 g.noFill();
@@ -45,7 +52,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
             this.makeUniverseTree();
             this.generateStartRegion();
             this.spawn(this.camera.center);
-            this.spawn(this.touchCenter);
+            this.spawn(this.touchMarker);
         },
 
         // Make a quad tree for the universe
@@ -161,6 +168,8 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
             $.each(activeObjects, function(index, obj) {
                 obj.finishUpdate(time);
             });
+
+            this.quadTree.cleanup();
         },
 
         //=======================================================
@@ -174,10 +183,11 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
                 h : 7500
             });
         },
+
         generateRegion : function(region) {
 
             // Pick some random locations in the region
-            var density = .009;
+            var density = .004;
             var count = Math.ceil(region.w * region.h * density * density);
             var w2 = region.w / 2;
             var h2 = region.h / 2;
@@ -190,16 +200,20 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
                 var obj;
 
-                if (Math.random() > .6) {
-                    //console.log("1");
-                    obj = new particleTypes.Trailhead();
-                } else if (Math.random() > .5) {
-                    //console.log("2");
-                    obj = new particleTypes.Star();
-                } else {
-                    //console.log("3");
-                    obj = new particleTypes.Critter();
-                }
+                obj = new particleTypes.UParticle();
+                /*
+                 if (Math.random() > .6) {
+                 //console.log("1");
+                 obj = new particleTypes.Trailhead();
+                 } else if (Math.random() > .5) {
+                 //console.log("2");
+                 obj = new particleTypes.Star();
+                 } else {
+                 //console.log("3");
+                 obj = new particleTypes.Critter();
+                 }
+                 */
+
                 obj.position.setTo(p);
 
                 this.spawn(obj);
@@ -239,6 +253,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
         },
         addScrollingMovement : function(v) {
             this.camera.center.velocity.addMultiple(v, 1);
+            utilities.touchOutput("Camera Velocity: " + this.camera.center.velocity);
 
         },
     });

@@ -16,7 +16,14 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
             lastPressed : new Vector(0, 0),
             lastReleased : new Vector(0, 0),
             dragOffset : new Vector(0, 0),
-            lastOffset : new Vector(0, 0),
+
+            screenOffset : new Vector(0, 0),
+            planeOffset : new Vector(0, 0),
+            planeLast : new Vector(0, 0),
+            screenLast : new Vector(0, 0),
+            screenPosition : new Vector(0, 0),
+            planePosition : new Vector(0, 0),
+            planeCenterOffset : new Vector(0, 0),
 
             // History function
             history : [],
@@ -32,8 +39,6 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
                 return this.currentPosition.getOffsetTo(p);
             },
 
-            currentPlanePosition : new Vector(0, 0),
-            currentPosition : new Vector(0, 0),
             center : new Vector(0, 0),
             overObjects : [],
 
@@ -49,22 +54,34 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
 
             // Move the primary touch/mouse to this positon
             var touchMove = function(p) {
-
-                universeView.projectToPlanePosition(p, universe.touchCenter.position);
-
                 var w = universeView.dimensions.width;
                 var h = universeView.dimensions.height;
 
-                // Find the offset since the last movement
-                touch.lastOffset.setTo(p.x + touch.currentPosition.x, p.y + touch.currentPosition.y);
-                touch.currentPosition.setTo(p.x - w / 2, -p.y + h / 2);
-              
-                universeView.projectToPlanePosition(touch.currentPosition, touch.currentPlanePosition);
+                utilities.clearTouchOutput();
 
+                // set the last positions to the current position;
+                touch.planeLast.setTo(touch.planePosition);
+                touch.screenLast.setTo(touch.screenPosition);
+                touch.screenPosition.setTo(p.x - w / 2, -p.y + h / 2);
+
+                // where is the plane position?  Project that back so that the screen position has depth
+
+                universeView.projectToPlanePosition(touch.screenPosition, touch.planePosition);
+                universeView.convertToScreenPosition(touch.planePosition, touch.screenPosition);
+
+                // Set the offsets
+                touch.screenOffset.setToAddMultiple(touch.screenPosition, 1, touch.screenLast, -1);
+                touch.planeOffset.setToAddMultiple(touch.planePosition, 1, touch.planeLast, -1);
+
+                // How far is the touch from the screen's center position on the plane?
+                touch.planeCenterOffset.setToDifference(universeView.camera.center.position, touch.planePosition);
+
+                // Add to the history
                 touch.historyIndex = (touch.historyIndex + 1) % maxHistory;
-                touch.history[touch.historyIndex] = touch.currentPosition.clone();
+                touch.history[touch.historyIndex] = new Vector(touch.planePosition);
 
-                touch.overObjects = universeView.getTouchableAt(touch.currentPosition);
+                touch.overObjects = universeView.getTouchableAt(touch.planePosition);
+                utilities.touchOutput(touch.overObjects);
 
                 if (touch.pressed) {
 
@@ -148,6 +165,9 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
 
         var setUniverse = function(u) {
             universe = u;
+            // set the universe touch marker to follow the plane position
+            universe.touchMarker.position = touch.planePosition;
+
         };
 
         var controlUpdateFunction = [];

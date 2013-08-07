@@ -48,7 +48,19 @@ body {
 	position: relative;
 	background-color: rgba(155, 255, 155, 1);
 	width: 98%;
-	height: 300px;
+	height: 250px;
+	float: left;
+	padding: 10px;
+	margin: 2px;
+	overflow: auto;
+}
+
+#touch_output {
+	z-index: 42;
+	position: relative;
+	background-color: rgba(155, 255, 155, 1);
+	width: 98%;
+	height: 200px;
 	float: left;
 	padding: 10px;
 	margin: 2px;
