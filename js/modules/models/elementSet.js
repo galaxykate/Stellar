@@ -5,6 +5,10 @@
 // Reusable Vector class
 
 define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
+    var polarVertex = function(g, r, theta) {
+        g.vertex(r*Math.cos(theta), r*Math.sin(theta));
+    };
+    
     return (function() {
         // TUNING VALUES
         var PPCHAINREACTIONTEMP = 1000;
@@ -46,13 +50,13 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
             // Go back and forth around the shape
             for (var i = 0; i < segments + 1; i++) {
                 var theta = (i / (segments) * thetaRange + startTheta);
-                g.polarVertex(innerRadius, theta);
+                polarVertex(g, innerRadius, theta);
 
             }
 
             for (var i = segments; i >= 0; i--) {
                 var theta = (i / (segments) * thetaRange + startTheta);
-                g.polarVertex(outerRadius, theta);
+                polarVertex(g, outerRadius, theta);
             }
 
             g.endShape();

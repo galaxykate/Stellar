@@ -198,7 +198,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             init : function(universe) {
                 this._super(universe);
-       this.initAsElementContainer();
+                this.initAsElementContainer();
 
                 this.state = states[0];
                 // turning off random states
@@ -217,7 +217,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.acceptsDust = true;
 
                 this.radiusModifier = 0;
-         
+
                 stellarGame.statistics.numberOfStars++;
             },
 
@@ -226,37 +226,33 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             },
 
             drawBackground : function(g, options) {
-                if (stellarGame.drawStars) {
-                    //    this._super(g, options);
-                }
+                this._super(g, options);
             },
 
             drawMain : function(g, options) {
                 // Do all the other drawing
 
-                if (stellarGame.drawStars) {
-                    //this._super(g, options);
-                    this.idColor.fill(g, (Math.sin(stellarGame.time.universeTime + this.temperature)) / 4 - .25);
-                    g.noStroke();
-                    if (this.deleted) {
-                        g.fill(.2, 0, .4);
-                        g.stroke(1, 0, 1, .7);
-                    }
+                this._super(g, options);
+                this.idColor.fill(g, (Math.sin(stellarGame.time.universeTime + this.temperature)) / 4 - .25);
+                g.noStroke();
+                if (this.deleted) {
+                    g.fill(.2, 0, .4);
+                    g.stroke(1, 0, 1, .7);
+                }
 
-                    g.ellipse(0, 0, this.radius, this.radius);
+                g.ellipse(0, 0, this.radius, this.radius);
 
-                    if (stellarGame.drawFaces)
-                        this.face.draw(g);
+                if (stellarGame.drawFaces) {
+
+                    this.face.draw(g);
+            
                 }
                 
-
-                this.drawAsDot(g);
             },
 
             drawOverlay : function(g, options) {
-                if (stellarGame.drawStars) {
-                    //   this._super(g, options);
-                }
+                this._super(g, options);
+
             },
 
             update : function(time) {

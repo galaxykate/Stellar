@@ -31,18 +31,18 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 // Release all the elements as a dust cloud
 
                 if (touch.overObjects.length > 0 && touch.overObjects[0].acceptsDust) {
-                	// All objects that "acceptDust" must have a .feedDust() public function
-                	touch.overObjects[0].feedDust(touch, tool);
+                    // All objects that "acceptDust" must have a .feedDust() public function
+                    touch.overObjects[0].feedDust(touch, tool);
 
                 } else {
                     if (tool.elements.totalMass > minDustMass) {
 
-                       	// Transfer 100% of the elements to the new popup Inventory!
-                       	var playerInventory = uiManager.getPlayerInventory();
+                        // Transfer 100% of the elements to the new popup Inventory!
+                        var playerInventory = uiManager.getPlayerInventory();
 
-                       	tool.elements.transferTo(playerInventory.contents["playerElements"].elementsHolder.elements, 1);
-                       	playerInventory.contents["playerElements"].elementsHolder.elements.updateAllElementsInDiv();
-                       	
+                        tool.elements.transferTo(playerInventory.contents["playerElements"].elementsHolder.elements, 1);
+                        playerInventory.contents["playerElements"].elementsHolder.elements.updateAllElementsInDiv();
+
                     }
                 }
             },
@@ -57,6 +57,8 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 this.moveWithOffset(touch);
 
                 $.each(touch.overObjects, function(index, obj) {
+                    
+                   utilities.touchOutput("Siphon " + obj);
                     if (obj.siphonable)
                         tool.elements.siphon(obj.elements, 1);
 
@@ -82,12 +84,12 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 g.text(this.elements.totalMass, 5, 15);
 
                 if (this.mode === MOVE) {
-                	// Removing touch pressed for now for UI interaction
+                    // Removing touch pressed for now for UI interaction
                     //
 
                     this.elements.drawAsDustCloud(g, 20);
-						
-						if (stellarGame.touch.pressed) {
+
+                    if (stellarGame.touch.pressed) {
                         // Draw a spiral
                         g.stroke(1, 0, 1, .8);
 

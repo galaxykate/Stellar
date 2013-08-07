@@ -136,9 +136,7 @@ define(["modules/models/vector", "uparticle", "kcolor"], function(Vector, UParti
                 var edgeStrength = touch.screenPct.magnitude();
                 var moveStrength = 300*Math.pow(edgeStrength, 1.5);
                 this.direction.addMultiple(touch.planeCenterOffset, -moveStrength / touch.planeCenterOffset.magnitude());
-                   utilities.touchOutput(touch.screenPct);
-               utilities.touchOutput(edgeStrength);
-                utilities.touchOutput(this.direction.toString(2));
+             
 
                 stellarGame.universe.addScrollingMovement(this.direction);
 

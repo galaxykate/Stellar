@@ -8,7 +8,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
     console.log("Init universe view");
 
     return (function() {
-        stellarGame.addOption("drawCameraQuad", true);
+        stellarGame.addOption("drawCameraQuad", false);
         var processing;
 
         var universe;
