@@ -24,6 +24,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
             screenPosition : new Vector(0, 0),
             planePosition : new Vector(0, 0),
             planeCenterOffset : new Vector(0, 0),
+            screenPct : new Vector(0, 0),
 
             // History function
             history : [],
@@ -70,11 +71,18 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
                 universeView.convertToScreenPosition(touch.planePosition, touch.screenPosition);
 
                 // Set the offsets
-                touch.screenOffset.setToAddMultiple(touch.screenPosition, 1, touch.screenLast, -1);
+                touch.screenOffset.setToAddMultiple(touch.screenPosition, 1, touch.screenLast, -1)
+
                 touch.planeOffset.setToAddMultiple(touch.planePosition, 1, touch.planeLast, -1);
 
                 // How far is the touch from the screen's center position on the plane?
                 touch.planeCenterOffset.setToDifference(universeView.camera.center.position, touch.planePosition);
+
+                touch.screenPct.setTo(touch.screenPosition);
+                touch.screenPct.x /= w;
+                touch.screenPct.y /= h;
+                touch.screenPct.z = 0;
+                utilities.touchOutput("ScreenPct: " + touch.screenPct.toString(2) + " w: " + w + " h: " + h);
 
                 // Add to the history
                 touch.historyIndex = (touch.historyIndex + 1) % maxHistory;

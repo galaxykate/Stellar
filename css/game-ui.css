@@ -1,7 +1,6 @@
 body {
 
 }
-
 #app {
 	z-index: 0;
 	position: relative;
@@ -67,17 +66,27 @@ body {
 	overflow: auto;
 }
 
+.ui_box {
+	background-color: rgba(225, 235, 255, .8);
+	border-radius: 10px;
+	border: 2px solid rgba(255,255, 255, 1);
+	box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+}
+
+.option_checkbox_holder {
+	float:right;
+	font-size:70%;
+	font-family: "Trebuchet MS", Helvetica, sans-serif;
+}
+
 .palette {
 	z-index: 56;
 	position: static;
 	padding: 5px;
 	width: 200px;
 	height: 25px;
-	background-color: rgba(225, 235, 255, .6);
-	border-radius: 10px;
 	transition: all 0.22s;
 	overflow: hidden;
-	border: 2px solid rgba(255,255, 255, 1);
 }
 .palette:hover {
 
@@ -119,6 +128,24 @@ body {
 	height: 100px;
 	background-color: rgba(160, 170, 250, 1);
 }
+
+#options_panel {
+
+	z-index: 56;
+	left: 590px;
+	top: -310px;
+	position: absolute;
+	padding: 5px;
+	width: 160px;
+	height: 300px;
+	transition: all 0.22s;
+	overflow: hidden;
+}
+
+#options_panel:hover {
+	top: -10px;
+}
+
 .popup {
 	z-index: 31;
 	position: absolute;
@@ -149,8 +176,6 @@ body {
 	background-color: rgba(160, 170, 190, 1);
 	box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
 }
-<<<<<<< HEAD
-=======
 
 .closeButton {
 	z-index: 60;
@@ -169,4 +194,3 @@ body {
 	background-color: rgba(255, 10, 10, 1);
 	box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
 }
->>>>>>> ee4f449da04fe8b7eb96a4c6261117e8673a04ab

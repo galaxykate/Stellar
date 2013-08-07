@@ -132,13 +132,16 @@ define(["modules/models/vector", "uparticle", "kcolor"], function(Vector, UParti
                 //  this.direction.addMultiple(touch.planeOffset, Math.pow(d, .5) / d);
 
                 // Add some movement based on the edge that we're pointing at
-                var edgeMag = stellarGame.touch.screenPosition.magnitude();
+         
+                var edgeStrength = touch.screenPct.magnitude();
+                var moveStrength = 300*Math.pow(edgeStrength, 1.5);
+                this.direction.addMultiple(touch.planeCenterOffset, -moveStrength / touch.planeCenterOffset.magnitude());
+                   utilities.touchOutput(touch.screenPct);
+               utilities.touchOutput(edgeStrength);
+                utilities.touchOutput(this.direction.toString(2));
 
-                this.direction.addMultiple(touch.planeCenterOffset, -.1);
-                utilities.touchOutput("Center offset: " + touch.planeCenterOffset);
-   
                 stellarGame.universe.addScrollingMovement(this.direction);
-                
+
             },
 
             //==========================================================

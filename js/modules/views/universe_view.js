@@ -8,6 +8,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
     console.log("Init universe view");
 
     return (function() {
+        stellarGame.addOption("drawCameraQuad", true);
         var processing;
 
         var universe;
@@ -139,44 +140,46 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 // Draw the debug circles for the camera directions
 
                 // draw the quad
-                g.noStroke();
-                g.fill(.55, 1, 1, .5);
-                this.drawShape(g, this.camera.screenQuadCorners);
+                if (stellarGame.options.drawCameraQuad) {
+                    g.noStroke();
+                    g.fill(.55, 1, 1, .5);
+                    this.drawShape(g, this.camera.screenQuadCorners);
 
-                // Test the angle to for the corners
-                var testCenter = new Vector(0, 0, 0);
-                var edges = this.camera.screenQuadEdges;
-                for (var i = 0; i < 4; i++) {
+                    // Test the angle to for the corners
+                    var testCenter = new Vector(0, 0, 0);
+                    var edges = this.camera.screenQuadEdges;
+                    for (var i = 0; i < 4; i++) {
 
-                    // draw the quad corner
-                    g.fill(1);
-                    var corner = this.camera.screenQuadCorners[i];
-                    this.drawText(g, "Corner " + i + " " + corner, corner, 0, 0);
+                        // draw the quad corner
+                        g.fill(1);
+                        var corner = this.camera.screenQuadCorners[i];
+                        this.drawText(g, "Corner " + i + " " + corner, corner, 0, 0);
 
-                    var angle = edges[i].getAngleTo(testCenter);
-                    var side = edges[i].getSide(testCenter);
-                    var testShape = [];
-                    var offset = edges[i].getOffset();
-                    var offset2 = edges[i].start.getOffsetTo(testCenter);
+                        var angle = edges[i].getAngleTo(testCenter);
+                        var side = edges[i].getSide(testCenter);
+                        var testShape = [];
+                        var offset = edges[i].getOffset();
+                        var offset2 = edges[i].start.getOffsetTo(testCenter);
 
-                    g.stroke(1, 1, 1);
-                    testShape[0] = new Vector(edges[i].start);
-                    testShape[1] = new Vector(edges[i].start);
-                    testShape[1].addMultiple(offset2, .7)
-                    testShape[2] = new Vector(edges[i].start);
-                    testShape[2].addMultiple(offset, .3)
+                        g.stroke(1, 1, 1);
+                        testShape[0] = new Vector(edges[i].start);
+                        testShape[1] = new Vector(edges[i].start);
+                        testShape[1].addMultiple(offset2, .7)
+                        testShape[2] = new Vector(edges[i].start);
+                        testShape[2].addMultiple(offset, .3)
 
-                    var angle = offset.getAngleTo(offset2);
-                    testShape[2] = new Vector(edges[i].start);
-                    testShape[2].addPolar(30, angle);
+                        var angle = offset.getAngleTo(offset2);
+                        testShape[2] = new Vector(edges[i].start);
+                        testShape[2].addPolar(30, angle);
 
-                    // testShape[2] = new Vector(edges[i].start);
-                    // testShape[2].addPolar(40, angle);
-                    //                    this.drawShape(g, testShape);
+                        // testShape[2] = new Vector(edges[i].start);
+                        // testShape[2].addPolar(40, angle);
+                        //                    this.drawShape(g, testShape);
 
-                    //                  this.drawText(g, side, corner, 0, 10);
-                    //                this.drawText(g, edges[i].getOffset(), corner, 0, 20);
+                        //                  this.drawText(g, side, corner, 0, 10);
+                        //                this.drawText(g, edges[i].getOffset(), corner, 0, 20);
 
+                    }
                 }
 
                 // Draw the touch
@@ -250,7 +253,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
 
                         if (obj.radius)
                             d -= obj.radius;
-                     
+
                         if (d < minDist) {
 
                             touchables.push(obj);
