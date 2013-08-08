@@ -32,7 +32,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	        var contents = new PopupContents();
 	        contents.initAsElementHolder();
 	        contents.updateElementsDrawAndUpdate();
-	        contents.addElementsToUniverse();
+	        //contents.addElementsToUniverse(); // Need to figure out some other way to update an element container
 	        playerInventory.addContents("playerElements", contents);
 	        
 	    };
@@ -65,10 +65,17 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    function getPlayerInventory() {
 	    	return playerInventory;
 	    };
+	    
+	    function update() {
+	    	// For element holder stuff :)
+	    	playerInventory.update();
+	    	//utilities.debugOutput("updating in uiManager");
+	    }
 
         return {
             init : init,
-            getPlayerInventory : getPlayerInventory
+            getPlayerInventory : getPlayerInventory,
+            update: update
         };
 
     })();

@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], function(Vector, KColor, QuadTree, particleTypes) {
+define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules/models/ui/uiManager'], function(Vector, KColor, QuadTree, particleTypes, uiManager) {
     var backgroundLayers = 3;
     var backgroundStarDensity = .03;
     var Universe = Class.extend({
@@ -168,6 +168,8 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
             $.each(activeObjects, function(index, obj) {
                 obj.finishUpdate(time);
             });
+            
+            uiManager.update();
 
             this.quadTree.cleanup();
         },

@@ -172,10 +172,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     // removal of this happence twice for some reason. Not sure why!
                     //console.log("CALLING THIS.REMOVE");
                 }
-        
-                if (this.elements.totalMass === 0) {
-                    this.remove();
-                }
             },
 
             initAsParticle : function() {
