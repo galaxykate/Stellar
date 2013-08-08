@@ -153,6 +153,8 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
         //=======================================================
         // Updateing
         update : function(time, activeObjects) {
+        	stellarGame.time.universeTime = time.total;
+        	
             $.each(activeObjects, function(index, obj) {
                 obj.beginUpdate(time);
             });

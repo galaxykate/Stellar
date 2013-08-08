@@ -81,7 +81,8 @@ define(["inheritance"], function(Inheritance) {
 	            	this.duration = stellarGame.time.universeTime - this.startTime;
 	            	this.figuredPctCompleted = this.duration/this.lifespan;
 	            	
-	            	//utilities.debugOutput("lifespan " + this.idNumber + " updating...! " + utilities.roundNumber(this.duration) + ", " + utilities.roundNumber(this.figuredPctCompleted*100, 0) + "%");
+	            	utilities.debugOutput("universe time?!: " + stellarGame.time.universeTime);
+	            	utilities.debugOutput("lifespan " + this.idNumber + " updating...! " + utilities.roundNumber(this.duration) + ", " + utilities.roundNumber(this.figuredPctCompleted*100, 0) + "%");
 	            	
 	            	// If we have passed any thresholds for specific pct progress and not yet triggered it, TRIGGER IT!
 	            	for(var i = 0; i < this.onUpdatePcts.length; i++){

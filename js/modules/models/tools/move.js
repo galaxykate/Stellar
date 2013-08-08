@@ -32,9 +32,18 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
                 if (touch.overObjects.length > 0 && touch.overObjects[0].acceptsDust) {
                     // All objects that "acceptDust" must have a .feedDust() public function
+                    console.log("Feeding dust to: " );
+                    console.log(touch.overObjects[0]);
                     touch.overObjects[0].feedDust(touch, tool);
 
                 } else {
+                	if (touch.overObjects.length > 0){
+                		console.log("Object touched does not accept dust: " );
+                		console.log(touch.overObjects[0]);
+                		console.log("touch object length : " + touch.overObjects.length);
+                	} else {
+                		console.log("No object touched: sending dust to inventory");
+                	}
                     if (tool.elements.totalMass > minDustMass) {
 
                         // Transfer 100% of the elements to the new popup Inventory!

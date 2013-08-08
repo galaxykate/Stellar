@@ -155,7 +155,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 			
 			var lifespanUpdate = function(){
 				star.radius = startStarRadius - (lifespan.figuredPctCompleted * sizeToRemove);
-				utilities.debugOutput("star radius: " + star.radius);
+				//utilities.debugOutput("star radius: " + star.radius);
+				//utilities.debugOutput("% figured completed: " + lifespan.figuredPctCompleted);
 			};
 			
 			var lifespanOnEnd = function(){
@@ -186,38 +187,6 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 			return Math.pow(amount, .5);
 		}
 		
-
-        
-
-        // Very quick size down as the dust is expelled
-        var startBurnLifespan = function(star, totalMass) {
-            var lifespan = new Lifespan(1);
-            var startStarRadius = star.radius;
-            var sizeToRemove = calcSizeOfElements(totalMass);
-
-            var lifespanUpdate = function() {
-                star.radius = startStarRadius - (lifespan.figuredPctCompleted * sizeToRemove);
-                utilities.debugOutput("star radius: " + star.radius);
-            };
-
-            var lifespanOnEnd = function() {
-                console.log("radius at END: " + star.radius);
-            };
-
-            var lifespanOnStart = function() {
-                console.log("radius at start: " + startStarRadius);
-                console.log("sizeToAdd: " + sizeToRemove);
-
-            };
-
-            lifespan.onUpdate(lifespanUpdate);
-            lifespan.onEnd(lifespanOnEnd);
-            lifespan.onStart(lifespanOnStart);
-
-            star.lifespans.push(lifespan);
-
-        };
-
         var calcStarSizeOfElements = function(elementHolder) {
             return calcSizeOfElements(elementHolder.elements.totalMass);
         };
@@ -306,7 +275,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 var newDustObj = new Dust();
                 newDustObj.elements.clearAllElements();
                 newDustObj.position = new Vector();
-                newDustObj.position.setTo(touch.toWorldPosition(touch.currentPosition));
+                newDustObj.position.setTo(touch.planePosition);
                 console.log("New dust made at " + newDustObj.position + "+++++++++++++ " + this.position);
 
                 tool.elements.transferTo(newDustObj.elements, 1);
