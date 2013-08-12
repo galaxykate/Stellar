@@ -3,7 +3,7 @@
  */
 
 // poluting the namespace, fix at some point
-var toolTypeNames = ["move", "spawn"];
+var toolTypeNames = ["move", "spawn", "add"];
 var toolTypePath = "modules/models/tools/";
 var toolFiles = toolTypeNames.map(function(name, index) {
     return toolTypePath + name;

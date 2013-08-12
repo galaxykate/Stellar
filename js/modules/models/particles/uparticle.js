@@ -31,7 +31,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 // this.velocity.addPolar(Math.random() * .3, Math.random() * 100);
 
-              
                 this.initAsTouchable();
                 this.debugOutputLines = [];
 
@@ -102,7 +101,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
             finishUpdate : function(time) {
                 this.velocity.mult(this.drag);
-				this.update(time);
+                this.update(time);
             },
 
             update : function(time) {
@@ -146,15 +145,14 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 }
 
-                if(this.elements !== undefined){
-                	this.updateElements();
+                if (this.elements !== undefined) {
+                    this.updateElements();
                 }
 
-            
                 for (var i = 0; i < this.lifespans.length; i++) {
                     this.lifespans[i].update();
                 }
-             
+
             },
 
             // Give this object a bunch of elements
@@ -166,13 +164,13 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             updateElements : function() {
                 // Do something with the new element amounts
                 //this.elements.setTotalMass(); // this is set by elements.siphon()
-             
+
                 if (this.elements.totalMass === 0) {
                     this.remove();
                     // removal of this happence twice for some reason. Not sure why!
                     //console.log("CALLING THIS.REMOVE");
                 }
-        
+
                 if (this.elements.totalMass === 0) {
                     this.remove();
                 }
@@ -231,16 +229,19 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 }
 
                 // Draw the text
-                this.idColor.fill(g);
-                this.idColor.stroke(g, 1, 1);
-                var textX = this.radius * .85 + 5;
-                var textY = this.radius * .74 + 5;
-                g.text(this.idNumber, textX, textY);
-                $.each(this.debugOutputLines, function(index, line) {
-                    g.text(line, textX, textY + 12 * (index + 1));
-                })
+                if (stellarGame.options.showText) {
+                    this.idColor.fill(g);
+                    this.idColor.stroke(g, 1, 1);
+                    var textX = this.radius * .85 + 5;
+                    var textY = this.radius * .74 + 5;
+
+                    g.text(this.idNumber, textX, textY);
+                    $.each(this.debugOutputLines, function(index, line) {
+                        g.text(line, textX, textY + 12 * (index + 1));
+                    })
+                }
             },
-            
+
             draw : function(g, options) {
 
                 switch(options.layer) {

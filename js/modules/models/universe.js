@@ -6,7 +6,7 @@
 
 define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], function(Vector, KColor, QuadTree, particleTypes) {
     var backgroundLayers = 3;
-    var backgroundStarDensity = .03;
+    var backgroundStarDensity = 40;
     var Universe = Class.extend({
         init : function() {
             backgroundStars = [];
@@ -34,25 +34,27 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
             this.camera.center.name = "Camera";
             this.camera.center.drawUntransformed = true;
             this.camera.center.drawMain = function(g, options) {
-                g.noFill();
-                g.strokeWeight(1);
-                g.stroke(.55, 1, 1);
-                g.ellipse(0, 0, 50, 50);
+                if (stellarGame.options.drawCamera) {
+                    g.noFill();
+                    g.strokeWeight(1);
+                    g.stroke(.55, 1, 1);
+                    g.ellipse(0, 0, 50, 50);
 
-                var segments = 12;
-                var points = [];
-                for (var i = 0; i < segments; i++) {
-                    points[i] = new Vector(this.position);
-                    points[i].addPolar(30, i * 2 * Math.PI / segments);
+                    var segments = 12;
+                    var points = [];
+                    for (var i = 0; i < segments; i++) {
+                        points[i] = new Vector(this.position);
+                        points[i].addPolar(30, i * 2 * Math.PI / segments);
+                    }
+                    options.universeView.drawShape(g, points);
                 }
-                options.universeView.drawShape(g, points);
             };
 
             this.makeBackgroundStars();
             this.makeUniverseTree();
             this.generateStartRegion();
             this.spawn(this.camera.center);
-            this.spawn(this.touchMarker);
+      //      this.spawn(this.touchMarker);
         },
 
         // Make a quad tree for the universe
@@ -70,6 +72,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
             for (var i = 0; i < backgroundLayers; i++) {
                 backgroundStars[i] = [];
                 var starCount = backgroundStarDensity * (backgroundLayers - i);
+                console.log(starCount);
                 stellarGame.statistics.bgStarCount += starCount;
 
                 for (var j = 0; j < starCount; j++) {
@@ -79,20 +82,22 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
             }
         },
 
-        drawBackgroundStars : function(g) {
-
+        drawBackgroundStars : function(g, options) {
+            var t = stellarGame.time.universeTime;
             g.noStroke();
             for (var i = 0; i < backgroundLayers; i++) {
+                utilities.debugOutput("BG Stars: " + backgroundStars[i].length);
 
                 for (var j = 0; j < backgroundStars[i].length; j++) {
+                    var camera = options.universeView.camera;
+                    var scale = 4000 * camera.zoom / (camera.zoom + z);
 
-                    var x = backgroundStars[i][j][0] - camera.center.x;
-                    var y = backgroundStars[i][j][1] - camera.center.y;
-                    var z = backgroundStars[i][j][2] + Math.pow(4 - i, 2) * 200 + 100;
-                    var scale = camera.zoom / (camera.zoom + z);
+                    var x = backgroundStars[i][j][0] - .01 * camera.center.position.y;
+                    var y = backgroundStars[i][j][1] - .01 * camera.center.position.x * Math.sin(camera.orbitPhi);
+                    var z = backgroundStars[i][j][2] + Math.pow(4 - i, 2) * 2000 + 4000;
 
-                    var loopBoxWidth = 300;
-                    var loopBoxHeight = 200;
+                    var loopBoxWidth = 100;
+                    var loopBoxHeight = 100;
 
                     x = ((x % loopBoxWidth) + loopBoxWidth) % loopBoxWidth - loopBoxWidth / 2;
                     y = ((y % loopBoxHeight) + loopBoxHeight) % loopBoxHeight - loopBoxHeight / 2;
@@ -101,25 +106,27 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
                     var color = backgroundStars[i][j][4];
 
                     // Offset the position
-                    /*
-                     x *= scale;
-                     y *= scale;
-                     */
-                    var r = backgroundStars[i][j][3] * 10 / (z + camera.zoom);
+                    x /= scale;
+                    y /= scale;
+
+                    var r = backgroundStars[i][j][3] * .02 / scale + .1;
 
                     /*x -= camera.angle.x * parallax;
-                     y -= camera.angle.y * parallax;
-                     x -= camera.center.x * parallax;
-                     y -= camera.center.y * parallax;
-                     */
+                    y -= camera.angle.y * parallax;
+                    x -= camera.center.x * parallax;
+                    y -= camera.center.y * parallax;
+                    */
 
-                    g.fill((.1 + .0032 * z) % 1, 1, 1);
-                    //color.fill(, 0, -.8);
-                    g.ellipse(x, y, r, r);
-                    g.text(scale, x + r, y + r);
-                    g.text(scale, x + r, y + r);
-                    //  g.fill(1, 0, 1);
-                    // g.ellipse(x, y, r * .1 + 1, r * .1 + 1);
+                    //g.fill((.1 + .0032 * z) % 1, 1, 1);
+                    //   color.fill(g, 0, -.8);
+                    //  g.ellipse(x, y, r, r);
+                    // g.text(scale, x + r, y + r);
+                    //g.text(scale, x + r, y + r);
+                    var brighten = Math.sin(10 * t + j);
+                    r *= (1 + .2 * brighten);
+                    g.noStroke();
+                    g.fill(1, 0, 1, 1 - i * .3 + .3 * brighten);
+                    g.ellipse(x, y, r * .1 + 1, r * .1 + 1);
 
                 }
             }
@@ -137,13 +144,15 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
         draw : function(g, options) {
 
             if (options.layer === 'bg') {
-                // drawBackgroundStars(g);
+                this.drawBackgroundStars(g, options);
             }
 
             if (options.layer === 'overlay') {
-                g.pushMatrix();
-                //this.quadTree.drawTree(g, options);
-                g.popMatrix();
+                if (stellarGame.options.drawQuadTree) {
+                    g.pushMatrix();
+                    this.quadTree.drawTree(g, options);
+                    g.popMatrix();
+                }
             }
 
         },
@@ -187,7 +196,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
         generateRegion : function(region) {
 
             // Pick some random locations in the region
-            var density = .004;
+            var density = .006;
             var count = Math.ceil(region.w * region.h * density * density);
             var w2 = region.w / 2;
             var h2 = region.h / 2;
@@ -202,14 +211,11 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
                 //obj = new particleTypes.UParticle();
 
-                if (Math.random() > .6) {
-                    //console.log("1");
+                if (Math.random() > .8) {
                     obj = new particleTypes.Trailhead();
-                } else if (Math.random() > .5) {
-                    //console.log("2");
+                } else if (Math.random() > .2) {
                     obj = new particleTypes.Star();
                 } else {
-                    //console.log("3");
                     obj = new particleTypes.Critter();
                 }
 
@@ -218,9 +224,8 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
                 this.spawn(obj);
             }
 
+            //Spawn springs
             /*
-             //Spawn springs
-
              for (var i = 0; i < count; i++) {
              var offset = Math.ceil(Math.random() * (count - 1));
              var offset2 = Math.ceil(Math.random() * (count - 1));

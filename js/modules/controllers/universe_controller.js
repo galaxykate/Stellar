@@ -59,7 +59,8 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
                 var h = universeView.dimensions.height;
 
                 utilities.clearTouchOutput();
-
+     utilities.touchOutput("Current Tool: " + touch.activeTool);
+           
                 // set the last positions to the current position;
                 touch.planeLast.setTo(touch.planePosition);
                 touch.screenLast.setTo(touch.screenPosition);

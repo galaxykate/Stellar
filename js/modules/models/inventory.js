@@ -22,6 +22,9 @@ define(["modules/models/elementSet", "kcolor", "modules/models/vector", "particl
             this.defaultTool = moveTool;
             this.addTool(moveTool);
 
+            var addTest = new toolTypes.Add(this, "Hydrogen", "hydrogen");
+            this.addTool(addTest);
+
             var spawnables = [{
                 name : "Star",
                 constructor : particleTypes.Star,

@@ -55,7 +55,6 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 };
 
                 canvas = document.getElementById("universe_canvas");
-                console.log(canvas);
                 this.processing = new Processing(canvas, initProcessing);
                 this.createThreeCamera();
 
@@ -77,6 +76,8 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 if (time.ellapsed === undefined)
                     time.ellapsed = .03;
                 utilities.constrain(time.ellapsed, .01, .1);
+
+                stellarGame.time.universeTime = time.total;
 
                 time.total = currentTime;
                 utilities.debugOutput("Update " + time.total.toFixed(2) + " fps: " + (1 / time.ellapsed).toFixed(2));
