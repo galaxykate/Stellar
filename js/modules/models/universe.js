@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], function(Vector, KColor, QuadTree, particleTypes) {
+define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules/models/ui/uiManager', 'voronoi'], function(Vector, KColor, QuadTree, particleTypes, uiManager, Voronoi) {
     var backgroundLayers = 3;
     var backgroundStarDensity = 40;
     var Universe = Class.extend({
@@ -54,7 +54,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
             this.makeUniverseTree();
             this.generateStartRegion();
             this.spawn(this.camera.center);
-      //      this.spawn(this.touchMarker);
+            //      this.spawn(this.touchMarker);
         },
 
         // Make a quad tree for the universe
@@ -72,7 +72,6 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
             for (var i = 0; i < backgroundLayers; i++) {
                 backgroundStars[i] = [];
                 var starCount = backgroundStarDensity * (backgroundLayers - i);
-                console.log(starCount);
                 stellarGame.statistics.bgStarCount += starCount;
 
                 for (var j = 0; j < starCount; j++) {
@@ -109,7 +108,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
                     x /= scale;
                     y /= scale;
 
-                    var r = backgroundStars[i][j][3] * .02 / scale + .1;
+                    var r = backgroundStars[i][j][3] * .02 / scale + 7;
 
                     /*x -= camera.angle.x * parallax;
                     y -= camera.angle.y * parallax;
@@ -126,7 +125,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
                     r *= (1 + .2 * brighten);
                     g.noStroke();
                     g.fill(1, 0, 1, 1 - i * .3 + .3 * brighten);
-                    g.ellipse(x, y, r * .1 + 1, r * .1 + 1);
+                    g.ellipse(x, y, r * .1, r * .1);
 
                 }
             }
@@ -162,6 +161,17 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
         //=======================================================
         // Updateing
         update : function(time, activeObjects) {
+            var universe = this;
+            // Use the current tool
+
+            stellarGame.time.universeTime = time.total;
+
+            this.activeRegions = _.filter(activeObjects, function(obj) {
+                return obj.isRegion;
+            });
+
+            stellarGame.touch.update();
+
             $.each(activeObjects, function(index, obj) {
                 obj.beginUpdate(time);
             });
@@ -178,6 +188,8 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
                 obj.finishUpdate(time);
             });
 
+            uiManager.update();
+
             this.quadTree.cleanup();
         },
 
@@ -186,6 +198,45 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
         //=======================================================
         // Generating regions
         generateStartRegion : function() {
+            // Make lots of region centers
+            var universe = this;
+            universe.regions = [];
+            universe.regionCenters = [];
+            var count = 10;
+            var spacing = 400;
+            for (var i = 0; i < count; i++) {
+                for (var j = 0; j < count; j++) {
+                    var wiggleX = spacing * 1 * Math.sin(i + j + Math.random(30));
+                    var wiggleY = spacing * 1 * Math.sin(i + j + 10 + Math.random(30));
+                    var center = new Vector((i - count / 2) * spacing + wiggleX, (j - count / 2) * spacing + wiggleY);
+                    var region = new particleTypes.Region(center);
+                    universe.spawn(region);
+                    universe.regions.push(region);
+                }
+            }
+            $.each(universe.regions, function(index, region) {
+                universe.regionCenters[index] = region.center;
+            });
+
+            var r = 80000;
+            var voronoi = new Voronoi();
+            var bbox = {
+                xl : -r,
+                xr : r,
+                yt : -r,
+                yb : r
+            };
+
+            var diagram = voronoi.compute(universe.regionCenters, bbox);
+
+            // divvy the cells' edges into the correct regions
+            $.each(universe.regions, function(index, region) {
+                var voronoiId = region.center.voronoiId;
+                var cell = diagram.cells[voronoiId];
+
+                region.createFromCell(cell);
+            });
+
             this.generateRegion({
                 center : new Vector(0, 0, 0),
                 w : 8000,
@@ -207,21 +258,22 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
 
                 p.setTo(utilities.random(-w2, w2) + region.center.x, utilities.random(-h2, h2) + region.center.y);
 
-                var obj;
-
                 //obj = new particleTypes.UParticle();
+                if (settings.user == "") {
 
-                if (Math.random() > .8) {
-                    obj = new particleTypes.Trailhead();
-                } else if (Math.random() > .2) {
-                    obj = new particleTypes.Star();
                 } else {
-                    obj = new particleTypes.Critter();
+                    var obj;
+                    if (Math.random() > .8) {
+                        obj = new particleTypes.Trailhead();
+                    } else if (Math.random() > .2) {
+                        obj = new particleTypes.Star();
+                    } else {
+                        obj = new particleTypes.Critter();
+                    }
+
+                    obj.position.setTo(p);
+                    this.spawn(obj);
                 }
-
-                obj.position.setTo(p);
-
-                this.spawn(obj);
             }
 
             //Spawn springs
@@ -241,6 +293,15 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes"], functio
              */
 
         },
+
+        getRegion : function(p) {
+            var universe = this;
+            var region = _.find(this.activeRegions, function(region) {
+                return region.contains(p);
+            });
+            return region;
+        },
+
         spawn : function(object) {
             this.quadTree.insert(object);
         },

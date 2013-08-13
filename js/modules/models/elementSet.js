@@ -135,14 +135,14 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         };
 
         ElementSet.prototype.addElement = function(elementName, volume) {
-             var index;
+            var index;
             for (var i = 0; i < activeElements.length; i++) {
                 if (activeElements[i].name === elementName) {
                     index = i;
                 }
 
             }
-            
+
             utilities.touchOutput("Add " + elementName + " " + volume);
             this.elementQuantity[index] += volume;
             utilities.touchOutput(" result " + this.elementQuantity[elementName]);
@@ -363,9 +363,8 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 
             var parent = $("#" + parentID);
             parent.mouseleave(function() {
-                //console.log("leaving the parent " + parentID);
-                //console.log("var mousedown: false");
-                elementSet.parent.varMouseDown = false;
+
+                elementSet.varMouseDown = false;
             });
 
             for (var i = 0; i < activeElements.length; i++) {
@@ -393,28 +392,29 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 
                 // ========= controller stuff ===========
                 mousedown : function() {
-                    console.log("mouse down on div " + this.id);
-                    console.log("var mousedown: true, siphoning: true, " + elementName);
-                    elementSet.parent.varMouseDown = true;
-                    elementSet.parent.siphoning = true;
-                    elementSet.parent.siphonElement = elementName;
+
+                    //console.log("mouse down on div " + this.id);
+                    //console.log("var mousedown: true, siphoning: true, " + elementName);
+                    elementSet.varMouseDown = true;
+                    elementSet.siphoning = true;
+                    elementSet.siphonElement = elementName;
                 },
                 mouseup : function() {
                     //console.log("mouse up on div " + this.id);
                     //console.log("var mousedown: false, siphoning: false");
-                    elementSet.parent.varMouseDown = false;
-                    elementSet.parent.siphoning = false;
+                    elementSet.varMouseDown = false;
+                    elementSet.siphoning = false;
                 },
                 mouseleave : function() {
                     //console.log("mouse leave on div " + this.id);
                     //console.log("var siphoning: false ");
-                    elementSet.parent.siphoning = false;
+                    elementSet.siphoning = false;
                 },
                 mouseenter : function() {
-                    if (elementSet.parent.varMouseDown) {
+                    if (elementSet.varMouseDown) {
                         console.log("var siphoning: true, " + elementName);
-                        elementSet.parent.siphoning = true;
-                        elementSet.parent.siphonElement = elementName;
+                        elementSet.siphoning = true;
+                        elementSet.siphonElement = elementName;
                     }
                 }
             };
@@ -436,6 +436,8 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         ElementSet.prototype.updateSpanForElement = function(elementID, elementName, elementAmount) {
             var span = $("#" + this.parentIDFromUI + "_" + elementID);
             span.html(elementName + ": " + elementAmount + "<br>");
+
+            //utilities.debugOutput("elementSet update this.siphoning/siphonElements: " + this.siphoning + ", " + this.siphonElements);
 
             if (elementAmount <= 0) {
                 //span.hide();

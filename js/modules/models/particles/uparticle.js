@@ -171,9 +171,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     //console.log("CALLING THIS.REMOVE");
                 }
 
-                if (this.elements.totalMass === 0) {
-                    this.remove();
-                }
             },
 
             initAsParticle : function() {

@@ -61,10 +61,9 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             },
             
             initAsElementHolder : function() {
-            	this.elementsHolder = new UParticle();
-            	this.elementsHolder.initAsElementContainer();
+            	this.elementsHolder = new ElementSet();
             	this.elementsHolder.siphoning = false;
-            	//console.log("new uparticle: " + this.elementsHolder);
+            	console.log("new elementSet as elements holder: " + this.elementsHolder);
             },
             
             initStatisticsHTMLHolder : function() {
@@ -74,7 +73,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             // Only call after attached to a parent: needs parentDivID
             updateIndividualElements : function() {
             	if(this.elementsHolder !== undefined){
-            		this.elementsHolder.elements.addAllElementsToADiv(this.elementsHolderID);
+            		this.elementsHolder.addAllElementsToADiv(this.elementsHolderID);
             	}
             },
             
@@ -119,20 +118,25 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             		// Should be empty! Probably
             	};
             	contents.elementsHolder.update = function() {
-            		utilities.debugOutput("UPDATING CONTENTS?!");
+            		//utilities.debugOutput("UPDATING CONTENTS?!");
+            		//utilities.debugOutput("elementsHolder.siphoning: " + contents.elementsHolder.siphoning + ", " + contents.elementsHolder.siphonElement);
             		if(contents.elementsHolder.siphoning){
             			// siphon selected Element
             			utilities.debugOutput("SIPHONING... " + contents.elementsHolder.siphonElement);
             			// stellargame.touch.activeTool
             			//console.log(stellarGame.touch.activeTool);
-            			stellarGame.touch.activeTool.elements.siphonOneByName(contents.elementsHolder.elements, contents.elementsHolder.siphonElement, .01);
-            			contents.elementsHolder.elements.updateAllElementsInDiv(); 
+            			stellarGame.touch.activeTool.elements.siphonOneByName(contents.elementsHolder, contents.elementsHolder.siphonElement, .01);
+            			
             		}
+            		contents.elementsHolder.updateAllElementsInDiv(); 
             	};
             },
             
-            addElementsToUniverse : function() {
-            	stellarGame.universe.spawn(this.elementsHolder);
+            update : function() {
+            	if(this.elementsHolder !== undefined && this.elementsHolder.update !== undefined){
+            		//utilities.debugOutput("updating in popupContents");
+            		this.elementsHolder.update();
+            	}
             },
  
             

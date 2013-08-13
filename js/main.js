@@ -170,6 +170,7 @@ require.config({
         'jQueryUI' : 'libs/jquery-ui',
         'jQueryUITouchPunch' : 'libs/jquery.ui.touch-punch',
         'jQueryHammer' : 'libs/jquery.hammer',
+        'voronoi' : 'libs/rhill-voronoi-core',
         'underscore' : 'libs/underscore',
         'processing' : 'libs/processing-1.4.1',
         'inheritance' : 'libs/inheritance',
@@ -213,6 +214,10 @@ require.config({
         },
         'three' : {
             exports : 'THREE'
+        },
+
+        'voronoi' : {
+            exports : 'Voronoi'
         },
 
     }
