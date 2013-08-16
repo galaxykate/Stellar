@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(["inheritance", "modules/models/vector", "modules/models/face", "modules/models/elementSet", "uparticle", particleTypePath + "dust", 'lifespan'], function(Inheritance, Vector, Face, ElementSet, UParticle, Dust, Lifespan) {
+define(["inheritance", "modules/models/vector", "modules/models/face", "modules/models/elementSet", "uparticle", particleTypePath + "dust", 'lifespan', "modules/models/ui/glow"], function(Inheritance, Vector, Face, ElementSet, UParticle, Dust, Lifespan, Glow) {
     return (function() {
 
         var states = [{
@@ -159,12 +159,12 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             };
 
             var lifespanOnEnd = function() {
-                console.log("radius at END: " + star.radius);
+                //console.log("radius at END: " + star.radius);
             };
 
             var lifespanOnStart = function() {
-                console.log("radius at start: " + startStarRadius);
-                console.log("sizeToAdd: " + sizeToRemove);
+                //console.log("radius at start: " + startStarRadius);
+                //console.log("sizeToAdd: " + sizeToRemove);
 
             };
 
@@ -217,6 +217,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.radiusModifier = 0;
 
                 stellarGame.statistics.numberOfStars++;
+                
+                this.glow = new Glow(this);
             },
 
             initFace : function() {
@@ -225,6 +227,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             drawBackground : function(g, options) {
                 this._super(g, options);
+                //this.glow.draw(g);
             },
 
             drawMain : function(g, options) {
@@ -259,6 +262,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             update : function(time) {
                 this._super(time);
+                //this.glow.update(this.radius);
                 this.debugOutput(this.state.name);
                 this.debugOutput(this.temperature);
                 updateDustBurning(this);
@@ -271,6 +275,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             },
 
             feedDust : function(touch, tool) {
+            	
                 var newDustObj = new Dust();
                 newDustObj.elements.clearAllElements();
                 newDustObj.position = new Vector();
@@ -282,6 +287,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 stellarGame.universe.spawn(newDustObj);
 
                 startFeedLifespan(this, newDustObj);
+                
 
             }
         });
