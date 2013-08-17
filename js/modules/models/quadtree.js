@@ -131,7 +131,9 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
                     onScreenQuads.push(this);
                 else if (this.children !== undefined) {
                     $.each(this.children, function(index, child) {
-                        child.compileOnscreenQuadrants(onScreenQuads, universeView);
+                    	if(child !== undefined){
+                        	child.compileOnscreenQuadrants(onScreenQuads, universeView);
+                        }
                     });
                 }
 

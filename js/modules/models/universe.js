@@ -7,6 +7,7 @@
 define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules/models/ui/uiManager'], function(Vector, KColor, QuadTree, particleTypes, uiManager) {
     var backgroundLayers = 3;
     var backgroundStarDensity = .03;
+    var locs = [];
     var Universe = Class.extend({
         init : function() {
             backgroundStars = [];
@@ -154,6 +155,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
         // Updateing
         update : function(time, activeObjects) {
         	stellarGame.time.universeTime = time.total;
+        	utilities.debugOutput("Num locs generated: " + locs.length);
         	
             $.each(activeObjects, function(index, obj) {
                 obj.beginUpdate(time);
@@ -170,7 +172,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             $.each(activeObjects, function(index, obj) {
                 obj.finishUpdate(time);
             });
-            
+
             uiManager.update();
 
             this.quadTree.cleanup();
@@ -203,19 +205,20 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
                 p.setTo(utilities.random(-w2, w2) + region.center.x, utilities.random(-h2, h2) + region.center.y);
 
                 var obj;
+                locs.push(p.clone());
 
                 //obj = new particleTypes.UParticle();
 
-                if (Math.random() > .6) {
+                //if (Math.random() > .6) {
                     //console.log("1");
-                    obj = new particleTypes.Trailhead();
-                } else if (Math.random() > .5) {
+                //    obj = new particleTypes.Trailhead();
+                //} else if (Math.random() > .5) {
                     //console.log("2");
                     obj = new particleTypes.Star();
-                } else {
+                //} else {
                     //console.log("3");
-                    obj = new particleTypes.Critter();
-                }
+                //    obj = new particleTypes.Critter();
+                //}
 
                 obj.position.setTo(p);
 
