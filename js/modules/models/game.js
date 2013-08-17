@@ -12,6 +12,9 @@ define(['modules/views/game_view', 'modules/controllers/game_controller', 'modul
 
     var startGame = function() {
         // Make this into a global object
+        
+        var universe = new Universe();
+        stellarGame.universe = universe;
 
         game.view = gameView;
         console.log("START GAME");

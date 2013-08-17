@@ -129,14 +129,8 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
                     onScreenQuads.push(this);
                 else if (this.children !== undefined) {
                     $.each(this.children, function(index, child) {
-<<<<<<< HEAD
-                    	if(child !== undefined){
-                        	child.compileOnscreenQuadrants(onScreenQuads, universeView);
-                        }
-=======
                         if (child !== undefined)
                             child.compileOnscreenQuadrants(onScreenQuads, universeView);
->>>>>>> 8d2d710ce0c7a3792de44f2b4e53153bcfcc6353
                     });
                 }
 
