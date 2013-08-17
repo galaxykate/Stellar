@@ -13,13 +13,12 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         // TUNING VALUES
         var PPCHAINREACTIONTEMP = 1000;
         // proto-proton chain reaction: 4 H to 1 HE
-        var PPAMOUNT = .01;
+
         var TAPREACTIONTEMP = 2000;
         // triple-alpha process : 3 HE to 1 C
-        var TAPAMOUNT = .01;
+
         var MADEUPSTUFFTEMP = 3000;
         // all other elements will convert on a 4-to-1 ratio
-        var MADEUPSTUFFAMOUNT = .01;
         // until more research is done on this
 
         var CUTOFFAMOUNT = 50;
@@ -214,48 +213,53 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
             return count;
         };
 
+		// Only burns 1 element at a time
         ElementSet.prototype.burnSomeFuel = function(temp) {
             var amountToRemove = 0;
-            var heatGenerated = 0;
+            this.heatGenerated = 0;
+            this.burntElementID = -1;
             var burning = false;
             if (temp >= PPCHAINREACTIONTEMP) {
                 if (this.elementQuantity[0] > CUTOFFAMOUNT) {// should be > 4
                     burning = true;
-                    amountToRemove = this.elementQuantity[0] * PPAMOUNT;
+                    this.burntElementID = 0;
+                    amountToRemove = this.elementQuantity[0] * settings.elementBurnAmtScaler;
                     this.elementQuantity[0] -= amountToRemove;
                     this.elementQuantity[1] += amountToRemove / 4;
                     //utilities.debugOutput("REMOVING SOME HYDROGEN?: " + amountToRemove);
-                    heatGenerated += HEATSCALAR;
+                    this.heatGenerated += HEATSCALAR;
                 }
             }
             //utilities.debugOutput("Element Quantity: " + this.elementQuantity);
 
-            if (temp >= TAPREACTIONTEMP) {
+            if (temp >= TAPREACTIONTEMP && burning === false) {
                 if (this.elementQuantity[1] > CUTOFFAMOUNT) {// should be > 3
                     burning = true;
-                    amountToRemove = this.elementQuantity[1] * TAPAMOUNT;
+                    this.burntElementID = 1;
+                    amountToRemove = this.elementQuantity[1] * settings.elementBurnAmtScaler;
                     this.elementQuantity[1] -= amountToRemove;
                     this.elementQuantity[2] += amountToRemove / 4;
                     //utilities.debugOutput("REMOVING SOME HELIUM?: " + amountToRemove);
-                    heatGenerated += HEATSCALAR * 2;
+                    this.heatGenerated += HEATSCALAR * 2;
                 }
             }
 
             for (var i = 2; i < activeElements.length - 1; i++) {
-                if (temp >= MADEUPSTUFFTEMP) {
+                if (temp >= MADEUPSTUFFTEMP && burning === false) {
                     if (this.elementQuantity[i] > CUTOFFAMOUNT) {// should be > 4
                         burning = true;
-                        amountToRemove = this.elementQuantity[i] * MADEUPSTUFFAMOUNT;
+                        this.burntElementID = i;
+                        amountToRemove = this.elementQuantity[i] * settings.elementBurnAmtScaler;
                         this.elementQuantity[i] -= amountToRemove;
                         this.elementQuantity[i + 1] += amountToRemove / 4;
                         //utilities.debugOutput("REMOVING SOME OTHER ELEMENT " + i + ", " + amountToRemove);
-                        heatGenerated += HEATSCALAR * 3;
+                        this.heatGenerated += HEATSCALAR * 3; 
+                        // Iron burns MUCH dimmer and does not produce enough energy
                     }
                 }
             }
 
             this.setTotalMass();
-            return heatGenerated;
 
         }
         /* triggers when a supernova occurs

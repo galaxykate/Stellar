@@ -47,7 +47,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         // Only stars burn dust
         // They burn so long as there is fuel
         var updateDustBurning = function(star) {
-            star.tempGenerated = star.elements.burnSomeFuel(star.temperature);
+        	star.elements.burnSomeFuel(star.temperature);
+            star.tempGenerated = star.elements.heatGenerated;
             //utilities.debugOutput("temp: " + star.tempGenerated);
 
             // If the star is able to burn energy again and is marked as a nova, change it back to a star
@@ -62,11 +63,6 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
         };
 
-        var updateInternalForces = function(star, burnedEnergy) {
-            star.internalGravity = 100 * star.mass;
-            star.outwardForce = 100 * burnedEnergy;
-
-        };
 
         // When enements are added to a dormant star
         var reviveStar = function(star) {
@@ -200,21 +196,15 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.initAsElementContainer();
 
                 this.state = states[0];
-                // turning off random states
+
                 this.radius = calcStarSizeOfElements(this);
 
                 this.initFace();
-                this.temperature = Math.random() * 4000 + 1000;
+                this.density = 1.0; // affects how temperature is figured
+                this.temperature = this.density * this.elements.totalMass * settings.starTempCalcScaler; //Math.random() * 4000 + 1000;
                 this.burningFuel = true;
 
-                // internal gravity will be a function of mass
-                this.internalGravity
-                // outwardForce will be a function of the reactions
-                this.outwardForce
-
                 this.acceptsDust = true;
-
-                this.radiusModifier = 0;
 
                 stellarGame.statistics.numberOfStars++;
                 
@@ -234,9 +224,6 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 // Do all the other drawing
 
                 this._super(g, options);
-                this.idColor.fill(g, .5 + (Math.sin(stellarGame.time.universeTime + this.temperature)) / 4 - .25);
-
-                g.ellipse(0, 0, this.radius + 2, this.radius + 2);
 
                 g.noStroke();
                 if (this.deleted) {
@@ -262,6 +249,9 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             update : function(time) {
                 this._super(time);
+                
+                this.temperature = this.density * this.elements.totalMass * settings.starTempCalcScaler;
+                //utilities.debugOutput("star " + this.idNumber + " temp " + this.temperature);
                 //this.glow.update(this.radius);
                 this.debugOutput(this.state.name);
                 this.debugOutput(this.temperature);
@@ -280,8 +270,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 newDustObj.elements.clearAllElements();
                 newDustObj.position = new Vector();
 
-                newDustObj.position.setTo(touch.planePosition);
-                console.log("New dust made at " + newDustObj.position + "+++++++++++++ " + this.position);
+                newDustObj.position.setTo(touch.planePosition); // still off, not sure which position to grab
+                //console.log("New dust made at " + newDustObj.position + "+++++++++++++ " + this.position);
 
                 tool.elements.transferTo(newDustObj.elements, 1);
                 stellarGame.universe.spawn(newDustObj);
