@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(["inheritance", "modules/models/vector", "modules/models/face", "modules/models/elementSet", "uparticle", particleTypePath + "dust", 'lifespan'], function(Inheritance, Vector, Face, ElementSet, UParticle, Dust, Lifespan) {
+define(["inheritance", "modules/models/vector", "modules/models/face", "modules/models/elementSet", "uparticle", particleTypePath + "dust", 'lifespan', "modules/models/ui/glow"], function(Inheritance, Vector, Face, ElementSet, UParticle, Dust, Lifespan, Glow) {
     return (function() {
 
         var states = [{
@@ -103,90 +103,86 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
         };
 
-		
-		// Dust spirals into the star, star grows into its full size, 
-		// dust shrinks to nothing, transfers all its elements, and dies
-		var startFeedLifespan = function(star, dust){
-			var lifespan = new Lifespan(2);
-			var startStarRadius = star.radius;
-			var sizeToAdd = calcSizeOfElements(dust.elements.totalMass);
-			var radiusToDust = star.position.getDistanceTo(dust.position);
-			var curRadiusToDust = radiusToDust;
-			var angleToDust = dust.position.getAngleTo(star.position);
-			//console.log("DISTANCE/ANGLE: " + radiusToDust + ", " + angleToDust);
-			
-			var lifespanUpdate = function(){
-				star.radius = startStarRadius + (lifespan.figuredPctCompleted * sizeToAdd);
-				//utilities.debugOutput("star radius: " + star.radius);
-				curRadiusToDust = radiusToDust * (1-lifespan.figuredPctCompleted);
-				angleToDust += 0.06;
-				dust.scale = 1-lifespan.figuredPctCompleted;
-				//console.log("curDIST/ANGLE and SCALE: " + curRadiusToDust + ", " + angleToDust + " | " + dust.scale);
-				dust.position.setToPolarOffset(star.position, curRadiusToDust, angleToDust);
-			};
-			
-			var lifespanOnEnd = function(){
-				//console.log("radius at startEND: " + star.radius);
-				// transfering all elements should make the dust disappear, the star set to its final size
-				dust.elements.transferTo(star.elements, 1);
-				//console.log("star should have all dust");
-				//console.log("radius at END: " + star.radius);
-			};
-			
-			var lifespanOnStart = function(){
-				//console.log("radius at start: " + startStarRadius);
-				//console.log("sizeToAdd: " + sizeToAdd);
-				
-			};
-			
-			lifespan.onUpdate(lifespanUpdate);
-			lifespan.onEnd(lifespanOnEnd);
-			lifespan.onStart(lifespanOnStart);
-			
-			star.lifespans.push(lifespan);
+        // Dust spirals into the star, star grows into its full size,
+        // dust shrinks to nothing, transfers all its elements, and dies
+        var startFeedLifespan = function(star, dust) {
+            var lifespan = new Lifespan(2);
+            var startStarRadius = star.radius;
+            var sizeToAdd = calcSizeOfElements(dust.elements.totalMass);
+            var radiusToDust = star.position.getDistanceTo(dust.position);
+            var curRadiusToDust = radiusToDust;
+            var angleToDust = dust.position.getAngleTo(star.position);
+            //console.log("DISTANCE/ANGLE: " + radiusToDust + ", " + angleToDust);
 
-		};
-		
-		// Very quick size down as the dust is expelled
-		var startBurnLifespan = function(star, totalMass){
-			var lifespan = new Lifespan(1);
-			var startStarRadius = star.radius;
-			var sizeToRemove = calcSizeOfElements(totalMass);
-			
-			var lifespanUpdate = function(){
-				star.radius = startStarRadius - (lifespan.figuredPctCompleted * sizeToRemove);
-				//utilities.debugOutput("star radius: " + star.radius);
-				//utilities.debugOutput("% figured completed: " + lifespan.figuredPctCompleted);
-			};
-			
-			var lifespanOnEnd = function(){
-				console.log("radius at END: " + star.radius);
-			};
-			
-			var lifespanOnStart = function(){
-				console.log("radius at start: " + startStarRadius);
-				console.log("sizeToAdd: " + sizeToRemove);
-				
-			};
-			
-			lifespan.onUpdate(lifespanUpdate);
-			lifespan.onEnd(lifespanOnEnd);
-			lifespan.onStart(lifespanOnStart);
-			
-			star.lifespans.push(lifespan);
+            var lifespanUpdate = function() {
+                star.radius = startStarRadius + (lifespan.figuredPctCompleted * sizeToAdd);
+                //utilities.debugOutput("star radius: " + star.radius);
+                curRadiusToDust = radiusToDust * (1 - lifespan.figuredPctCompleted);
+                angleToDust += 0.06;
+                dust.scale = 1 - lifespan.figuredPctCompleted;
+                //console.log("curDIST/ANGLE and SCALE: " + curRadiusToDust + ", " + angleToDust + " | " + dust.scale);
+                dust.position.setToPolarOffset(star.position, curRadiusToDust, angleToDust);
+            };
 
-		};
-		
-		
-		
-		var calcStarSizeOfElements = function(elementHolder){
-			return calcSizeOfElements(elementHolder.elements.totalMass);
-		};
-		
-		var calcSizeOfElements = function(amount) {
-			return Math.pow(amount, .5);
-		}
-		
+            var lifespanOnEnd = function() {
+                //console.log("radius at startEND: " + star.radius);
+                // transfering all elements should make the dust disappear, the star set to its final size
+                dust.elements.transferTo(star.elements, 1);
+                //console.log("star should have all dust");
+                //console.log("radius at END: " + star.radius);
+            };
+
+            var lifespanOnStart = function() {
+                //console.log("radius at start: " + startStarRadius);
+                //console.log("sizeToAdd: " + sizeToAdd);
+
+            };
+
+            lifespan.onUpdate(lifespanUpdate);
+            lifespan.onEnd(lifespanOnEnd);
+            lifespan.onStart(lifespanOnStart);
+
+            star.lifespans.push(lifespan);
+
+        };
+
+        // Very quick size down as the dust is expelled
+        var startBurnLifespan = function(star, totalMass) {
+            var lifespan = new Lifespan(1);
+            var startStarRadius = star.radius;
+            var sizeToRemove = calcSizeOfElements(totalMass);
+
+            var lifespanUpdate = function() {
+                star.radius = startStarRadius - (lifespan.figuredPctCompleted * sizeToRemove);
+                //utilities.debugOutput("star radius: " + star.radius);
+                //utilities.debugOutput("% figured completed: " + lifespan.figuredPctCompleted);
+            };
+
+            var lifespanOnEnd = function() {
+                //console.log("radius at END: " + star.radius);
+            };
+
+            var lifespanOnStart = function() {
+                //console.log("radius at start: " + startStarRadius);
+                //console.log("sizeToAdd: " + sizeToRemove);
+
+            };
+
+            lifespan.onUpdate(lifespanUpdate);
+            lifespan.onEnd(lifespanOnEnd);
+            lifespan.onStart(lifespanOnStart);
+
+            star.lifespans.push(lifespan);
+
+        };
+
+        var calcStarSizeOfElements = function(elementHolder) {
+            return calcSizeOfElements(elementHolder.elements.totalMass);
+        };
+
+        var calcSizeOfElements = function(amount) {
+            return Math.pow(amount, .5);
+        }
         var calcStarSizeOfElements = function(elementHolder) {
             return calcSizeOfElements(elementHolder.elements.totalMass);
         };
@@ -201,7 +197,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             init : function(universe) {
                 this._super(universe);
 
-       			this.initAsElementContainer();
+                this.initAsElementContainer();
 
                 this.state = states[0];
                 // turning off random states
@@ -209,7 +205,6 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
                 this.initFace();
                 this.temperature = Math.random() * 4000 + 1000;
-                //console.log("star " + this.idNumber + " temp: " + this.temperature);
                 this.burningFuel = true;
 
                 // internal gravity will be a function of mass
@@ -222,6 +217,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.radiusModifier = 0;
 
                 stellarGame.statistics.numberOfStars++;
+                
+                this.glow = new Glow(this);
             },
 
             initFace : function() {
@@ -230,27 +227,32 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             drawBackground : function(g, options) {
                 this._super(g, options);
+                //this.glow.draw(g);
             },
 
             drawMain : function(g, options) {
                 // Do all the other drawing
 
                 this._super(g, options);
-                this.idColor.fill(g, (Math.sin(stellarGame.time.universeTime + this.temperature)) / 4 - .25);
+                this.idColor.fill(g, .5 + (Math.sin(stellarGame.time.universeTime + this.temperature)) / 4 - .25);
+
+                g.ellipse(0, 0, this.radius + 2, this.radius + 2);
+
                 g.noStroke();
                 if (this.deleted) {
                     g.fill(.2, 0, .4);
                     g.stroke(1, 0, 1, .7);
                 }
 
+                this.idColor.fill(g);
                 g.ellipse(0, 0, this.radius, this.radius);
 
                 if (stellarGame.drawFaces) {
 
                     this.face.draw(g);
-            
+
                 }
-                
+
             },
 
             drawOverlay : function(g, options) {
@@ -260,6 +262,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             update : function(time) {
                 this._super(time);
+                //this.glow.update(this.radius);
                 this.debugOutput(this.state.name);
                 this.debugOutput(this.temperature);
                 updateDustBurning(this);
@@ -272,9 +275,11 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             },
 
             feedDust : function(touch, tool) {
+            	
                 var newDustObj = new Dust();
                 newDustObj.elements.clearAllElements();
                 newDustObj.position = new Vector();
+
                 newDustObj.position.setTo(touch.planePosition);
                 console.log("New dust made at " + newDustObj.position + "+++++++++++++ " + this.position);
 
@@ -282,6 +287,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 stellarGame.universe.spawn(newDustObj);
 
                 startFeedLifespan(this, newDustObj);
+                
 
             }
         });

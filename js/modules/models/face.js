@@ -20,7 +20,7 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
         }
 
         function drawFace(g) {
-
+      
             g.pushMatrix();
             drawHalfFace(g, false, this);
             g.popMatrix();

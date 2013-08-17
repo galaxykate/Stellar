@@ -6,15 +6,14 @@
 
 define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
     var quadrantCount = 0;
-    var maxLevels = 4;
+    var maxLevels = 6;
     var quadrantOffsets = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
     var quadrantIndices = [[0, 1], [3, 2]];
 
     // Make the star class
     //  Extend the star
-    var maxRadius = 5000;
+    var maxRadius = 15000;
     var minRadius = maxRadius / (Math.pow(2, maxLevels - 1));
-    console.log(minRadius);
 
     var QuadTree = Class.extend({
 
@@ -81,7 +80,6 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
             if (depth === undefined)
                 depth = maxLevels;
 
-            // console.log(this.level + "/" + depth + ": " + p);
             var quadrant = this.getQuadrantIndex(p);
 
             // If this is the final level, return it
@@ -131,9 +129,14 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
                     onScreenQuads.push(this);
                 else if (this.children !== undefined) {
                     $.each(this.children, function(index, child) {
+<<<<<<< HEAD
                     	if(child !== undefined){
                         	child.compileOnscreenQuadrants(onScreenQuads, universeView);
                         }
+=======
+                        if (child !== undefined)
+                            child.compileOnscreenQuadrants(onScreenQuads, universeView);
+>>>>>>> 8d2d710ce0c7a3792de44f2b4e53153bcfcc6353
                     });
                 }
 
@@ -232,8 +235,6 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
                 });
 
                 if (incorrectlyPlaced.length > 0) {
-                    console.log("Incorrectly placed: ");
-                    console.log(incorrectlyPlaced);
 
                     $.each(incorrectlyPlaced, function(index, obj) {
                         quad.root.insert(obj);

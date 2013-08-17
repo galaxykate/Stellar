@@ -100,7 +100,6 @@ define(["modules/models/vector", "uparticle", "kcolor"], function(Vector, UParti
 
                 g.fill(1);
                 g.text(this.label, p.x, p.y - 10);
-
                 var t = stellarGame.time.universeTime;
                 for (var i = 0; i < 30; i++) {
                     this.idColor.fill(g, .3 + .5 * Math.sin(i), 1);
@@ -122,24 +121,16 @@ define(["modules/models/vector", "uparticle", "kcolor"], function(Vector, UParti
 
                 this.direction.mult(0);
 
-                var d = touch.planeOffset.magnitude();
-                //this.direction.mult(-.4);
-
-                if (d === 0 || d === NaN) {
-                    console.log("DIRECTION MAGNITUDE ERROR: " + d);
-                    d = .00001;
-                }
                 //  this.direction.addMultiple(touch.planeOffset, Math.pow(d, .5) / d);
 
                 // Add some movement based on the edge that we're pointing at
-         
-                var edgeStrength = touch.screenPct.magnitude();
-                var moveStrength = 300*Math.pow(edgeStrength, 1.5);
-                this.direction.addMultiple(touch.planeCenterOffset, -moveStrength / touch.planeCenterOffset.magnitude());
-             
+                if (touch.planeCenterOffset.magnitude() !== 0) {
+                    var edgeStrength = touch.screenPct.magnitude();
+                    var moveStrength = 300 * Math.pow(Math.max(edgeStrength - .3, 0), 1.5);
+                    this.direction.addMultiple(touch.planeCenterOffset, -moveStrength / touch.planeCenterOffset.magnitude());
 
-                stellarGame.universe.addScrollingMovement(this.direction);
-
+                    stellarGame.universe.addScrollingMovement(this.direction);
+                }
             },
 
             //==========================================================

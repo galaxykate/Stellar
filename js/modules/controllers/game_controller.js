@@ -70,7 +70,7 @@ define(['modules/controllers/universe_controller', 'jQueryUI'], function(univers
                     } else {
                         stellarGame[setting.id] = false;
                     }
-                    console.log(stellarGame[setting.id]);
+               
                 });
 
             });

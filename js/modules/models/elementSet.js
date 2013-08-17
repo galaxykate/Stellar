@@ -6,9 +6,9 @@
 
 define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
     var polarVertex = function(g, r, theta) {
-        g.vertex(r*Math.cos(theta), r*Math.sin(theta));
+        g.vertex(r * Math.cos(theta), r * Math.sin(theta));
     };
-    
+
     return (function() {
         // TUNING VALUES
         var PPCHAINREACTIONTEMP = 1000;
@@ -21,9 +21,9 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         // all other elements will convert on a 4-to-1 ratio
         var MADEUPSTUFFAMOUNT = .01;
         // until more research is done on this
-        
+
         var CUTOFFAMOUNT = 50;
-		var HEATSCALAR = 100;
+        var HEATSCALAR = 100;
         // Private functions
 
         // Which elements are actually active in this game?
@@ -110,35 +110,51 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
             target.setTotalMass();
 
         };
-        
+
         // Siphon off 1 element by name and percentage
         ElementSet.prototype.siphonOneByName = function(target, elementName, pct) {
-        	var index;
+            var index;
             for (var i = 0; i < activeElements.length; i++) {
-                if(activeElements[i].name === elementName){
-                	index = i;
+                if (activeElements[i].name === elementName) {
+                    index = i;
                 }
 
-           	}
+            }
 
             var siphonAmt = Math.max(1, target.elementQuantity[index] * pct);
-            if(target.elementQuantity[index] < siphonAmt) siphonAmt = target.elementQuantity[index];
+            if (target.elementQuantity[index] < siphonAmt)
+                siphonAmt = target.elementQuantity[index];
             utilities.debugOutput("Siphoning " + siphonAmt);
 
             this.elementQuantity[index] += siphonAmt;
             target.elementQuantity[index] -= siphonAmt
 
-
             this.setTotalMass();
             target.setTotalMass();
 
         };
-        
+
+        ElementSet.prototype.addElement = function(elementName, volume) {
+            var index;
+            for (var i = 0; i < activeElements.length; i++) {
+                if (activeElements[i].name === elementName) {
+                    index = i;
+                }
+
+            }
+
+            utilities.touchOutput("Add " + elementName + " " + volume);
+            this.elementQuantity[index] += volume;
+            utilities.touchOutput(" result " + this.elementQuantity[elementName]);
+
+            this.setTotalMass();
+        };
+
         // Transfer a specific amount of elements to the target
         ElementSet.prototype.transferAmountsTo = function(target, amounts) {
             for (var i = 0; i < amounts.length; i++) {
                 this.elementQuantity[i] -= amounts[i];
-				target.elementQuantity[i] += amounts[i];
+                target.elementQuantity[i] += amounts[i];
 
             }
 
@@ -169,15 +185,14 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
             this.setTotalMass();
 
         };
-        
-        ElementSet.prototype.clearAllElements = function(){
-        	for (var i = 0; i < activeElements.length; i++) {
+
+        ElementSet.prototype.clearAllElements = function() {
+            for (var i = 0; i < activeElements.length; i++) {
                 this.elementQuantity[i] = 0;
             }
-            
+
             this.setTotalMass();
         }
-
         //===============================================================
         //===============================================================
         //===============================================================
@@ -200,72 +215,71 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         };
 
         ElementSet.prototype.burnSomeFuel = function(temp) {
-        	var amountToRemove = 0;
-        	var heatGenerated = 0;
-        	var burning = false;
-        	if(temp >= PPCHAINREACTIONTEMP){
-        		if(this.elementQuantity[0] > CUTOFFAMOUNT){ // should be > 4
-        			burning = true;
-        			amountToRemove = this.elementQuantity[0]*PPAMOUNT;
-        			this.elementQuantity[0] -= amountToRemove;
-        			this.elementQuantity[1] += amountToRemove/4;
-        			//utilities.debugOutput("REMOVING SOME HYDROGEN?: " + amountToRemove);
-        			heatGenerated += HEATSCALAR;
-        		}
-        	}
-        	//utilities.debugOutput("Element Quantity: " + this.elementQuantity);
-        	
-        	if(temp >= TAPREACTIONTEMP) {
-        		if(this.elementQuantity[1] > CUTOFFAMOUNT){ // should be > 3
-        			burning = true;
-        			amountToRemove = this.elementQuantity[1]*TAPAMOUNT;
-        			this.elementQuantity[1] -= amountToRemove;
-        			this.elementQuantity[2] += amountToRemove/4;
-        			//utilities.debugOutput("REMOVING SOME HELIUM?: " + amountToRemove);
-        			heatGenerated += HEATSCALAR*2;
-        		}
-        	}
-        	
-        	for(var i = 2; i < activeElements.length-1; i++){
-        		if(temp >= MADEUPSTUFFTEMP){
-	        		if(this.elementQuantity[i] > CUTOFFAMOUNT){ // should be > 4
-	        			burning = true;
-	        			amountToRemove = this.elementQuantity[i]*MADEUPSTUFFAMOUNT;
-	        			this.elementQuantity[i] -= amountToRemove;
-	        			this.elementQuantity[i+1] += amountToRemove/4;
-	        			//utilities.debugOutput("REMOVING SOME OTHER ELEMENT " + i + ", " + amountToRemove);
-	        			heatGenerated += HEATSCALAR*3;
-	        		}
-        		}
-        	}
-        	
-        	this.setTotalMass();
-        	return heatGenerated;
-        	
+            var amountToRemove = 0;
+            var heatGenerated = 0;
+            var burning = false;
+            if (temp >= PPCHAINREACTIONTEMP) {
+                if (this.elementQuantity[0] > CUTOFFAMOUNT) {// should be > 4
+                    burning = true;
+                    amountToRemove = this.elementQuantity[0] * PPAMOUNT;
+                    this.elementQuantity[0] -= amountToRemove;
+                    this.elementQuantity[1] += amountToRemove / 4;
+                    //utilities.debugOutput("REMOVING SOME HYDROGEN?: " + amountToRemove);
+                    heatGenerated += HEATSCALAR;
+                }
+            }
+            //utilities.debugOutput("Element Quantity: " + this.elementQuantity);
+
+            if (temp >= TAPREACTIONTEMP) {
+                if (this.elementQuantity[1] > CUTOFFAMOUNT) {// should be > 3
+                    burning = true;
+                    amountToRemove = this.elementQuantity[1] * TAPAMOUNT;
+                    this.elementQuantity[1] -= amountToRemove;
+                    this.elementQuantity[2] += amountToRemove / 4;
+                    //utilities.debugOutput("REMOVING SOME HELIUM?: " + amountToRemove);
+                    heatGenerated += HEATSCALAR * 2;
+                }
+            }
+
+            for (var i = 2; i < activeElements.length - 1; i++) {
+                if (temp >= MADEUPSTUFFTEMP) {
+                    if (this.elementQuantity[i] > CUTOFFAMOUNT) {// should be > 4
+                        burning = true;
+                        amountToRemove = this.elementQuantity[i] * MADEUPSTUFFAMOUNT;
+                        this.elementQuantity[i] -= amountToRemove;
+                        this.elementQuantity[i + 1] += amountToRemove / 4;
+                        //utilities.debugOutput("REMOVING SOME OTHER ELEMENT " + i + ", " + amountToRemove);
+                        heatGenerated += HEATSCALAR * 3;
+                    }
+                }
+            }
+
+            this.setTotalMass();
+            return heatGenerated;
+
         }
-        
         /* triggers when a supernova occurs
          * densityPerc: The percent of elements, from least dense to most dense. 1 = 100%, sheds some of all elements the star contains
          * 				Provides a hard cut-off point of the other two functions.
          * amtPerc: The percent of the least dense element to toss out. 1 = 100%, sheds all of the that density the star contains
-         * amtDegradePerc: The percentage subtracted from amtPerc from each low-dense element to the next higher-dense element. 
+         * amtDegradePerc: The percentage subtracted from amtPerc from each low-dense element to the next higher-dense element.
          * 					0% = all amtPerc is carried over to the next highest element
-         * 
+         *
          * For example: 1, 1, 0: throws all elements of the star off
          * 				1, .5, .5: throws 50% of H, 25% of He, 12.5% of C, etc until the end of the elements list
          * 				.5, .1, .1: throws 10% of H, 9% of He, 8.1% of C, etc until we've gone through HALF of elements the star contains
          */
         ElementSet.prototype.calcShedElements = function(densityPerc, amtPerc, amtDegradePerc) {
-        	var numElementsToShed = Math.floor(densityPerc*(activeElements.length-1));
-        	var curAmtPercToShed = amtPerc;
-        	var amtToShed = [];
-        	for(var i = 0; i <= numElementsToShed; i++){
-        		amtToShed.push(this.elementQuantity[i] * curAmtPercToShed);
-        		curAmtPercToShed *= amtDegradePerc;
-        	}
-        	return amtToShed;
+            var numElementsToShed = Math.floor(densityPerc * (activeElements.length - 1));
+            var curAmtPercToShed = amtPerc;
+            var amtToShed = [];
+            for (var i = 0; i <= numElementsToShed; i++) {
+                amtToShed.push(this.elementQuantity[i] * curAmtPercToShed);
+                curAmtPercToShed *= amtDegradePerc;
+            }
+            return amtToShed;
         };
-        
+
         //===============================================================
         //=========================   drawing   ========================
         //===============================================================
@@ -338,103 +352,108 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 
             }
         };
-        
+
         // ===============================================================
         // ==================== View Stuff ========================
         // ===============================================================
-        
-        ElementSet.prototype.addAllElementsToADiv = function(parentID){
-        	var elementSet = this;
-        	this.parentIDFromUI = parentID;
-        	
-        	var parent = $("#" + parentID);
+
+        ElementSet.prototype.addAllElementsToADiv = function(parentID) {
+            var elementSet = this;
+            this.parentIDFromUI = parentID;
+
+            var parent = $("#" + parentID);
             parent.mouseleave(function() {
-            	//console.log("leaving the parent " + parentID);
-            	//console.log("var mousedown: false");
-            	elementSet.varMouseDown = false;
+
+                elementSet.varMouseDown = false;
             });
-        	
-        	for(var i = 0; i < activeElements.length; i++) {
-        		//if(this.elementQuantity[i] > 0){
-        			this.createSpanForElement(parentID, activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i]);
-        		//}
-        	}
+
+            for (var i = 0; i < activeElements.length; i++) {
+                //if(this.elementQuantity[i] > 0){
+                this.createSpanForElement(parentID, activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i]);
+                //}
+            }
         };
-        
+
         // Only call once all elements have been added to the parent div!
-        ElementSet.prototype.updateAllElementsInDiv = function(){
-        	
-        	for(var i = 0; i < activeElements.length; i++) {
-        		this.updateSpanForElement(activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i]);
-        	}
+        ElementSet.prototype.updateAllElementsInDiv = function() {
+
+            for (var i = 0; i < activeElements.length; i++) {
+                this.updateSpanForElement(activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i]);
+            }
         };
-        
-        ElementSet.prototype.createSpanForElement = function(parentID, elementID, elementName, elementAmount){
-        	var elementSet = this;
-        	
-    		var options = {
+
+        ElementSet.prototype.createSpanForElement = function(parentID, elementID, elementName, elementAmount) {
+            var elementSet = this;
+
+            var options = {
                 html : elementName + ": " + elementAmount + "<br>",
                 "class" : "element",
                 "id" : this.parentIDFromUI + "_" + elementID,
-                
+
                 // ========= controller stuff ===========
                 mousedown : function() {
-                	//console.log("mouse down on div " + this.id);
-                	//console.log("var mousedown: true, siphoning: true, " + elementName);
-                	elementSet.varMouseDown = true;
-                	elementSet.siphoning = true;
-                	elementSet.siphonElement = elementName;
+
+                    //console.log("mouse down on div " + this.id);
+                    //console.log("var mousedown: true, siphoning: true, " + elementName);
+                    elementSet.varMouseDown = true;
+                    elementSet.siphoning = true;
+                    elementSet.siphonElement = elementName;
                 },
                 mouseup : function() {
-                	//console.log("mouse up on div " + this.id);
-                	//console.log("var mousedown: false, siphoning: false");
-                	elementSet.varMouseDown = false;
-                	elementSet.siphoning = false;
+                    //console.log("mouse up on div " + this.id);
+                    //console.log("var mousedown: false, siphoning: false");
+                    elementSet.varMouseDown = false;
+                    elementSet.siphoning = false;
                 },
-                mouseleave: function() {
-                	//console.log("mouse leave on div " + this.id);
-                	//console.log("var siphoning: false ");
-                	elementSet.siphoning = false;
+                mouseleave : function() {
+                    //console.log("mouse leave on div " + this.id);
+                    //console.log("var siphoning: false ");
+                    elementSet.siphoning = false;
                 },
-                mouseenter: function() {
-                	if(elementSet.varMouseDown){
-                		console.log("var siphoning: true, " + elementName);
-                		elementSet.siphoning = true;
-                		elementSet.siphonElement = elementName;
-                	}
+                mouseenter : function() {
+                    if (elementSet.varMouseDown) {
+                        console.log("var siphoning: true, " + elementName);
+                        elementSet.siphoning = true;
+                        elementSet.siphonElement = elementName;
+                    }
                 }
             };
-            
-            var span = $('<span/>', options);
-            if(elementAmount <= 0){
-            	//span.hide();
-            	span.css({ opacity: .2 });
-            	//console.log("hiding span " + elementName);
-            }
-            
-            var parent = $("#" + parentID);
-			parent.append(span);
 
-    	};
-    	
-    	ElementSet.prototype.updateSpanForElement = function(elementID, elementName, elementAmount){
+            var span = $('<span/>', options);
+            if (elementAmount <= 0) {
+                //span.hide();
+                span.css({
+                    opacity : .2
+                });
+                //console.log("hiding span " + elementName);
+            }
+
+            var parent = $("#" + parentID);
+            parent.append(span);
+
+        };
+
+        ElementSet.prototype.updateSpanForElement = function(elementID, elementName, elementAmount) {
             var span = $("#" + this.parentIDFromUI + "_" + elementID);
             span.html(elementName + ": " + elementAmount + "<br>");
+
             //utilities.debugOutput("elementSet update this.siphoning/siphonElements: " + this.siphoning + ", " + this.siphonElements);
-            
-            if(elementAmount <= 0){
-            	//span.hide();
-            	span.css({ opacity: .2 });
-            	//console.log("hiding span " + elementName);
+
+            if (elementAmount <= 0) {
+                //span.hide();
+                span.css({
+                    opacity : .2
+                });
+                //console.log("hiding span " + elementName);
             } else {
-            	//span.show();
-            	span.css({ opacity: 1 });
-            	//console.log("showing span " + elementName);
+                //span.show();
+                span.css({
+                    opacity : 1
+                });
+                //console.log("showing span " + elementName);
             }
 
-    	};
-
-        
+        };
 
         return ElementSet;
     })();

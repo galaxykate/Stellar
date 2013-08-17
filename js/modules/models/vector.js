@@ -229,10 +229,19 @@ define(["three"], function(THREE) {
 
             toString : function(precision) {
                 if (precision === undefined)
-                precision = 0;
+                    precision = 0;
                 return "(" + this.x.toFixed(precision) + ", " + this.y.toFixed(precision) + ", " + this.z.toFixed(precision) + ")";
             },
         };
+
+        // Class functions
+        Vector.sub = function(a, b) {
+            return new Vector(a.x - b.x, a.y - b.y, a.z - b.z);
+        };
+
+        Vector.dot = function(a, b) {
+            return a.x * b.x + a.y * b.y + a.z * b.z;
+        }
 
         return Vector;
     })();

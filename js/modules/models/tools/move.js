@@ -86,7 +86,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 g.fill(1, 0, 1, .4);
                 g.ellipse(0, 0, 10, 10);
 
-                this.drawDirection(g, p);
+             //   this.drawDirection(g, p);
 
                 g.fill(1, 0, 1);
                 g.text(this.elements.totalMass, 5, 15);
@@ -128,7 +128,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
                 if (this.mode === COLLECT) {
                     if (stellarGame.touch.pressed) {
-                        this.drawDirection(g, p);
+                      //  this.drawDirection(g, p);
                     }
                 }
                 g.popMatrix();

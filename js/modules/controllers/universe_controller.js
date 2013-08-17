@@ -4,9 +4,13 @@
 
 // Create the way that the game will render on-screen
 
-define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function(Vector, $) {
+define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"], function(Vector, $, $, KColor) {
     var maxHistory = 50;
     return (function() {
+
+        var player = {
+            idColor : new KColor(Math.random(), 1, 1),
+        };
 
         // Attach mouse events to the world window
         var universeView, universe;
@@ -51,58 +55,87 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
         }
 
         //=====
+
+        var updateTouchPositions = function(p) {
+            if (p === undefined) {
+                p = touch.screenPosition;
+            }
+
+            var w = universeView.dimensions.width;
+            var h = universeView.dimensions.height;
+
+            // If the position is updated
+            // set the last positions to the current position;
+            touch.planeLast.setTo(touch.planePosition);
+            touch.screenLast.setTo(touch.screenPosition);
+            touch.screenPosition.setTo(p);
+            if (touch.pressed) {
+
+                touch.dragOffset.setTo(-touch.lastPressed.x + p.x, -touch.lastPressed.y + p.y);
+            }
+
+            // where is the plane position?  Project that back so that the screen position has depth
+
+            universeView.projectToPlanePosition(touch.screenPosition, touch.planePosition);
+            universeView.convertToScreenPosition(touch.planePosition, touch.screenPosition);
+
+            // Set the offsets
+            touch.screenOffset.setToAddMultiple(touch.screenPosition, 1, touch.screenLast, -1)
+
+            touch.planeOffset.setToAddMultiple(touch.planePosition, 1, touch.planeLast, -1);
+
+            // How far is the touch from the screen's center position on the plane?
+            touch.planeCenterOffset.setToDifference(universeView.camera.center.position, touch.planePosition);
+
+            touch.screenPct.setTo(touch.screenPosition);
+            touch.screenPct.x /= w;
+            touch.screenPct.y /= h;
+            touch.screenPct.z = 0;
+            utilities.touchOutput("ScreenPct: " + touch.screenPct.toString(2) + " w: " + w + " h: " + h);
+
+            // Add to the history
+            touch.historyIndex = (touch.historyIndex + 1) % maxHistory;
+            touch.history[touch.historyIndex] = new Vector(touch.planePosition);
+
+        };
+
+        var toScreenPosition = function(p) {
+            var w = universeView.dimensions.width;
+            var h = universeView.dimensions.height;
+            return new Vector(p.x - w / 2, -p.y + h / 2);
+        };
+
         var initTouchFunctions = function() {
 
             // Move the primary touch/mouse to this positon
             var touchMove = function(p) {
-                var w = universeView.dimensions.width;
-                var h = universeView.dimensions.height;
-
+                if (p !== undefined) {
+                    updateTouchPositions(p);
+                }
                 utilities.clearTouchOutput();
+                utilities.touchOutput("Current Tool: " + touch.activeTool);
 
-                // set the last positions to the current position;
-                touch.planeLast.setTo(touch.planePosition);
-                touch.screenLast.setTo(touch.screenPosition);
-                touch.screenPosition.setTo(p.x - w / 2, -p.y + h / 2);
-
-                // where is the plane position?  Project that back so that the screen position has depth
-
-                universeView.projectToPlanePosition(touch.screenPosition, touch.planePosition);
-                universeView.convertToScreenPosition(touch.planePosition, touch.screenPosition);
-
-                // Set the offsets
-                touch.screenOffset.setToAddMultiple(touch.screenPosition, 1, touch.screenLast, -1)
-
-                touch.planeOffset.setToAddMultiple(touch.planePosition, 1, touch.planeLast, -1);
-
-                // How far is the touch from the screen's center position on the plane?
-                touch.planeCenterOffset.setToDifference(universeView.camera.center.position, touch.planePosition);
-
-                touch.screenPct.setTo(touch.screenPosition);
-                touch.screenPct.x /= w;
-                touch.screenPct.y /= h;
-                touch.screenPct.z = 0;
-                utilities.touchOutput("ScreenPct: " + touch.screenPct.toString(2) + " w: " + w + " h: " + h);
-
-                // Add to the history
-                touch.historyIndex = (touch.historyIndex + 1) % maxHistory;
-                touch.history[touch.historyIndex] = new Vector(touch.planePosition);
-
+                // Get the objects that the cursor is over
                 touch.overObjects = universeView.getTouchableAt(touch.planePosition);
+
+                // Get the regions that the cursor is over
+                touch.region = universe.getRegion(touch.planePosition);
+                if (touch.region)
+                    touch.region.setOwner(player);
+
                 utilities.touchOutput(touch.overObjects);
 
                 if (touch.pressed) {
 
-                    touch.dragOffset.setTo(-touch.lastPressed.x + p[0], -touch.lastPressed.y + p[1]);
                     if (touch.activeTool !== undefined) {
                         touch.activeTool.touchDrag(touch);
-
                     }
 
                 } else {
                     touch.activeTool.touchMove(touch);
 
                 }
+
                 controlUpdated();
             };
 
@@ -135,7 +168,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
 
                 touch.lastAction = "touch";
                 touch.lastActionOutput = relPos;
-                touchDown(relPos);
+                touchDown(toScreenPosition(relPos));
 
             });
 
@@ -145,7 +178,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
 
                 touch.lastAction = "drag";
                 touch.lastActionOutput = relPos;
-                touchMove(relPos);
+                touchMove(toScreenPosition(relPos));
 
             });
 
@@ -155,10 +188,13 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer"], function
 
                 touch.lastAction = "release";
                 touch.lastActionOutput = relPos;
-                touchUp(relPos);
+                touchUp(toScreenPosition(relPos));
             });
 
             touch.lastAction = "none";
+            touch.update = function() {
+                touchMove();
+            };
 
         };
         //=====
