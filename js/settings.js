@@ -10,7 +10,7 @@ var settings = {
 	
 	// Sets the rate that the star burns through its fuel if it past its temp threshold
 	// Debug default has been 0.01, but we probably will scale it way slower than that
-	elementBurnAmtScaler : 0.01,
+	elementBurnAmtScaler : 0.005,
 	
 	// Star temperature is based on density and mass of the star
 	// density * totalMass * starTempCalcScalar
