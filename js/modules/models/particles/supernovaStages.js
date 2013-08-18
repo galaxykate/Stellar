@@ -14,18 +14,15 @@
 
 define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "dust", "modules/models/ui/glow"], function(Inheritance, Vector, Lifespan, Dust, Glow) {
 
-	// Step 1
-    var fusionOfElement = function(star) {
-    	
-    };
+	// Step 1 -- handled in star with help from elementSet
 	
 	// Step 2
-    var collapse = function(star) {
+    var collapse = function(star, collapseScale) {
     	star.state = star.states[3];
     	
     	var lifespan = new Lifespan(3);
         var startStarRadius = star.radius;
-        var sizeToRemove = star.radius * 0.2;
+        var sizeToRemove = star.radius * collapseScale;
         var triggeredFadeOut = false;
 
         var lifespanUpdate = function() {
@@ -101,7 +98,6 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
     };
 
     return {
-        fusionOfElement:fusionOfElement,
         collapse:collapse,
         fullCollapse:fullCollapse, 
         explode:explode

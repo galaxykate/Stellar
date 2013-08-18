@@ -297,8 +297,8 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
             for (var i = 0; i < activeElements.length; i++) {
                 var amt = this.elementQuantity[i];
                 if (amt > 0) {
-                    var outerRadius = amt / innerRadius + innerRadius;
-
+                    //var outerRadius = amt / innerRadius + innerRadius;
+					var outerRadius = innerRadius + 2;
                     var thetaRange = totalRange * amt / this.totalMass;
                     g.fill(.1 * i, 1, 1);
 
