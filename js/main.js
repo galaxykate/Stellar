@@ -87,6 +87,10 @@ var utilities = {
 
     },
 
+    getRandom : function(array) {
+        return array[Math.floor(Math.random() * array.length)];
+    },
+
     constrain : function(val, lowerBound, upperBound) {
         if (Math.max(val, upperBound) === val)
             return upperBound;
@@ -94,15 +98,12 @@ var utilities = {
             return lowerBound;
         return val;
     },
-
     lerp : function(start, end, percent) {
         return (start + percent * (end - start));
     },
-
     debugOutput : function(output) {
         $("#debug_output").append(output + "<br>");
     },
-
     touchOutput : function(output) {
         $("#touch_output").append(output + "<br>");
     },
@@ -115,11 +116,9 @@ var utilities = {
 
         });
     },
-
     clearDebugOutput : function() {
         $("#debug_output").html("");
     },
-
     noiseInstance : undefined,
     // Takes up to 4 arguments and picks the correct 1D - 4D noise if those variables are defined
     // Refines the simplex noise to be 0-1 rather than -1 to 1
@@ -141,7 +140,6 @@ var utilities = {
 
         return (result + 1) / 2;
     },
-
     random : function() {
         if (arguments.length === 0)
             return Math.random();
@@ -152,7 +150,6 @@ var utilities = {
 
         return Math.random();
     },
-
     roundNumber : function(num, places) {
         // default 2 decimal places
         if (places === undefined) {
@@ -180,6 +177,7 @@ require.config({
         'toolTypes' : 'modules/models/tools/tool_types',
         'tool' : 'modules/models/tools/tool',
         'uparticle' : 'modules/models/particles/uparticle',
+        'chanceTable' : 'modules/models/chanceTable',
 
         'spring' : 'modules/models/particles/spring',
         'kcolor' : 'modules/models/kcolor',

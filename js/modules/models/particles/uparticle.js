@@ -7,6 +7,38 @@
 define(["inheritance", "modules/models/vector", "modules/models/elementSet", "noise", "kcolor"], function(Inheritance, Vector, ElementSet, Noise, KColor) {
     return (function() {
 
+        var endSyllables = "eum eia ia on a ius us is ux un eus os ium o or um ens oo ui ii".split(" ");
+        var midSyllables = "alph asp oph eon oly er aph azz elt ynst aev ym ian atz ers yll ial iar yllb idr ats id ann ezz anth arthr erc isth uk isgr ell az arz oon arkh ic aeon ettr urth ythr ogg ast ol elz yt or em in orn yrr ysm ystr agn eops ad umb eal aur apr ael icr et elt erg iot ec ulp eg ers ict isc app ups il on av icr ert osc ydr usc yr".split(" ");
+
+        var startSyllables = "Xer Stryl Micr Luc Koch Hel Gall Laev Liall Ros Hyb Ith Idri Vald Ter Zen Thal Thund Shor Kur Rem Nym Hyum Melm Kuk Xen Mal Saur Vekt Vhil Tran Zar Zil Ur Zyrg Thral Torm Orth Bel Zag Chth Cyt Deuc Dos Gur Hydr Khar Lag Iag Lith Lum Lun Om Prysm".split(" ");
+
+        var generateName = function(maxCharacters) {
+            if (maxCharacters === undefined)
+                maxCharacters = 10;
+            var finishedName = undefined;
+            while (finishedName === undefined) {
+                var name = utilities.getRandom(startSyllables);
+                if (Math.random() > .4) {
+                    name = utilities.getRandom(midSyllables);
+                    name = name.charAt(0).toUpperCase() + name.slice(1);
+                }
+                var syllCount = Math.floor(Math.random() * 5);
+                for (var i = 0; i < syllCount; i++) {
+                    name += utilities.getRandom(midSyllables);
+                }
+                name += utilities.getRandom(endSyllables);
+
+                if (name.length < maxCharacters)
+                    finishedName = name;
+            }
+            return name;
+
+        };
+
+        for (var i = 0; i < 50; i++) {
+            console.log(generateName(6 + Math.random() * 9));
+        }
+
         var noise = new Noise();
 
         // Private functions
@@ -74,6 +106,11 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.debugOutputLines = [];
             },
 
+            setTarget : function(target) {
+                this.target = target;
+            },
+
+            //===============================================================
             // Update this particle according to physics
             beginUpdate : function(time) {
                 this.totalForce.mult(0);
@@ -89,6 +126,14 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 var t = time.total * .03;
                 var theta = 20 * noise.noise2D(nx + t + this.idNumber * 39, ny + t);
                 var r = this.mass * 60;
+
+                if (this.target) {
+                    var targetOffset = Vector.sub(this.position, this.target);
+                    console.log(targetOffset);
+                    if (targetOffset.magnitude() < 10)
+                        this.target = undefined;
+                    this.totalForce.addMultiple(targetOffset, -10);
+                }
 
                 //       this.totalForce.addPolar(r, theta);
             },
@@ -238,7 +283,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     })
                 }
             },
-
             draw : function(g, options) {
 
                 switch(options.layer) {
@@ -274,7 +318,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 }
 
             },
-
             drawAsBlinkenStar : function(g, segmentDetail, useNoise, useTriangle) {
                 var i, j;
                 var t = stellarGame.time.universeTime;
@@ -311,11 +354,12 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     g.endShape();
                 }
             },
-
             toString : function() {
                 return "p" + this.idNumber + this.position;
             },
         });
+
+        UParticle.generateName = generateName;
         return UParticle;
     })();
 

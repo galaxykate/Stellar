@@ -277,6 +277,11 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
                     });
                 }
             });
+
+            $("#nav_home_button").click(function() {
+                universeView.camera.center.setTarget(new Vector(0, 0));
+            });
+
             universeView.setCamera({
                 rotation : rotationDefault
             });

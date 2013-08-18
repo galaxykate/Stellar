@@ -60,6 +60,32 @@ define(["inheritance", "modules/models/vector", "kcolor", "uparticle"], function
                 }
             },
 
+            //==================================================
+            //==================================================
+
+            generate : function(universe) {
+                this.generated = true;
+                console.log("Generate " + this);
+
+                var count = Math.random() * 4;
+                for (var i = 0; i < count; i++) {
+                    var r = 10 + 60 * Math.pow(i, .7);
+                    var theta = 1.6 * Math.pow(i, .7);
+
+                    var objType = universe.spawnTable.selectOne();
+                    var obj = new objType();
+
+                    obj.position.setTo(this.center);
+                    obj.position.addPolar(r, theta);
+
+                    universe.spawn(obj);
+                }
+
+            },
+
+            //==================================================
+            //==================================================
+
             setOwner : function(owner) {
                 this.owner = owner;
             },
@@ -125,11 +151,12 @@ define(["inheritance", "modules/models/vector", "kcolor", "uparticle"], function
 
             },
             drawOverlay : function(g, options) {
-                this.idColor.fill(g, .5, .6);
-                g.noStroke();
-                g.ellipse(options.screenPos.x, options.screenPos.y, 10, 10);
-                g.text("Region " + this.idNumber, options.screenPos.x, options.screenPos.y);
-
+                /*
+                 this.idColor.fill(g, .5, .6);
+                 g.noStroke();
+                 g.ellipse(options.screenPos.x, options.screenPos.y, 10, 10);
+                 g.text("Region " + this.idNumber, options.screenPos.x, options.screenPos.y);
+                 */
             },
         });
         return Region;

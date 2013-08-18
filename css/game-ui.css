@@ -74,8 +74,8 @@ body {
 }
 
 .option_checkbox_holder {
-	float:right;
-	font-size:70%;
+	float: right;
+	font-size: 70%;
 	font-family: "Trebuchet MS", Helvetica, sans-serif;
 }
 
@@ -109,24 +109,24 @@ body {
 	box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
 }
 
-#zoom_slider {
-	z-index: 25;
-	position: absolute;
-	top: 10px;
-	right: 5px;
+.nav_slider {
+	display: inline-block;
 	width: 8px;
 	height: 100px;
 	background-color: rgba(160, 170, 250, 1);
 }
 
-#rotation_slider {
-	z-index: 25;
-	position: absolute;
+#nav_controls {
 	top: 10px;
-	right: 20px;
-	width: 8px;
-	height: 100px;
-	background-color: rgba(160, 170, 250, 1);
+	width: 30px;
+	height: 140px;
+	right: 5px;
+	position: absolute;
+	z-index: 25;
+}
+
+.nav_button {
+	font-size: 70%;
 }
 
 #options_panel {

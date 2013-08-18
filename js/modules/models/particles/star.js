@@ -196,6 +196,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             init : function(universe) {
                 this._super(universe);
+                this.name = UParticle.generateName();
 
                 this.initAsElementContainer();
 
@@ -254,7 +255,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             drawOverlay : function(g, options) {
                 this._super(g, options);
-
+                g.fill(1);
+                g.text(this.name, 0, 0);
             },
 
             update : function(time) {

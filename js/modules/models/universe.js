@@ -4,12 +4,15 @@
 
 // Its the Universe!
 
-define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules/models/ui/uiManager', 'voronoi'], function(Vector, KColor, QuadTree, particleTypes, uiManager, Voronoi) {
+define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules/models/ui/uiManager', 'voronoi', 'chanceTable'], function(Vector, KColor, QuadTree, particleTypes, uiManager, Voronoi, ChanceTable) {
     var backgroundLayers = 3;
     var backgroundStarDensity = 40;
     var Universe = Class.extend({
         init : function() {
             backgroundStars = [];
+
+            this.spawnTable = new ChanceTable();
+            this.spawnTable.addOption(particleTypes.Star, "star", 1);
 
             this.touchMarker = new particleTypes.UParticle();
             this.touchMarker.name = "Touch Marker";
@@ -170,6 +173,12 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
                 return obj.isRegion;
             });
 
+            $.each(this.activeRegions, function(index, region) {
+                if (!region.generated) {
+                    region.generate(universe);
+                }
+            });
+
             stellarGame.touch.update();
 
             $.each(activeObjects, function(index, obj) {
@@ -237,13 +246,9 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
                 region.createFromCell(cell);
             });
 
-            this.generateRegion({
-                center : new Vector(0, 0, 0),
-                w : 8000,
-                h : 7500
-            });
         },
 
+        // Is this region on screen for the first time?
         generateRegion : function(region) {
 
             // Pick some random locations in the region
