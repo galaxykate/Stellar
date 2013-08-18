@@ -62,10 +62,10 @@ define(["inheritance", "modules/models/vector", "kcolor", "uparticle"], function
 
             //==================================================
             //==================================================
+            // Generate a region, fill it with things
 
             generate : function(universe) {
                 this.generated = true;
-                console.log("Generate " + this);
 
                 var count = Math.random() * 4;
                 for (var i = 0; i < count; i++) {
