@@ -96,9 +96,11 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             	
             	// If we are not the first element burned (edge case)
             	// And not triggering a supernova for lack of energy (already handled later)...
-            	if(lastElement !== -1 && star.elements.burntElementID !== -1){
+            	if(lastElement !== -1 && lastElement !== undefined && star.elements.burntElementID !== -1 && star.elements.burntElementID !== undefined){
+            		//console.log(star.idNumber + " last element: " + lastElement + " burntElementID: " + star.elements.burntElementID);
             		// And we have transitioned to burning a new element...
             		if(lastElement !== star.elements.burntElementID){
+            			console.log(star.idNumber + " COLLAPSING");
             			// take a break from burning elements to collapse slightly with a lifespan
             			// the value there is how much mass of the star to lose in percentage.
             			// SNS.collapse sets the state to states[3]
