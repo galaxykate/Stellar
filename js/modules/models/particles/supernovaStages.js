@@ -17,10 +17,11 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
 	// Step 1 -- handled in star with help from elementSet
 	
 	// Step 2
-    var collapse = function(star, collapseScale) {
+    var collapse = function(star, collapseScale, duration) {
     	star.state = star.states[3];
+    	if(duration === undefined) duration = 3;
     	
-    	var lifespan = new Lifespan(3);
+    	var lifespan = new Lifespan(duration);
         var startStarRadius = star.radius;
         var sizeToRemove = star.radius * collapseScale;
         var triggeredFadeOut = false;
@@ -29,7 +30,7 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
             star.radius = startStarRadius - (lifespan.figuredPctCompleted * sizeToRemove);
             //utilities.debugOutput("star radius: " + star.radius);
 			if(triggeredFadeOut === false && lifespan.lifespan - lifespan.progress <= 1){
-				spiralOpacitySpan(star, false);
+				spiralOpacitySpan(star, false, Math.random() + 1.5);
 				triggeredFadeOut = true;
 			}
         };
@@ -39,7 +40,8 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
         };
 
         var lifespanOnStart = function() {
-			spiralOpacitySpan(star, true);
+			spiralOpacitySpan(star, true, Math.random() + 1);
+			shake(star, duration, Math.ceil(Math.random()*4 + 3)*2);
         };
 
         lifespan.onUpdate(lifespanUpdate);
@@ -49,8 +51,10 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
         star.lifespans.push(lifespan);
     };
     
-    var spiralOpacitySpan = function(star, fadeIn) {
-    	var lifespan = new Lifespan(1);
+    var spiralOpacitySpan = function(star, fadeIn, duration) {
+    	if(duration === undefined) duration = 1;
+    	
+    	var lifespan = new Lifespan(duration);
 
         var lifespanUpdate = function() {
         	if(fadeIn){
@@ -60,9 +64,40 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
             } 
 
         };
+        var lifespanOnStart = function() {
+
+        };
 
         lifespan.onUpdate(lifespanUpdate);
+		lifespan.onStart(lifespanOnStart);
+        star.lifespans.push(lifespan);
 
+    };
+    
+    // Shakes from -swing/2 to swing/2 on the y axis
+    // (which, on starting rotation, is side-to-side)
+    var shake = function(star, duration, swing) {
+    	if(duration === undefined) duration = 1;
+    	if(swing === undefined) swing = 8;
+    	
+    	var lifespan = new Lifespan(duration);
+    	var startPosition = star.position.clone();
+    	var updateCount = 2; // start at the center of the wiggle
+		//console.log(star.idNumber + " swing:" + swing);
+        var lifespanUpdate = function() {
+			
+        	if(updateCount%swing < swing/2) star.position.y++;
+        	else star.position.y--;
+        	
+        	updateCount++;
+        };
+        
+        var lifespanOnEnd = function() {
+			star.position.x = startPosition.x;
+        };
+
+        lifespan.onUpdate(lifespanUpdate);
+		lifespan.onEnd(lifespanOnEnd);
         star.lifespans.push(lifespan);
     };
     
