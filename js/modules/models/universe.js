@@ -16,7 +16,8 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
             this.touchMarker = new particleTypes.UParticle();
             this.touchMarker.name = "Touch Marker";
-            this.touchMarker.drawMain = function(g, options) {
+            this.touchMarker.drawMain = function(context) {
+                var g = context.g;
                 g.fill(.55, 1, 1);
                 g.noStroke();
                 g.ellipse(0, 0, 20, 20);
@@ -36,7 +37,9 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
             this.camera.center.name = "Camera";
             this.camera.center.drawUntransformed = true;
-            this.camera.center.drawMain = function(g, options) {
+
+            // Set how the camera draws
+            this.camera.center.drawMain = function(context) {
                 if (stellarGame.options.drawCamera) {
                     g.noFill();
                     g.strokeWeight(1);
@@ -49,7 +52,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
                         points[i] = new Vector(this.position);
                         points[i].addPolar(30, i * 2 * Math.PI / segments);
                     }
-                    options.universeView.drawShape(g, points);
+                    context.universeView.drawShape(g, points);
                 }
             };
 
@@ -84,14 +87,15 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             }
         },
 
-        drawBackgroundStars : function(g, options) {
+        drawBackgroundStars : function(context) { 
+            g = context.g;
             var t = stellarGame.time.universeTime;
             g.noStroke();
             for (var i = 0; i < backgroundLayers; i++) {
                 utilities.debugOutput("BG Stars: " + backgroundStars[i].length);
 
                 for (var j = 0; j < backgroundStars[i].length; j++) {
-                    var camera = options.universeView.camera;
+                    var camera = context.universeView.camera;
                     var scale = 4000 * camera.zoom / (camera.zoom + z);
 
                     var x = backgroundStars[i][j][0] - .01 * camera.center.position.y;
@@ -143,16 +147,16 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
         // Draw the universes background
         // May be camera-dependent, eventually
-        draw : function(g, options) {
+        draw : function(context) {
 
-            if (options.layer === 'bg') {
-                this.drawBackgroundStars(g, options);
+            if (context.layer === 'bg') {
+                this.drawBackgroundStars(context);
             }
 
-            if (options.layer === 'overlay') {
+            if (context.layer === 'overlay') {
                 if (stellarGame.options.drawQuadTree) {
                     g.pushMatrix();
-                    this.quadTree.drawTree(g, options);
+                    this.quadTree.drawTree(context);
                     g.popMatrix();
                 }
             }

@@ -7,14 +7,14 @@
 define(["inheritance", "modules/models/vector", "modules/models/elementSet", "noise", "kcolor"], function(Inheritance, Vector, ElementSet, Noise, KColor) {
     return (function() {
 
-        var endSyllables = "eum eia ia on a ius us is ux un eus os ium o or um ens oo ui ii".split(" ");
-        var midSyllables = "alph asp oph eon oly er aph azz elt ynst aev ym ian atz ers yll ial iar yllb idr ats id ann ezz anth arthr erc isth uk isgr ell az arz oon arkh ic aeon ettr urth ythr ogg ast ol elz yt or em in orn yrr ysm ystr agn eops ad umb eal aur apr ael icr et elt erg iot ec ulp eg ers ict isc app ups il on av icr ert osc ydr usc yr".split(" ");
+        var endSyllables = "eum eia ia on a an ius us is ux un eus os ium o or i aa um ea ens oo ui ii".split(" ");
+        var midSyllables = "urv osh alph ongr asp ab alk aiz oph ij enj ik iy eon ectr oly er aph ion ian ank azz ill all iall elt apr el ynst udm aev ym ian atz ers yll ial iar yllb idr ats id ann ezz anth arthr erc isth uk isgr ell az arz oon arkh ic aeon ettr urth ythr ogg ast ol elz yt or em in orn yrr ysm ystr agn eops ad umb eal aur apr ael icr et elt erg iot ec ulp eg ers ict isc app ups il on av icr ert osc ydr usc yr".split(" ");
 
-        var startSyllables = "Xer Stryl Micr Luc Koch Hel Gall Laev Liall Ros Hyb Ith Idri Vald Ter Zen Thal Thund Shor Kur Rem Nym Hyum Melm Kuk Xen Mal Saur Vekt Vhil Tran Zar Zil Ur Zyrg Thral Torm Orth Bel Zag Chth Cyt Deuc Dos Gur Hydr Khar Lag Iag Lith Lum Lun Om Prysm".split(" ");
+        var startSyllables = "Xer Stryl Jin Micr Zib Xilb Brian Cher Vict Laur Ryl Franc Cyd Lur Xerx Lian Prisc Thel Cygn Jez Phyr Pryn Thal Xeb Zekr Sess Cec Kyrs Ver Phil Theoph Thur Luc Koch Hel Lectr Gall Laev Kat Xanth Chris Liall Ros Hyb Ith Idri Vald Ter Zen Thal Thund Shor Kur Rem Nym Hyum Melm Kuk Xen Mal Saur Vekt Vhil Tran Zar Zil Ur Zyrg Thral Torm Orth Bel Zag Chth Cyt Deuc Dos Gur Hydr Khar Lag Iag Lith Lum Lun Om Prysm".split(" ");
 
         var generateName = function(maxCharacters) {
             if (maxCharacters === undefined)
-                maxCharacters = 10;
+                maxCharacters = 10 + Math.random() * 5;
             var finishedName = undefined;
             while (finishedName === undefined) {
                 var name = utilities.getRandom(startSyllables);
@@ -22,9 +22,14 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     name = utilities.getRandom(midSyllables);
                     name = name.charAt(0).toUpperCase() + name.slice(1);
                 }
-                var syllCount = Math.floor(Math.random() * 5);
+                var syllCount = Math.floor(Math.random() * Math.random() * 5);
                 for (var i = 0; i < syllCount; i++) {
-                    name += utilities.getRandom(midSyllables);
+
+                    var syl = utilities.getRandom(midSyllables);
+                    name += syl;
+                    if (syl.length * syl.length * Math.random() < 1)
+                        name += syl;
+
                 }
                 name += utilities.getRandom(endSyllables);
 
@@ -36,7 +41,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
         };
 
         for (var i = 0; i < 50; i++) {
-            console.log(generateName(6 + Math.random() * 9));
+            //  console.log(generateName(6 + Math.random() * 25));
         }
 
         var noise = new Noise();
@@ -240,23 +245,16 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.touchHeld = false;
             },
 
-            drawBackground : function(g, options) {
+            drawBackground : function(context) {
 
             },
 
-            drawMain : function(g, options) {
-
-                this.idColor.fill(g);
-                g.noStroke();
-                if (this.deleted) {
-                    g.fill(.2, 0, .4);
-                    g.stroke(1, 0, 1, .7);
-                }
-
-                g.ellipse(0, 0, this.radius, this.radius);
+            drawMain : function(context) {
 
             },
-            drawOverlay : function(g, options) {
+
+            drawOverlay : function(context) {
+                var g = context.g;
                 //var h = (this.idNumber * .212 + .3) % 1;
                 if (this.touchHeld) {
 
@@ -264,10 +262,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     g.noFill();
                     g.strokeWeight(5);
                     g.ellipse(0, 0, this.radius + 10, this.radius + 10);
-                }
-
-                if (stellarGame.drawElements && this.elements) {
-                    this.elements.draw(g, this.radius);
                 }
 
                 // Draw the text
@@ -283,20 +277,20 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     })
                 }
             },
-            draw : function(g, options) {
+            draw : function(context) {
 
-                switch(options.layer) {
+                switch(context.layer) {
                     case "bg":
-                        this.drawBackground(g, options);
+                        this.drawBackground(context);
                         break;
 
                     case "main":
-                        this.drawMain(g, options);
+                        this.drawMain(context);
 
                         break;
 
                     case "overlay":
-                        this.drawOverlay(g, options);
+                        this.drawOverlay(context);
                         break;
 
                 }

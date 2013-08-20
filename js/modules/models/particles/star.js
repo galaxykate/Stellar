@@ -218,7 +218,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.radiusModifier = 0;
 
                 stellarGame.statistics.numberOfStars++;
-                
+
                 this.glow = new Glow(this);
             },
 
@@ -226,15 +226,16 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.face = new Face.Face(this.idColor, this.idNumber);
             },
 
-            drawBackground : function(g, options) {
-                this._super(g, options);
-                //this.glow.draw(g);
+            drawBackground : function(context) {
+                this._super(context);
+
             },
 
-            drawMain : function(g, options) {
+            drawMain : function(context) {
+                this._super(context);
+                var g = context.g;
                 // Do all the other drawing
 
-                this._super(g, options);
                 this.idColor.fill(g, .5 + (Math.sin(stellarGame.time.universeTime + this.temperature)) / 4 - .25);
 
                 g.ellipse(0, 0, this.radius + 2, this.radius + 2);
@@ -256,10 +257,11 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             },
 
-            drawOverlay : function(g, options) {
-                this._super(g, options);
+            drawOverlay : function(context) {
+                this._super(context);
+                var g = context.g;
                 g.fill(1);
-                g.text(this.name, 0, 0);
+                g.text(this.name, 0, context.distanceScale * this.radius + 10);
             },
 
             update : function(time) {
@@ -277,7 +279,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             },
 
             feedDust : function(touch, tool) {
-            	
+
                 var newDustObj = new Dust();
                 newDustObj.elements.clearAllElements();
                 newDustObj.position = new Vector();
@@ -289,7 +291,6 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 stellarGame.universe.spawn(newDustObj);
 
                 startFeedLifespan(this, newDustObj);
-                
 
             }
         });
