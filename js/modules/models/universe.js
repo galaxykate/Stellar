@@ -87,7 +87,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             }
         },
 
-        drawBackgroundStars : function(context) { 
+        drawBackgroundStars : function(context) {
             g = context.g;
             var t = stellarGame.time.universeTime;
             g.noStroke();
@@ -173,18 +173,28 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
             stellarGame.time.universeTime = time.total;
 
+            // Get all the active objects that are regions
             this.activeRegions = _.filter(activeObjects, function(obj) {
                 return obj.isRegion;
             });
 
+            // If a region is on screen, but not generated, generate (aka fill) it
             $.each(this.activeRegions, function(index, region) {
                 if (!region.generated) {
                     region.generate(universe);
                 }
             });
 
+            // update the touch object
             stellarGame.touch.update();
 
+            // Update the stars' evolutions at the current speed
+            $.each(activeObjects, function(index, obj) {
+                if (obj.updateStarEvolution)
+                    obj.updateStarEvolution(time);
+            });
+
+            // Update all the particle physics
             $.each(activeObjects, function(index, obj) {
                 obj.beginUpdate(time);
             });
@@ -200,9 +210,12 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             $.each(activeObjects, function(index, obj) {
                 obj.finishUpdate(time);
             });
+            
+            
 
             uiManager.update();
 
+            // Remove dead object, replace misplaced ones, etc
             this.quadTree.cleanup();
         },
 

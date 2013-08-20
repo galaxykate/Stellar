@@ -118,6 +118,17 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             //===============================================================
             // Update this particle according to physics
             beginUpdate : function(time) {
+
+                // Clear the output
+                this.clearDebugOutput();
+
+                // Has this particle been updated in a while?
+                var t = time.ellapsed;
+                if (this.lastUpdate === undefined) {
+                    this.lastUpdate = 0;
+                    this.initialUpdate();
+                }
+
                 this.totalForce.mult(0);
 
             },
@@ -128,9 +139,9 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 var noiseScale = .0040;
                 var nx = this.position.x * noiseScale;
                 var ny = this.position.y * noiseScale;
-                var t = time.total * .03;
+                var t = time.total * .02;
                 var theta = 20 * noise.noise2D(nx + t + this.idNumber * 39, ny + t);
-                var r = this.mass * 60;
+                var r = this.mass * 60 + (1 + 1 * Math.sin(this.idNumber));
 
                 if (this.target) {
                     var targetOffset = Vector.sub(this.position, this.target);
@@ -140,7 +151,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     this.totalForce.addMultiple(targetOffset, -10);
                 }
 
-                //       this.totalForce.addPolar(r, theta);
+                this.totalForce.addPolar(r, theta);
             },
 
             updatePosition : function(time) {
@@ -151,40 +162,10 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
             finishUpdate : function(time) {
                 this.velocity.mult(this.drag);
-                this.update(time);
+                this.cleanup();
             },
 
-            update : function(time) {
-                // Clear the output
-                var t = time.ellapsed;
-                if (this.lastUpdate === undefined) {
-                    this.lastUpdate = 0;
-                    this.initialUpdate();
-                }
-
-                this.clearDebugOutput();
-
-                var d = this.position.magnitude();
-
-                if (d === 0 || d === NaN)
-                    d = .001;
-
-                var outside = Math.max(0, d - 200);
-                var gravity = -Math.pow(outside, 2) / d;
-                // this.totalForce.setToMultiple(this.position, gravity);
-
-                var noiseScale = .0040;
-                var nx = this.position.x * noiseScale;
-                var ny = this.position.y * noiseScale;
-                var t = time.total * .1;
-                var ellapsed = time.ellapsed;
-                var theta = 16 * noise.noise2D(nx + t + this.idNumber * 39, ny + t);
-                var r = 190;
-                // this.totalForce.addPolar(r, theta);
-
-                this.velocity.addMultiple(this.totalForce, ellapsed);
-                this.position.addMultiple(this.velocity, ellapsed);
-                this.velocity.mult(this.drag);
+            cleanup : function(time) {
 
                 //DEBUG CHECKING
                 if (this.DEBUGPOSITION) {
@@ -195,12 +176,13 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 }
 
-                if (this.elements !== undefined) {
-                    this.updateElements();
-                }
-
                 for (var i = 0; i < this.lifespans.length; i++) {
                     this.lifespans[i].update();
+                }
+
+                // Remove this if the elements have bottomed out
+                if (this.elements && this.elements.totalMass === 0) {
+                    this.remove();
                 }
 
             },
@@ -208,19 +190,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             // Give this object a bunch of elements
             initAsElementContainer : function() {
                 this.elements = new ElementSet(this);
-
-            },
-
-            updateElements : function() {
-                // Do something with the new element amounts
-                //this.elements.setTotalMass(); // this is set by elements.siphon()
-
-                if (this.elements.totalMass === 0) {
-                    this.remove();
-                    // removal of this happence twice for some reason. Not sure why!
-                    //console.log("CALLING THIS.REMOVE");
-                }
-
             },
 
             initAsParticle : function() {
@@ -231,20 +200,17 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.mass = 1;
                 this.drag = .93;
             },
-
             initAsTouchable : function() {
                 this.touchable = true;
                 this.touchHeld = false;
 
             },
-
             touchStart : function(touch) {
                 this.touchHeld = true;
             },
             touchEnd : function(touch) {
                 this.touchHeld = false;
             },
-
             drawBackground : function(context) {
 
             },
@@ -277,6 +243,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     })
                 }
             },
+
             draw : function(context) {
 
                 switch(context.layer) {

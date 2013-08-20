@@ -32,6 +32,24 @@ body {
 	background-color: rgba(50, 255, 90, 1);
 }
 
+#star_overlay_holder {
+	z-index: 22;
+	position: absolute;
+	width: 600px;
+	height: 400px;
+	overflow: hidden;
+}
+
+.star_overlay {
+	z-index: 23;
+	position: relative;
+	width: 40px;
+	height: 40px;
+	border-radius: 90px;
+	border: 2px solid rgba(255, 255, 255, 1);
+	background-color: rgba(150, 190, 250, .4);
+}
+
 #debug_controls {
 	z-index: 40;
 	position: relative;

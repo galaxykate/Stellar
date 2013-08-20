@@ -86,6 +86,23 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             this.processing = new Processing(canvas, initProcessing);
             this.createThreeCamera();
 
+            // Create a pool of divs
+            this.starUIDivs = [];
+            var starUIHolder = $("#star_overlay_holder");
+            for (var i = 0; i < 10; i++) {
+                var div = $('<div/>', {
+                    'class' : 'star_overlay',
+                });
+                console.log(div);
+              
+                div.css({
+                    top : Math.round(Math.random() * 300) + "px",
+                    left : Math.round(Math.random() * 300) + "px",
+                });
+                
+                starUIHolder.append(div);
+            }
+
         },
 
         isOnScreen : function(p) {
