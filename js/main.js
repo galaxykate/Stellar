@@ -128,9 +128,9 @@ var utilities = {
         // May want to add an extra parameter for the random seed
         if (w !== undefined) {
             result = utilities.noiseInstance.noise4D(x, y, z, w);
-        } else if (y !== undefined) {
-            result = utilities.noiseInstance.noise3D(x, y, z);
         } else if (z !== undefined) {
+            result = utilities.noiseInstance.noise3D(x, y, z);
+        } else if (y !== undefined) {
             result = utilities.noiseInstance.noise2D(x, y);
         } else if (x !== undefined) {
             result = utilities.noiseInstance.noise2D(x, x);

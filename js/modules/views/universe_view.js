@@ -89,7 +89,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             // Create a pool of divs
             this.starUIDivs = [];
             var starUIHolder = $("#star_overlay_holder");
-            for (var i = 0; i < 10; i++) {
+            for (var i = 0; i < 0; i++) {
                 var div = $('<div/>', {
                     'class' : 'star_overlay',
                 });

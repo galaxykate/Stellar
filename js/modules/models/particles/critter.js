@@ -56,7 +56,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
 	                g.noStroke();
 	                g.ellipse(0, 0, this.radius, this.radius);
 	                
-	                this.emotion.drawBackground(g, options);
+	                //this.emotion.drawBackground(g, options);
 					
 					//console.log("critter draw bg: true!");
             	}
@@ -73,14 +73,14 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
 	                this.face.drawRightProfile(g);
 	                g.popMatrix();
 	                
-	                this.emotion.drawMain(g, options);
+	                //this.emotion.drawMain(g, options);
                 }
             },
             
             drawOverlay : function(g, options) {
             	if(stellarGame.drawCritters){
             		//console.log("critter draw overlay: true!");
-            		this.emotion.drawOverlay(g, options);
+            		//this.emotion.drawOverlay(g, options);
             	}
             }, 
             

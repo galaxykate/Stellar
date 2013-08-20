@@ -107,39 +107,45 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
 
         var initTouchFunctions = function() {
 
-            // Move the primary touch/mouse to this positon
-            var touchMove = function(p) {
-                if (p !== undefined) {
-                    updateTouchPositions(p);
-                }
+            // Clear the touch output and get the objects/regions that it's over
+            var updateTouchContext = function() {
                 utilities.clearTouchOutput();
                 utilities.touchOutput("Current Tool: " + touch.activeTool);
+                utilities.touchOutput("Last : " + touch.lastActionOutput);
 
                 // Get the objects that the cursor is over
                 touch.overObjects = universeView.getTouchableAt(touch.planePosition);
 
                 // Get the regions that the cursor is over
                 touch.region = universe.getRegion(touch.planePosition);
+                utilities.touchOutput(touch.overObjects);
+            };
+
+            // Move the primary touch/mouse to this positon
+            var touchDrag = function(p) {
+                if (p !== undefined) {
+                    updateTouchPositions(p);
+                }
+
+                updateTouchContext();
+
                 if (touch.region)
                     touch.region.setOwner(player);
-
-                utilities.touchOutput(touch.overObjects);
-
-                if (touch.pressed) {
-
-                    if (touch.activeTool !== undefined) {
-                        touch.activeTool.touchDrag(touch);
-                    }
-
-                } else {
-                    touch.activeTool.touchMove(touch);
-
-                }
 
                 controlUpdated();
             };
 
+            var touchDoubletap = function(p) {
+                if (p !== undefined) {
+                    updateTouchPositions(p);
+                }
+                updateTouchContext();
+
+            };
+
             var touchUp = function(p) {
+                updateTouchContext();
+
                 touch.pressed = false;
                 touch.dragOffset.mult(0);
                 touch.lastReleased.setTo(p);
@@ -151,6 +157,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
             };
 
             var touchDown = function(p) {
+                updateTouchContext();
                 touch.pressed = true;
 
                 touch.lastPressed.setTo(p)
@@ -161,39 +168,54 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
 
             };
 
-            var hammertime = universeDiv.hammer();
-            hammertime.on("touch", function(ev) {
+            // Bind these events to hammer actions
+
+            var eventToScreenPos = function(ev) {
                 var p = new Vector(ev.gesture.center.pageX, ev.gesture.center.pageY);
                 var relPos = pagePositionToRelativePosition(universeDiv, p);
+                return toScreenPosition(relPos);
+            };
 
+            var hammertime = universeDiv.hammer();
+            hammertime.on("touch", function(ev) {
+                var p = eventToScreenPos(ev);
                 touch.lastAction = "touch";
-                touch.lastActionOutput = relPos;
-                touchDown(toScreenPosition(relPos));
+                touch.lastActionOutput = p;
+                touchDown(p);
+
+            });
+
+            hammertime.on("doubletap", function(ev) {
+                var p = eventToScreenPos(ev);
+                touch.lastAction = "doubleclick";
+                touch.lastActionOutput = p;
+                touchDoubletap(p);
 
             });
 
             hammertime.on("drag", function(ev) {
-                var p = new Vector(ev.gesture.center.pageX, ev.gesture.center.pageY);
-                var relPos = pagePositionToRelativePosition(universeDiv, p);
-
+                var p = eventToScreenPos(ev);
                 touch.lastAction = "drag";
-                touch.lastActionOutput = relPos;
-                touchMove(toScreenPosition(relPos));
+                touch.lastActionOutput = p;
+                touchDrag(p);
 
             });
 
             hammertime.on("release", function(ev) {
-                var p = new Vector(ev.gesture.center.pageX, ev.gesture.center.pageY);
-                var relPos = pagePositionToRelativePosition(universeDiv, p);
-
+                var p = eventToScreenPos(ev);
                 touch.lastAction = "release";
-                touch.lastActionOutput = relPos;
-                touchUp(toScreenPosition(relPos));
+                touch.lastActionOutput = p;
+                touchUp(p);
+            });
+
+            hammertime.on("pinchin", function(ev) {
+                console.log("ZOOOOOOM");
             });
 
             touch.lastAction = "none";
             touch.update = function() {
-                touchMove();
+                if (touch.pressed)
+                    touchDrag();
             };
 
         };

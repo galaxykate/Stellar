@@ -38,6 +38,7 @@ body {
 	width: 600px;
 	height: 400px;
 	overflow: hidden;
+	pointer-events: none;
 }
 
 .star_overlay {

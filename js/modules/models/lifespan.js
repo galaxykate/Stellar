@@ -12,15 +12,16 @@ define(["inheritance"], function(Inheritance) {
 
         var Lifespan = Class.extend({
         	
-            init : function(lifeDuration) {
+            init : function(lifeprogress) {
                 this.idNumber = idCount;
                 idCount++;
                 
                 this.started = false;
                 this.finished = false;
                 this.onUpdatePcts = [];
-                this.lifespan = lifeDuration; // In game time
-                //console.log("lifespan initiated: " + this.idNumber + " with duration " + this.lifespan);
+                this.lifespan = lifeprogress; // TOTAL TIME
+                this.progress = 0; // TIME PROGRESSED
+                //console.log("lifespan initiated: " + this.idNumber + " with progress " + this.lifespan);
             },
             
             // =============== custom functions to be set by the implementer ==============
@@ -55,7 +56,7 @@ define(["inheritance"], function(Inheritance) {
             // =============== action items ==============
             start : function(){
             	this.startTime = stellarGame.time.universeTime;
-            	this.duration = 0;
+            	this.progress = 0;
             	//console.log("... " + this.startTime + ", " + this.lifespan);
             	this.proposedEndTime = this.startTime + this.lifespan;
             	
@@ -66,7 +67,7 @@ define(["inheritance"], function(Inheritance) {
             	}
             	
             	this.started = true;
-            	//console.log("lifespan " + this.idNumber + " started!: " + this.startTime + ", " + this.duration + ", " + this.proposedEndTime);
+            	//console.log("lifespan " + this.idNumber + " started!: " + this.startTime + ", " + this.progress + ", " + this.proposedEndTime);
             },
             
             update: function(){
@@ -78,11 +79,11 @@ define(["inheritance"], function(Inheritance) {
             	// Update only updates a non-finished lifespan
             	if(this.finished === false){
 	            	// update time variables
-	            	this.duration = stellarGame.time.universeTime - this.startTime;
-	            	this.figuredPctCompleted = this.duration/this.lifespan;
+	            	this.progress = stellarGame.time.universeTime - this.startTime;
+	            	this.figuredPctCompleted = this.progress/this.lifespan;
 	            	
 	            	utilities.debugOutput("universe time?!: " + stellarGame.time.universeTime);
-	            	utilities.debugOutput("lifespan " + this.idNumber + " updating...! " + utilities.roundNumber(this.duration) + ", " + utilities.roundNumber(this.figuredPctCompleted*100, 0) + "%");
+	            	utilities.debugOutput("lifespan " + this.idNumber + " updating...! " + utilities.roundNumber(this.progress) + ", " + utilities.roundNumber(this.figuredPctCompleted*100, 0) + "%");
 	            	
 	            	// If we have passed any thresholds for specific pct progress and not yet triggered it, TRIGGER IT!
 	            	for(var i = 0; i < this.onUpdatePcts.length; i++){
@@ -99,7 +100,7 @@ define(["inheritance"], function(Inheritance) {
 	            	}
 	            	
 					if(this.figuredPctCompleted >= 1){
-						// If we have run the course of our duration, FINISH IT!
+						// If we have run the course of our progress, FINISH IT!
 						//console.log("notice (lifeSpan): finishing lifespan");
 						//console.log(this);
 						this.end();

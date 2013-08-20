@@ -4,11 +4,11 @@
 
 // Its the Universe!
 
-define(["inheritance", "modules/models/vector", "modules/models/face", "modules/models/elementSet", "uparticle", particleTypePath + "dust", 'lifespan', "modules/models/ui/glow"], function(Inheritance, Vector, Face, ElementSet, UParticle, Dust, Lifespan, Glow) {
+define(["inheritance", "modules/models/vector", "modules/models/face", "modules/models/elementSet", "uparticle", particleTypePath + "dust", 'lifespan', "modules/models/ui/glow", particleTypePath + "supernovaStages"], function(Inheritance, Vector, Face, ElementSet, UParticle, Dust, Lifespan, Glow, SNS) {
     return (function() {
 
         var states = [{
-            name : "star",
+            name : "inactive",
             idNumber : 0,
             draw : function(g, star, options) {
 
@@ -17,26 +17,71 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             name : "nova",
             idNumber : 1,
             draw : function(g, star, options) {
-                var noise = utilities.noiseInstance;
 
+            }
+        }, {
+            name : "burning",
+            idNumber : 2,
+            draw : function(g, star, options) {
                 var segments = 25;
                 var theta;
                 var r;
-                var layers = 3;
+                var layers = 2;
                 g.noFill();
-                g.stroke(star.hue, 1, 1, 1);
 
+                if (star.elements.burntElementID !== undefined && star.elements.burntElementID !== -1) {
+
+                    g.stroke(.1 * star.elements.burntElementID, 1, 1, 1);
+                } else {
+
+                    star.idColor.stroke(g);
+                }
                 g.beginShape();
-                var t = stellarGame.time.total;
+                var t = stellarGame.time.universeTime;
 
                 for (var j = 0; j < layers; j++) {
                     for (var i = 0; i < segments; i++) {
-                        theta = i * 2 * Math.PI / segments;
-                        r = 50 * (1 + noise.noise2D(theta, t * 2 + j * 100)) + star.radius;
+                        theta = (i * 2 * Math.PI) / segments;
+                        r = 2 * (1 + utilities.pnoise(theta, t * 2 + j * 100)) + star.radius;
                         g.vertex(r * Math.cos(theta), r * Math.sin(theta));
                     }
                 }
                 g.endShape(g.CLOSE);
+            }
+        }, {
+            name : "collapsing",
+            idNumber : 3,
+            draw : function(g, star, options) {
+                // Draw a spiral
+                g.stroke(1, 0, 1, .8);
+                //utilities.debugOutput("collapsing!!!");
+                var streaks = star.radius / 3 + 50;
+                var t = stellarGame.time.universeTime;
+                for (var i = 0; i < streaks; i++) {
+                    var theta = i * Math.PI * 2 / streaks + .2 * Math.sin(i + t);
+
+                    var rPct = ((i * 1.413124 - 1 * 3 * t) % 1 + 1) % 1;
+
+                    rPct = Math.pow(rPct, .8);
+                    g.strokeWeight(4 * (1 - rPct));
+                    star.idColor.stroke(g, 0, -1 + star.spiralOpacity);
+                    rPct = rPct * 1.6 - .4;
+                    var r = star.radius + 10 * Math.sin(i + 4 * t);
+                    var rInner = r * utilities.constrain(rPct - .1, 0, 1) + star.radius;
+                    var rOuter = r * utilities.constrain(rPct + .1, 0, 1) + star.radius;
+                    var spiral = -.06;
+                    var cInnerTheta = Math.cos(theta + spiral * rInner);
+                    var sInnerTheta = Math.sin(theta + spiral * rInner);
+                    var cOuterTheta = Math.cos(theta + spiral * rOuter);
+                    var sOuterTheta = Math.sin(theta + spiral * rOuter);
+                    g.line(rInner * cInnerTheta, rInner * sInnerTheta, rOuter * cOuterTheta, rOuter * sOuterTheta);
+                }
+            }
+        }, {
+            name : "finalCollapse",
+            idNumber : 4,
+            draw : function(g, star, options) {
+
             }
         }];
 
@@ -47,62 +92,56 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         // Only stars burn dust
         // They burn so long as there is fuel
         var updateDustBurning = function(star) {
-            star.tempGenerated = star.elements.burnSomeFuel(star.temperature);
-            //utilities.debugOutput("temp: " + star.tempGenerated);
+            // Do not burn dust or trigger anything else if the star is collapsing
+            if (star.state !== states[3]) {
+                var lastElement = star.elements.burntElementID;
 
-            // If the star is able to burn energy again and is marked as a nova, change it back to a star
-            if (star.tempGenerated > 0 && star.state === states[1]) {
-                reviveStar(star);
+                star.elements.burnSomeFuel(star.temperature);
+                star.tempGenerated = star.elements.heatGenerated;
+
+                // If we are not the first element burned (edge case)
+                // And not triggering a supernova for lack of energy (already handled later)...
+                if (lastElement !== -1 && lastElement !== undefined && star.elements.burntElementID !== -1 && star.elements.burntElementID !== undefined && lastElement < star.elements.burntElementID) {
+                    //console.log(star.idNumber + " last element: " + lastElement + " burntElementID: " + star.elements.burntElementID);
+                    // And we have transitioned to burning a new element...
+                    if (lastElement !== star.elements.burntElementID) {
+                        //console.log(star.idNumber + " COLLAPSING");
+                        // take a break from burning elements to collapse slightly with a lifespan
+                        // the value there is how much mass of the star to lose in percentage.
+                        // SNS.collapse sets the state to states[3]
+                        // We can change it based on which element was last burnt!
+                        if (star.radius > 50) {
+                            SNS.collapse(star, 0.6);
+                        } else if (star.radius > 20) {
+                            SNS.collapse(star, 0.4);
+                        } else {
+                            SNS.collapse(star, 0.2);
+                        }
+                    }
+                }
+
+                //utilities.debugOutput("temp: " + star.tempGenerated);
+
+                // If the star is able to burn energy again and is marked as a nova, change it back to a star
+                if (star.tempGenerated > 0 && star.state === states[1]) {
+                    reviveStar(star);
+                }
+
+                // If a star is unable to burn energy and is marked as a star, nova it!
+                // TO DO: || star.state === states[3] Add the ability to abort lifespans
+                if (star.tempGenerated <= 0 && (star.state === states[0] || star.state === states[2])) {
+                    star.state = states[1];
+                    SNS.explode(star);
+                    startBurnLifespan(star, star.elements.totalMass);
+                }
             }
-
-            // If a star is unable to burn energy and is marked as a star, nova it!
-            if (star.tempGenerated <= 0 && star.state === states[0]) {
-                triggerSupernova(star);
-            }
-
-        };
-
-        var updateInternalForces = function(star, burnedEnergy) {
-            star.internalGravity = 100 * star.mass;
-            star.outwardForce = 100 * burnedEnergy;
 
         };
 
         // When enements are added to a dormant star
         var reviveStar = function(star) {
-            star.state = states[0];
+            star.state = states[2];
         }
-        var DUSTEXPLOSIONVELOCITY = 600;
-
-        // When a star runs out of elements
-        var triggerSupernova = function(star) {
-
-            star.state = states[1];
-
-            var elemsToShed = star.elements.calcShedElements(1, .5, .5);
-            var numDustToSpawn = Math.ceil(Math.random() * 5) + 2;
-            for (var j = 0; j < elemsToShed.length; j++) {
-                elemsToShed[j] = elemsToShed[j] / numDustToSpawn;
-            }
-
-            for (var i = 0; i < numDustToSpawn; i++) {
-                // spawn a new dust
-                var newDustObj = new Dust();
-                // give it elemsToShed/numDustToSpawn of each element
-                newDustObj.elements.clearAllElements();
-                star.elements.transferAmountsTo(newDustObj.elements, elemsToShed);
-                // place it at the center of the star
-                newDustObj.position = star.position.clone();
-                // give it a velocity directly away from the star
-                newDustObj.velocity.setTo(Math.random() * DUSTEXPLOSIONVELOCITY - (DUSTEXPLOSIONVELOCITY / 2), Math.random() * DUSTEXPLOSIONVELOCITY - (DUSTEXPLOSIONVELOCITY / 2));
-                stellarGame.universe.spawn(newDustObj);
-            }
-
-            star.burningFuel = false;
-            startBurnLifespan(star, star.elements.totalMass);
-
-        };
-
         // Dust spirals into the star, star grows into its full size,
         // dust shrinks to nothing, transfers all its elements, and dies
         var startFeedLifespan = function(star, dust) {
@@ -150,7 +189,9 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         var startBurnLifespan = function(star, totalMass) {
             var lifespan = new Lifespan(1);
             var startStarRadius = star.radius;
-            var sizeToRemove = calcSizeOfElements(totalMass);
+            // sizeToRemove used to be based on the elements
+            // That's too uncontrollable, so instead make it a safe minimum
+            var sizeToRemove = startStarRadius - (Math.random() * 5 + 1);
 
             var lifespanUpdate = function() {
                 star.radius = startStarRadius - (lifespan.figuredPctCompleted * sizeToRemove);
@@ -200,22 +241,19 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
                 this.initAsElementContainer();
 
-                this.state = states[0];
-                // turning off random states
+                this.state = states[2];
+
                 this.radius = calcStarSizeOfElements(this);
 
                 this.initFace();
-                this.temperature = Math.random() * 4000 + 1000;
-                this.burningFuel = true;
-
-                // internal gravity will be a function of mass
-                this.internalGravity
-                // outwardForce will be a function of the reactions
-                this.outwardForce
+                this.density = 1.0;
+                // affects how temperature is figured
+                this.temperature = this.density * this.elements.totalMass * settings.starTempCalcScaler;
+                //Math.random() * 4000 + 1000;
+                //this.burningFuel = true;
 
                 this.acceptsDust = true;
-
-                this.radiusModifier = 0;
+                this.spiralOpacity = 0;
 
                 stellarGame.statistics.numberOfStars++;
 
@@ -236,10 +274,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 var g = context.g;
                 // Do all the other drawing
 
-                this.idColor.fill(g, .5 + (Math.sin(stellarGame.time.universeTime + this.temperature)) / 4 - .25);
-
-                g.ellipse(0, 0, this.radius + 2, this.radius + 2);
-
+                this.state.draw(g, this, context);
                 g.noStroke();
                 if (this.deleted) {
                     g.fill(.2, 0, .4);
@@ -266,6 +301,9 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             update : function(time) {
                 this._super(time);
+
+                this.temperature = this.density * this.elements.totalMass * settings.starTempCalcScaler;
+                //utilities.debugOutput("star " + this.idNumber + " temp " + this.temperature);
                 //this.glow.update(this.radius);
                 this.debugOutput(this.state.name);
                 this.debugOutput(this.temperature);
@@ -285,14 +323,17 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 newDustObj.position = new Vector();
 
                 newDustObj.position.setTo(touch.planePosition);
-                console.log("New dust made at " + newDustObj.position + "+++++++++++++ " + this.position);
+                // still off, not sure which position to grab
+                //console.log("New dust made at " + newDustObj.position + "+++++++++++++ " + this.position);
 
                 tool.elements.transferTo(newDustObj.elements, 1);
                 stellarGame.universe.spawn(newDustObj);
 
                 startFeedLifespan(this, newDustObj);
 
-            }
+            },
+
+            states : states
         });
 
         return Star;
