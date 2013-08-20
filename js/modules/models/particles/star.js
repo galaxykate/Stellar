@@ -100,13 +100,11 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         		star.elements.burnSomeFuel(star.temperature);
             	star.tempGenerated = star.elements.heatGenerated;
             	
-            	// If we are not the first element burned (edge case)
-            	// And not triggering a supernova for lack of energy (already handled later)...
-            	if(lastElement !== -1 && lastElement !== undefined && star.elements.burntElementID !== -1 && star.elements.burntElementID !== undefined
-            		&& lastElement < star.elements.burntElementID){
+            	// If we ran out of elements to currently burn...
+            	if(lastElement !== -1 && lastElement !== undefined && star.elements.burntElementID === -1){
             		//console.log(star.idNumber + " last element: " + lastElement + " burntElementID: " + star.elements.burntElementID);
             		// And we have transitioned to burning a new element...
-            		if(lastElement !== star.elements.burntElementID){
+            		//if(lastElement !== star.elements.burntElementID){
             			//console.log(star.idNumber + " COLLAPSING");
             			// take a break from burning elements to collapse slightly with a lifespan
             			// the value there is how much mass of the star to lose in percentage.
@@ -119,7 +117,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 	            		} else {
 	            			SNS.collapse(star, 0.2);
 	            		}
-            		}
+            		//}
             	}
             
 	            //utilities.debugOutput("temp: " + star.tempGenerated);

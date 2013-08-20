@@ -38,6 +38,7 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
 
         var lifespanOnEnd = function() {
 			star.state = star.states[2];
+			star.density += .5;
         };
 
         var lifespanOnStart = function() {
