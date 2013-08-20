@@ -27,6 +27,10 @@ define([], function() {
             return "hsb: " + this.h.toFixed(2) + " " + this.s.toFixed(2) + " " + this.b.toFixed(2) + " " + this.a.toFixed(2);
 
         };
+        
+        KColor.prototype.clone = function() {
+        	return new KColor(this.h, this.s, this.b, this.a);
+        }
 
         KColor.prototype.constrainToUnit = function(v) {
             return Math.min(Math.max(v, 0), 1);

@@ -77,6 +77,12 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 		            g.line(rInner * cInnerTheta, rInner * sInnerTheta, rOuter * cOuterTheta, rOuter * sOuterTheta);
             	}
             }
+        }, {
+            name : "finalCollapse",
+            idNumber : 4,
+            draw : function(g, star, options) {
+                
+            }
         }];
 
 
@@ -100,7 +106,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             		//console.log(star.idNumber + " last element: " + lastElement + " burntElementID: " + star.elements.burntElementID);
             		// And we have transitioned to burning a new element...
             		if(lastElement !== star.elements.burntElementID){
-            			console.log(star.idNumber + " COLLAPSING");
+            			//console.log(star.idNumber + " COLLAPSING");
             			// take a break from burning elements to collapse slightly with a lifespan
             			// the value there is how much mass of the star to lose in percentage.
             			// SNS.collapse sets the state to states[3]

@@ -29,7 +29,8 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
         var lifespanUpdate = function() {
             star.radius = startStarRadius - (lifespan.figuredPctCompleted * sizeToRemove);
             //utilities.debugOutput("star radius: " + star.radius);
-			if(triggeredFadeOut === false && lifespan.lifespan - lifespan.progress <= 1){
+            
+			if(triggeredFadeOut === false && lifespan.lifespan - lifespan.progress <= 2.5){
 				spiralOpacitySpan(star, false, Math.random() + 1.5);
 				triggeredFadeOut = true;
 			}
