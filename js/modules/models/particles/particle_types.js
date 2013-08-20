@@ -4,7 +4,7 @@
 
 // poluting the namespace, fix at some point
 
-var particleTypeNames = ["star", "dust", "trailhead", "critter", "sparkle", "spring", "region"];
+var particleTypeNames = ["star", "dust", "trailhead", "critter", "sparkle", "spring", "region", "camera"];
 
 var particleTypePath = "modules/models/particles/";
 var particleFiles = particleTypeNames.map(function(name, index) {

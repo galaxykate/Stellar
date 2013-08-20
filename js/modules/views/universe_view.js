@@ -128,7 +128,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             utilities.debugOutput("Update " + time.total.toFixed(2) + " fps: " + (1 / time.ellapsed).toFixed(2));
 
             var angle = -Math.PI / 2 - .1 - this.camera.zoom;
-            this.camera.setOrbit(this.camera.center.position, 300 + this.camera.distance * 1000, this.camera.rotation, Math.PI + angle);
+            this.camera.setOrbit(this.camera.position, 300 + this.camera.distance * 1000, this.camera.rotation, Math.PI + angle);
 
             this.activeQuadrants = [];
 
@@ -150,7 +150,12 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             this.universe.update(time, this.activeObjects);
 
         },
-
+  //=================================================================================
+        //=================================================================================
+        //=================================================================================
+        // 
+        
+        
         //=================================================================================
         //=================================================================================
         //=================================================================================
@@ -229,7 +234,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             if (touch.activeTool === undefined) {
 
             } else {
-                if (touch.planePosition) {
+                if (touch.planePosition && touch.pressed) {
                     var scale = 500 / touch.screenPosition.z;
                     touch.activeTool.drawCursor(g, touch.screenPosition, scale);
                 }
