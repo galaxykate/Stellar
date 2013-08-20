@@ -82,8 +82,8 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
     	if(swing === undefined) swing = 8;
     	
     	var lifespan = new Lifespan(duration);
-    	var startPosition = star.position.clone();
-    	var updateCount = 2; // start at the center of the wiggle
+    	//var startPosition = star.position.clone();
+    	var updateCount = swing/4; // start at the center of the wiggle
 		//console.log(star.idNumber + " swing:" + swing);
         var lifespanUpdate = function() {
 			
@@ -94,7 +94,7 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
         };
         
         var lifespanOnEnd = function() {
-			star.position.x = startPosition.x;
+			//star.position.x = startPosition.x;
         };
 
         lifespan.onUpdate(lifespanUpdate);

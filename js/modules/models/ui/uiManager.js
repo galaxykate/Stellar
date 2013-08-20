@@ -15,7 +15,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 
 
             makeInventoryPopup();
-            makeMainMenu();
+            //makeMainMenu();
         };
         
         function makeInventoryPopup() {

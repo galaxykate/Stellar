@@ -268,9 +268,9 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
                         obj = new particleTypes.Trailhead();
                     } else if (Math.random() > .2) {
                         obj = new particleTypes.Star();
-                    } else {
-                        obj = new particleTypes.Critter();
-                    }
+                    } //else {
+                      //  obj = new particleTypes.Critter();
+                    //}
 
                     obj.position.setTo(p);
                     this.spawn(obj);

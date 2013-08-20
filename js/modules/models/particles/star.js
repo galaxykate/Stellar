@@ -102,7 +102,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             	
             	// If we are not the first element burned (edge case)
             	// And not triggering a supernova for lack of energy (already handled later)...
-            	if(lastElement !== -1 && lastElement !== undefined && star.elements.burntElementID !== -1 && star.elements.burntElementID !== undefined){
+            	if(lastElement !== -1 && lastElement !== undefined && star.elements.burntElementID !== -1 && star.elements.burntElementID !== undefined
+            		&& lastElement < star.elements.burntElementID){
             		//console.log(star.idNumber + " last element: " + lastElement + " burntElementID: " + star.elements.burntElementID);
             		// And we have transitioned to burning a new element...
             		if(lastElement !== star.elements.burntElementID){
