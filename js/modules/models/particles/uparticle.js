@@ -150,7 +150,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                     this.totalForce.addPolar(r, theta);
                 }
-                
+
                 if (this.target) {
                     this.velocity.mult(.92);
                     var targetOffset = Vector.sub(this.position, this.target.position);
