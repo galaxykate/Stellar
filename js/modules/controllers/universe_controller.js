@@ -4,7 +4,7 @@
 
 // Create the way that the game will render on-screen
 
-define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"], function(Vector, $, $, KColor) {
+define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor", "mousewheel"], function(Vector, $, $, KColor, mousewheel) {
     var maxHistory = 50;
     return (function() {
 
@@ -85,7 +85,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
             touch.planeOffset.setToAddMultiple(touch.planePosition, 1, touch.planeLast, -1);
 
             // How far is the touch from the screen's center position on the plane?
-            touch.planeCenterOffset.setToDifference(universeView.camera.center.position, touch.planePosition);
+            touch.planeCenterOffset.setToDifference(universeView.camera.position, touch.planePosition);
 
             touch.screenPct.setTo(touch.screenPosition);
             touch.screenPct.x /= w;
@@ -107,9 +107,20 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
 
         var initTouchFunctions = function() {
 
+            // Mousewheel zooming
+            $("body").mousewheel(function(event, delta) {
+             
+                var zoomCurrent = universeView.camera.zoom;
+                universeView.camera.setZoom(zoomCurrent + delta * .003);
+                event.preventDefault();
+
+            });
+
             // Clear the touch output and get the objects/regions that it's over
             var updateTouchContext = function() {
                 utilities.clearTouchOutput();
+
+                utilities.touchOutput("Last action: " + touch.lastAction);
                 utilities.touchOutput("Current Tool: " + touch.activeTool);
                 utilities.touchOutput("Last : " + touch.lastActionOutput);
 
@@ -121,18 +132,36 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
                 utilities.touchOutput(touch.overObjects);
             };
 
+            var dragCount = 0;
             // Move the primary touch/mouse to this positon
             var touchDrag = function(p) {
-                if (p !== undefined) {
-                    updateTouchPositions(p);
+                utilities.touchOutput("drag count : " + dragCount);
+
+                if (touch.pressed) {
+
+                    // Count how long it's been dragged
+                    if (!touch.dragging) {
+                        dragCount++;
+                        if (dragCount > 30) {
+                            touch.dragging = true;
+                            console.log("Dragging set to " + touch.dragging);
+                        }
+                    }
+
+                    if (touch.dragging) {
+                        if (p !== undefined) {
+                            updateTouchPositions(p);
+                        }
+
+                        updateTouchContext();
+
+                        if (touch.region)
+                            touch.region.setOwner(player);
+
+                        if (touch.activeTool)
+                            touch.activeTool.touchDrag(touch);
+                    }
                 }
-
-                updateTouchContext();
-
-                if (touch.region)
-                    touch.region.setOwner(player);
-
-                controlUpdated();
             };
 
             var touchDoubletap = function(p) {
@@ -141,11 +170,20 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
                 }
                 updateTouchContext();
 
+                // Do something with the clicked stuff
+                if (touch.overObjects.length > 0) {
+
+                    console.log("CLICK " + touch.overObjects[0]);
+                    universeView.camera.focusOn(touch.overObjects[0]);
+                } else
+                    console.log("CLICKED NOTHING");
             };
 
             var touchUp = function(p) {
+                console.log("TOUCH UP");
                 updateTouchContext();
 
+                touch.dragging = false;
                 touch.pressed = false;
                 touch.dragOffset.mult(0);
                 touch.lastReleased.setTo(p);
@@ -154,17 +192,18 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
                 if (touch.activeTool !== undefined) {
                     touch.activeTool.touchUp(touch);
                 }
+                dragCount = 0;
             };
 
             var touchDown = function(p) {
                 updateTouchContext();
                 touch.pressed = true;
-
                 touch.lastPressed.setTo(p)
 
                 if (touch.activeTool !== undefined) {
                     touch.activeTool.touchDown(touch);
                 }
+                dragCount = 0;
 
             };
 
@@ -208,10 +247,6 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
                 touchUp(p);
             });
 
-            hammertime.on("pinchin", function(ev) {
-                console.log("ZOOOOOOM");
-            });
-
             touch.lastAction = "none";
             touch.update = function() {
                 if (touch.pressed)
@@ -236,18 +271,6 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
 
         };
 
-        var controlUpdateFunction = [];
-
-        var onControl = function(f) {
-            controlUpdateFunction.push(f);
-        };
-
-        var controlUpdated = function() {
-            $.each(controlUpdateFunction, function(index, f) {
-                f.call(undefined, touch);
-            });
-        };
-
         var pagePositionToRelativePosition = function(div, pagePos) {
 
             //   var parentOffset = $(div).parent().offset();
@@ -264,25 +287,20 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
         var addUI = function() {
 
             var zoomDefault = .2;
-            function setZoom(value) {
-                var distance = Math.pow(value, 3);
-                universeView.setCamera({
-                    distance : distance,
-                    zoom : value
-                });
-            };
+
             $("#zoom_slider").slider({
                 orientation : "vertical",
                 range : "min",
-                min : .01,
-                max : 1,
+                min : tuning.minZoom,
+                max : tuning.maxZoom,
                 value : zoomDefault,
                 step : .01,
                 slide : function(event, ui) {
-                    setZoom(ui.value);
+                    universeView.camera.setZoom(ui.value);
                 }
             });
-            setZoom(zoomDefault);
+            
+            universeView.camera.setZoom(zoomDefault);
 
             var rotationDefault = .2;
             $("#rotation_slider").slider({
@@ -301,7 +319,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
             });
 
             $("#nav_home_button").click(function() {
-                universeView.camera.center.setTarget(new Vector(0, 0));
+                universeView.camera.setTarget(new Vector(0, 0));
             });
 
             universeView.setCamera({
@@ -323,7 +341,6 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
 
         return {
             init : init,
-            onControl : onControl,
             setUniverseView : setUniverseView,
             setUniverse : setUniverse,
 

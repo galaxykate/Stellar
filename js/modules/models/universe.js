@@ -27,39 +27,13 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
                 g.ellipse(0, 0, 50, 50);
             };
 
-            this.camera = {
-
-                angle : new Vector(0, 0, 0),
-                center : new particleTypes.UParticle(),
-                zoom : 1,
-                rotation : -Math.PI,
-            };
-
-            this.camera.center.name = "Camera";
-            this.camera.center.drawUntransformed = true;
-
-            // Set how the camera draws
-            this.camera.center.drawMain = function(context) {
-                if (stellarGame.options.drawCamera) {
-                    g.noFill();
-                    g.strokeWeight(1);
-                    g.stroke(.55, 1, 1);
-                    g.ellipse(0, 0, 50, 50);
-
-                    var segments = 12;
-                    var points = [];
-                    for (var i = 0; i < segments; i++) {
-                        points[i] = new Vector(this.position);
-                        points[i].addPolar(30, i * 2 * Math.PI / segments);
-                    }
-                    context.universeView.drawShape(g, points);
-                }
-            };
-
             this.makeBackgroundStars();
             this.makeUniverseTree();
             this.generateStartRegion();
-            this.spawn(this.camera.center);
+
+            this.camera = new particleTypes.Camera();
+            this.spawn(this.camera);
+
             //      this.spawn(this.touchMarker);
         },
 
@@ -98,8 +72,8 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
                     var camera = context.universeView.camera;
                     var scale = 4000 * camera.zoom / (camera.zoom + z);
 
-                    var x = backgroundStars[i][j][0] - .01 * camera.center.position.y;
-                    var y = backgroundStars[i][j][1] - .01 * camera.center.position.x * Math.sin(camera.orbitPhi);
+                    var x = backgroundStars[i][j][0] - .01 * camera.position.y;
+                    var y = backgroundStars[i][j][1] - .01 * camera.position.x * Math.sin(camera.orbitPhi);
                     var z = backgroundStars[i][j][2] + Math.pow(4 - i, 2) * 2000 + 4000;
 
                     var loopBoxWidth = 100;
@@ -190,16 +164,22 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             // update the touch object
             stellarGame.touch.update();
 
-            // Update all the particle physics
-            $.each(activeObjects, function(index, obj) {
-                obj.beginUpdate(time);
-            });
-            
+            // Does the activeObjects list contain the camera?
+            var cameraActive = $.inArray(this.camera, activeObjects);
+            utilities.debugOutput("Camera active " + cameraActive);
+            if (cameraActive < 0)
+                activeObjects.push(this.camera);
+
             // Update the stars' evolutions at the current speed
             // Need beginUpdate to happen first so that a star's temperature is calculated
             $.each(activeObjects, function(index, obj) {
                 if (obj.updateStarEvolution)
                     obj.updateStarEvolution(time);
+            });
+
+            // Update all the particle physics
+            $.each(activeObjects, function(index, obj) {
+                obj.beginUpdate(time);
             });
 
             $.each(activeObjects, function(index, obj) {
@@ -213,8 +193,6 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             $.each(activeObjects, function(index, obj) {
                 obj.finishUpdate(time);
             });
-            
-            
 
             uiManager.update();
 
@@ -292,8 +270,9 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
                         obj = new particleTypes.Trailhead();
                     } else if (Math.random() > .2) {
                         obj = new particleTypes.Star();
-                    } //else {
-                      //  obj = new particleTypes.Critter();
+                    }
+                    //else {
+                    //  obj = new particleTypes.Critter();
                     //}
 
                     obj.position.setTo(p);
@@ -330,6 +309,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
         spawn : function(object) {
             this.quadTree.insert(object);
         },
+
         initStatistics : function() {
             stellarGame.statistics.numberOfTrails = 0;
             stellarGame.statistics.numberOfStars = 0;
@@ -341,9 +321,11 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
         getQuadrantsInRegion : function(region, quads, g) {
             return quadTree.getQuadrantsInRegion(region, quads, g);
         },
+
         addScrollingMovement : function(v) {
-            this.camera.center.velocity.addMultiple(v, 1);
-            utilities.touchOutput("Camera Velocity: " + this.camera.center.velocity);
+
+            this.camera.velocity.addMultiple(v, 1);
+            utilities.touchOutput("Camera Velocity: " + this.camera.velocity);
 
         },
     });

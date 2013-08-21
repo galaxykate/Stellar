@@ -59,6 +59,7 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
             // Whenever this gets implemented
             stellarGame.statistics.numItemsInQuadTree--;
         },
+        
         getQuadrantIndex : function(p) {
             // Get the quadrant
             var dx = p.x - this.center.x;

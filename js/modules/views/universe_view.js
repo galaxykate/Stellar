@@ -46,6 +46,8 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
 
         // Initialize this universeView to look at this universe
         init : function(u) {
+            var universeView = this;
+
             console.log("Init View");
             this.universe = u;
 
@@ -66,7 +68,6 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             this.camera = this.universe.camera;
 
             // Initialize the universe view to use processing
-            var universeView = this;
             initProcessing = function(g) {
                 g.size(universeView.dimensions.width, universeView.dimensions.height);
 
@@ -94,12 +95,12 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                     'class' : 'star_overlay',
                 });
                 console.log(div);
-              
+
                 div.css({
                     top : Math.round(Math.random() * 300) + "px",
                     left : Math.round(Math.random() * 300) + "px",
                 });
-                
+
                 starUIHolder.append(div);
             }
 
@@ -127,9 +128,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             time.total = currentTime;
             utilities.debugOutput("Update " + time.total.toFixed(2) + " fps: " + (1 / time.ellapsed).toFixed(2));
 
-            var angle = -Math.PI / 2 - .1 - this.camera.zoom;
-            this.camera.setOrbit(this.camera.center.position, 300 + this.camera.distance * 1000, this.camera.rotation, Math.PI + angle);
-
+      
             this.activeQuadrants = [];
 
             // Compile all of the quadrants that are on screen
@@ -150,6 +149,10 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             this.universe.update(time, this.activeObjects);
 
         },
+        //=================================================================================
+        //=================================================================================
+        //=================================================================================
+        //
 
         //=================================================================================
         //=================================================================================
@@ -176,6 +179,8 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 mode : getModeFromDistance(this.camera.orbitDistance),
                 angle : this.camera.orbitPhi,
             };
+
+            utilities.debugOutput(context.mode.index + ": " + context.mode.pct);
 
             // Draw eaach layer in order
             context.layer = "bg";
@@ -229,7 +234,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             if (touch.activeTool === undefined) {
 
             } else {
-                if (touch.planePosition) {
+                if (touch.planePosition && touch.pressed) {
                     var scale = 500 / touch.screenPosition.z;
                     touch.activeTool.drawCursor(g, touch.screenPosition, scale);
                 }
@@ -315,11 +320,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
         createThreeCamera : function() {
             var view = this;
             // set the scene size
-            var WIDTH = this.dimensions.width, HEIGHT = this.dimensions.height;
             var createTestScene = false;
-
-            // set some camera attributes
-            var VIEW_ANGLE = 45, ASPECT = WIDTH / HEIGHT, NEAR = 0.1, FAR = 10000;
 
             // create a WebGL renderer, camera
             // and a scene
@@ -330,58 +331,8 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 camera.screenQuadEdges[i] = new Edge(camera.screenQuadCorners[i], camera.screenQuadCorners[(i + 1) % 4]);
             }
 
-            this.camera.threeCamera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
             var threeCamera = this.camera.threeCamera;
             this.projector = new THREE.Projector();
-
-            camera.setOrbit = function(center, r, theta, phi) {
-                camera.orbitDistance = r;
-                camera.orbitTheta = theta;
-                camera.orbitPhi = phi;
-                camera.orbitPosition = new Vector(center);
-                camera.orbitPosition.addSpherical(r, theta, phi);
-                threeCamera.position.set(center.x + r * Math.cos(theta) * Math.cos(phi), center.y + r * Math.sin(theta) * Math.cos(phi), center.z + r * Math.sin(phi));
-                threeCamera.up = new THREE.Vector3(0, 0, 1);
-                threeCamera.lookAt(center);
-
-                threeCamera.updateMatrix();
-                // make sure camera's local matrix is updated
-                threeCamera.updateMatrixWorld();
-                // make sure camera's world matrix is updated
-                threeCamera.matrixWorldInverse.getInverse(threeCamera.matrixWorld);
-
-                // Find the forward, etc vectors for the camera
-                var forward = new THREE.Vector3(0, 0, -1);
-                forward.applyEuler(threeCamera.rotation, threeCamera.eulerOrder);
-                camera.forward = new Vector(forward);
-
-                var up = new THREE.Vector3(0, 1, 0);
-                up.applyEuler(threeCamera.rotation, threeCamera.eulerOrder);
-                camera.up = new Vector(up);
-
-                var right = new THREE.Vector3(1, 0, 0);
-                right.applyEuler(threeCamera.rotation, threeCamera.eulerOrder);
-                camera.right = new Vector(right);
-
-                // Calculate the quad points
-
-                for (var i = 0; i < 2; i++) {
-                    var xSide = i * 2 - 1;
-                    for (var j = 0; j < 2; j++) {
-                        var ySide = j * 2 - 1;
-
-                        // Calculate the intersection with the ground plane
-                        var x = (i - .5) * (view.dimensions.width - view.screenBorder * 2);
-                        var y = (j - .5) * (view.dimensions.height - view.screenBorder * 2);
-                        view.projectToPlanePosition(new Vector(x, y), camera.screenQuadCorners[i * 2 + j]);
-                    }
-                }
-                // Swap 2 and 3
-                var temp = new Vector(camera.screenQuadCorners[2]);
-                camera.screenQuadCorners[2].setTo(camera.screenQuadCorners[3]);
-                camera.screenQuadCorners[3].setTo(temp);
-
-            };
 
             camera.isInScreenQuad = function(p) {
                 // Go through all the segments
@@ -402,7 +353,6 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 renderer.render(scene, threeCamera);
             };
 
-            camera.setOrbit(new Vector(0, 0, 0), 1200, 1.2, .6);
             scene = new THREE.Scene();
 
             // add the camera to the scene
