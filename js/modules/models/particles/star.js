@@ -37,6 +37,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
                     star.idColor.stroke(g);
                 }
+                g.strokeWeight(2);
                 g.beginShape();
                 var t = stellarGame.time.universeTime;
 
@@ -63,7 +64,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                     var theta = i * Math.PI * 2 / streaks + .2 * Math.sin(i + t);
 
                     var rPct = ((i * 1.413124 - 1 * 3 * t) % 1 + 1) % 1;
-
+					
                     rPct = Math.pow(rPct, .8);
                     g.strokeWeight(4 * (1 - rPct));
                     star.idColor.stroke(g, 0, -1 + star.spiralOpacity);
@@ -199,14 +200,15 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 star.radius = startStarRadius - (lifespan.figuredPctCompleted * sizeToRemove);
                 //utilities.debugOutput("star radius: " + star.radius);
                 //utilities.debugOutput("% figured completed: " + lifespan.figuredPctCompleted);
-                SNS.generateSomeSparkles(star, 3);
+                //SNS.generateSomeSparkles(star, 3);
             };
 
             var lifespanOnEnd = function() {
                 //console.log("radius at END: " + star.radius);
                 star.state = states[1];
+                
                 // Kinda makes things lag.... probably want to tone it down?
-                SNS.generateSomeSparkles(star, Math.random() * 5 + 5);
+                //SNS.generateSomeSparkles(star, Math.random() * 5 + 5);
                 star.glow.pulse = false;
             };
 
@@ -308,8 +310,10 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             drawOverlay : function(context) {
                 this._super(context);
                 var g = context.g;
-                g.fill(1);
-                g.text(this.name, 0, context.distanceScale * this.radius + 10);
+                if(stellarGame.options.showStarNames){
+	                g.fill(1);
+	                g.text(this.name, 0, context.distanceScale * this.radius + 10);
+                }
 
                 if (context.mode.index < 2) {
                     if (this.elements) {

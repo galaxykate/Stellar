@@ -19,7 +19,7 @@ define(["inheritance", "modules/models/vector", "kcolor"], function(Inheritance,
 				this.glowIntensity = 0.1; // the transparency of each circle
 				//console.log("Glow initated: " + this.baseRadius + ", " + this.glowScale);
 				this.color = parent.idColor.clone();
-				this.pulse = true;
+				this.pulse = false;
             },
 
             update : function(radius) {

@@ -10,6 +10,8 @@ define(['modules/controllers/universe_controller', 'jQueryUI'], function(univers
 
         console.log("Init singleton game controller");
         var privateVar = '';
+        stellarGame.addOption("showText", true);
+        stellarGame.addOption("showStarNames", false);
 
         function initializeDevUI() {
 
