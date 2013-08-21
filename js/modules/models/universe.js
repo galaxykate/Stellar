@@ -6,11 +6,13 @@
 
 define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules/models/ui/uiManager', 'voronoi', 'chanceTable'], function(Vector, KColor, QuadTree, particleTypes, uiManager, Voronoi, ChanceTable) {
     var backgroundLayers = 3;
+    var initialUpdate = true;
     var backgroundStarDensity = 40;
     var Universe = Class.extend({
         init : function() {
             backgroundStars = [];
 
+            stellarGame.player.idColor = new KColor(Math.random(), 1, 1);
             this.spawnTable = new ChanceTable();
             this.spawnTable.addOption(particleTypes.Star, "star", 1);
 
@@ -152,6 +154,14 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
                 return obj.isRegion;
             });
 
+            if (initialUpdate) {
+                // create some territory
+                $.each(this.activeRegions, function(index, region) {
+
+                    region.setOwner(stellarGame.player);
+                });
+            }
+
             // If a region is on screen, but not generated, generate (aka fill) it
             $.each(this.activeRegions, function(index, region) {
                 if (!region.generated) {
@@ -198,6 +208,8 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
             // Remove dead object, replace misplaced ones, etc
             this.quadTree.cleanup();
+
+            initialUpdate = false;
         },
 
         //=======================================================

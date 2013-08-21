@@ -12,12 +12,16 @@ var stellarGame = {
     time : {
         universeTime : 0,
         gameTime : 0,
-        updateCount: 0,
+        updateCount : 0,
     },
 
     // For display purposes!
     statistics : {
         numItemsInQuadTree : 0,
+    },
+
+    player : {
+       
     },
 
     options : {},

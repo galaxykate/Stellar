@@ -8,10 +8,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
     var maxHistory = 50;
     return (function() {
 
-        var player = {
-            idColor : new KColor(Math.random(), 1, 1),
-        };
-
+      
         // Attach mouse events to the world window
         var universeView, universe;
 
@@ -142,7 +139,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
                     // Count how long it's been dragged
                     if (!touch.dragging) {
                         dragCount++;
-                        if (dragCount > 30) {
+                        if (dragCount > 3) {
                             touch.dragging = true;
                             console.log("Dragging set to " + touch.dragging);
                         }
@@ -155,8 +152,6 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
 
                         updateTouchContext();
 
-                        if (touch.region)
-                            touch.region.setOwner(player);
 
                         if (touch.activeTool)
                             touch.activeTool.touchDrag(touch);
