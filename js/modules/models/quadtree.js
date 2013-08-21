@@ -183,11 +183,22 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
                 g.stroke(h, 1, 1);
                 if (this.level === maxLevels)
                     g.fill(h, 1, 1);
+
             }
 
             var r = this.radius - this.level * .2;
             context.universeView.drawShape(g, this.corners);
-            //  options.drawText(g, this.angle, this.center, 0, 0);
+
+            if (this.isOnScreen(context.universeView)) {
+                g.fill(1);
+                if (this.level === maxLevels) {
+                    
+                    context.universeView.drawText(g, this.toString(), this.center, 0, 0);
+
+                }
+            }
+
+            //
 
         },
         drawTree : function(g, options) {
