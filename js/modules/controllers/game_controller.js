@@ -12,6 +12,7 @@ define(['modules/controllers/universe_controller', 'jQueryUI'], function(univers
         var privateVar = '';
         stellarGame.addOption("showText", true);
         stellarGame.addOption("showStarNames", false);
+        stellarGame.addOption("simStarEvolution", true);
 
         function initializeDevUI() {
 

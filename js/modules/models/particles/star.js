@@ -14,7 +14,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             }
         }, {
-            name : "nova",
+            name : "degenerate",
             idNumber : 1,
             draw : function(g, star, context) {
 				star.glow.draw(context); // maybe do something else? Dunno...
@@ -97,14 +97,15 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         var updateDustBurning = function(star) {
 			//utilities.debugOutput(star.idNumber + " state " + star.state.idNumber);
         	// Do not burn dust or trigger anything else if the star is collapsing
-        	if(star.state !== states[3]){
+        	//if(star.state !== states[3]){
         		var lastElement = star.elements.burntElementID;
         		
         		star.elements.burnSomeFuel(star.temperature);
             	star.tempGenerated = star.elements.heatGenerated;
             	
-            	// If we ran out of elements to currently burn...
-            	if(lastElement !== -1 && lastElement !== undefined && star.elements.burntElementID === -1){
+            	// If we ran out of elements to currently burn and isn't already collapsing...
+            	if(lastElement !== -1 && lastElement !== undefined && star.elements.burntElementID === -1
+            		&& star.state !== states[3]){
             		//console.log(star.idNumber + " last element: " + lastElement + " burntElementID: " + star.elements.burntElementID);
             		// And we have transitioned to burning a new element...
             		//if(lastElement !== star.elements.burntElementID){
@@ -125,8 +126,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             
 	            //utilities.debugOutput("temp: " + star.tempGenerated);
 	
-	            // If the star is able to burn energy again and is marked as a nova, change it back to a star
-	            if (star.tempGenerated > 0 && star.state === states[1]) {
+	            // If the star is able to burn energy again and is not as burning, change it back to burning!
+	            if (star.tempGenerated > 0) {
 	                reviveStar(star);
 	            }
 	
@@ -137,7 +138,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 	                SNS.explode(star);
 	                startBurnLifespan(star, star.elements.totalMass);
 	            }
-           }
+           //}
 
         };
 
@@ -327,8 +328,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             },
 
             beginUpdate : function(time) {
-                this._super(time);
-                //utilities.debugOutput(this.idNumber + " UPDATING!!!");
+                this._super(time);//utilities.debugOutput(this.idNumber+ " UPDATING!!!");
 
                 this.temperature = this.density * this.elements.totalMass * settings.starTempCalcScaler;
                 //utilities.debugOutput("star " + this.idNumber + " temp " + this.temperature);

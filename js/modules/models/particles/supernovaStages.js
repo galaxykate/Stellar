@@ -36,6 +36,8 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
 				spiralOpacitySpan(star, false, Math.random() + 1.5);
 				triggeredFadeOut = true;
 			}
+			
+			if(star.state !== star.states[3]) lifespan.abort();
         };
 
         var lifespanOnEnd = function() {
@@ -51,6 +53,7 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
         lifespan.onUpdate(lifespanUpdate);
         lifespan.onEnd(lifespanOnEnd);
         lifespan.onStart(lifespanOnStart);
+        lifespan.addTag("starStageDependent");
 
         star.lifespans.push(lifespan);
     };
@@ -74,6 +77,7 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
 
         lifespan.onUpdate(lifespanUpdate);
 		lifespan.onStart(lifespanOnStart);
+		
         star.lifespans.push(lifespan);
 
     };
@@ -102,6 +106,8 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
 
         lifespan.onUpdate(lifespanUpdate);
 		lifespan.onEnd(lifespanOnEnd);
+		lifespan.addTag("starStageDependent");
+		
         star.lifespans.push(lifespan);
     };
     
