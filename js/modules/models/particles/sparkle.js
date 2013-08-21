@@ -78,7 +78,7 @@ define(["modules/models/vector", "uparticle", 'lifespan'], function(Vector, UPar
                     var jPct = j * 1.0 / (starLevels - 1);
                     //utilities.debugOutput(this.idNumber + " / " + j + ": " + (.2 + jPct));
                     //g.fill(.65, (.3 - .3 * jPct), 1, this.baseOpacity + this.opacityOffset + jPct);
-                    this.color.fill(g, (.3 - .3 * jPct), this.baseOpacity + this.opacityOffset + jPct);
+                    this.color.fill(g, (.6 - .3 * jPct), this.baseOpacity + this.opacityOffset + jPct);
                     g.beginShape();
                     g.vertex(0, 0);
                     var pop = 0;
@@ -92,7 +92,7 @@ define(["modules/models/vector", "uparticle", 'lifespan'], function(Vector, UPar
                         var sparkle = 1.1 * utilities.pnoise(t * 2 + theta + this.idNumber);
                         sparkle = Math.pow(sparkle, 2);
 
-                        var r = (Math.random() + .6) * radius * (spike * sparkle);
+                        var r = (Math.random() + .2) * radius * (spike * sparkle);
 
                         r += 1 + 1.5 * pop;
                         r *= radius * .7 * (1.2 - Math.pow(.7 * jPct, 1));
