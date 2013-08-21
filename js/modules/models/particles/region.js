@@ -60,6 +60,32 @@ define(["inheritance", "modules/models/vector", "kcolor", "uparticle"], function
                 }
             },
 
+            //==================================================
+            //==================================================
+            // Generate a region, fill it with things
+
+            generate : function(universe) {
+                this.generated = true;
+
+                var count = Math.random() * 4;
+                for (var i = 0; i < count; i++) {
+                    var r = 10 + 60 * Math.pow(i, .7);
+                    var theta = 1.6 * Math.pow(i, .7);
+
+                    var objType = universe.spawnTable.selectOne();
+                    var obj = new objType();
+
+                    obj.position.setTo(this.center);
+                    obj.position.addPolar(r, theta);
+
+                    universe.spawn(obj);
+                }
+
+            },
+
+            //==================================================
+            //==================================================
+
             setOwner : function(owner) {
                 this.owner = owner;
             },
@@ -102,11 +128,14 @@ define(["inheritance", "modules/models/vector", "kcolor", "uparticle"], function
                     //   region.points.push(new Vector(vb.x, vb.y));
                 });
             },
-            drawBackground : function(g, options) {
-
+            
+            drawBackground : function(context) {
+                this._super(context);
             },
 
-            drawMain : function(g, options) {
+            drawMain : function(context) {
+                this._super(context);
+                var g = context.g;
 
                 g.noFill();
 
@@ -121,15 +150,11 @@ define(["inheritance", "modules/models/vector", "kcolor", "uparticle"], function
                 }
                 //  g.noStroke();
 
-                options.universeView.drawShape(g, this.points);
+                context.universeView.drawShape(g, this.points);
 
             },
-            drawOverlay : function(g, options) {
-                this.idColor.fill(g, .5, .6);
-                g.noStroke();
-                g.ellipse(options.screenPos.x, options.screenPos.y, 10, 10);
-                g.text("Region " + this.idNumber, options.screenPos.x, options.screenPos.y);
-
+            drawOverlay : function(context) {
+                this._super(context);
             },
         });
         return Region;

@@ -14,6 +14,7 @@ define(["inheritance", "modules/models/vector", "kcolor"], function(Inheritance,
 				
 				this.depth = 10; // number of circles stacked on each other
 				this.baseRadius = parent.radius * 1.05; // the radius of the smallest circle
+				this.radiusModifier = 0; // for pulsing
 				this.glowScale = this.baseRadius * 1.9 - this.baseRadius; // the radius of the largest circle
 				this.glowIntensity = 0.1; // the transparency of each circle
 				//console.log("Glow initated: " + this.baseRadius + ", " + this.glowScale);
@@ -22,7 +23,7 @@ define(["inheritance", "modules/models/vector", "kcolor"], function(Inheritance,
 
             update : function(radius) {
 				if(radius !== undefined){
-					this.baseRadius = radius;
+					this.baseRadius = radius + this.radiusModifier;
 					if(radius < 10){
 						this.depth = 10;
 					} else if (radius < 20) {
@@ -32,9 +33,12 @@ define(["inheritance", "modules/models/vector", "kcolor"], function(Inheritance,
 					}
 					this.glowScale = this.baseRadius * 1.9 - this.baseRadius;
 				}
+				if(stellarGame.time.updateCount%10 < 5) this.radiusModifier += .2 + (radius / 100);
+				else this.radiusModifier -= .2 + (radius / 100);
             },
             
-            draw : function(g) {
+            draw : function(context) {
+            	var g = context.g;
             	var rad = this.baseRadius;
 				for(var i = this.depth -1; i >= 0; i--){
 					//utilities.debugOutput("Glow: " + rad);

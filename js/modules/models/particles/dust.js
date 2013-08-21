@@ -17,37 +17,45 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "up
                 this.initAsElementContainer();
                 this.siphonable = true;
 
-                if(parent !== undefined){
-                	this.parent = parent;
+                if (parent !== undefined) {
+                    this.parent = parent;
                 }
-				stellarGame.statistics.numberOfDust++;
-				this.type = "dust";
+                stellarGame.statistics.numberOfDust++;
+                this.type = "dust";
             },
 
-            drawBackground : function(g, options) {
-                if (stellarGame.drawDust) {
-                    this.idColor.fill(g, -.8, .5);
-                    g.noStroke();
-                    g.ellipse(0, 0, this.radius, this.radius);
-                }
-            },
-
-            drawMain : function(g, options) {
-                if (stellarGame.drawDust) {
-                    if(this.scale === undefined){
-                    	this.scale = 1;
+            drawBackground : function(context) {
+                this._super(context);
+                var g = context.g;
+                /* // Turning off dust background circles because it feels unnecessary
+                if (context.mode.index <= 2) {
+                    if (stellarGame.drawDust) {
+                        this.idColor.fill(g, -.8, .5);
+                        g.noStroke();
+                        g.ellipse(0, 0, this.radius, this.radius);
                     }
-                	g.pushMatrix();
-                	g.scale(this.scale);
-                	this.elements.drawAsDustCloud(g, this.radius, this.hacktime);
-                	g.popMatrix();
-                
+                }*/
+            },
+
+            drawMain : function(context) {
+                this._super(context);
+
+                var g = context.g;
+                // Only draw for closest
+                if (context.mode.index <= 1) {
+                    if (this.scale === undefined) {
+                        this.scale = 1;
+                    }
+                    g.pushMatrix();
+                    g.scale(this.scale);
+                    this.elements.drawAsDustCloud(g, this.radius, this.hacktime);
+                    g.popMatrix();
                 }
             },
 
-            drawOverlay : function(g, options) {
-                if (stellarGame.drawDust) {
-                }
+            drawOverlay : function(context) {
+                this._super(context);
+
             },
 
             update : function(time) {

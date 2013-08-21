@@ -10,32 +10,33 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         var states = [{
             name : "inactive",
             idNumber : 0,
-            draw : function(g, star, options) {
+            draw : function(g, star, context) {
 
             }
         }, {
             name : "nova",
             idNumber : 1,
-            draw : function(g, star, options) {
-
+            draw : function(g, star, context) {
+				star.glow.draw(context); // maybe do something else? Dunno...
             }
         }, {
             name : "burning",
             idNumber : 2,
-            draw : function(g, star, options) {
+            draw : function(g, star, context) {
+            	//utilities.debugOutput(star.idNumber + " burning " + star.elements.burntElementID);
                 var segments = 25;
                 var theta;
                 var r;
                 var layers = 2;
                 g.noFill();
 
-                if(star.elements.burntElementID !== undefined && star.elements.burntElementID !== -1){
+                if (star.elements.burntElementID !== undefined && star.elements.burntElementID !== -1) {
 
-                	g.stroke(.1*star.elements.burntElementID, 1, 1, 1);
-				} else {
+                    g.stroke(.1 * star.elements.burntElementID, 1, 1, 1);
+                } else {
 
-					star.idColor.stroke(g);
-				}
+                    star.idColor.stroke(g);
+                }
                 g.beginShape();
                 var t = stellarGame.time.universeTime;
 
@@ -51,40 +52,40 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         }, {
             name : "collapsing",
             idNumber : 3,
-            draw : function(g, star, options) {
+            draw : function(g, star, context) {
+            	//utilities.debugOutput(star.idNumber + " collapsing");
                 // Draw a spiral
-		        g.stroke(1, 0, 1, .8);
-				//utilities.debugOutput("collapsing!!!");
-		        var streaks = star.radius/3 + 50;
-		        var t = stellarGame.time.universeTime;
-		        for (var i = 0; i < streaks; i++) {
-		            var theta = i * Math.PI * 2 / streaks + .2 * Math.sin(i + t);
-		
-		            var rPct = ((i * 1.413124 - 1 * 3 * t) % 1 + 1) % 1;
-		
-		            rPct = Math.pow(rPct, .8);
-		            g.strokeWeight(4 * (1 - rPct));
-		            star.idColor.stroke(g, 0, -1+star.spiralOpacity);
-		            rPct = rPct * 1.6 - .4;
-		            var r = star.radius + 10 * Math.sin(i + 4 * t);
-		            var rInner = r * utilities.constrain(rPct - .1, 0, 1) + star.radius;
-		            var rOuter = r * utilities.constrain(rPct + .1, 0, 1) + star.radius;
-		            var spiral = -.06;
-		            var cInnerTheta = Math.cos(theta + spiral * rInner);
-		            var sInnerTheta = Math.sin(theta + spiral * rInner);
-		            var cOuterTheta = Math.cos(theta + spiral * rOuter);
-		            var sOuterTheta = Math.sin(theta + spiral * rOuter);
-		            g.line(rInner * cInnerTheta, rInner * sInnerTheta, rOuter * cOuterTheta, rOuter * sOuterTheta);
-            	}
+                g.stroke(1, 0, 1, .8);
+                //utilities.debugOutput("collapsing!!!");
+                var streaks = star.radius / 3 + 50;
+                var t = stellarGame.time.universeTime;
+                for (var i = 0; i < streaks; i++) {
+                    var theta = i * Math.PI * 2 / streaks + .2 * Math.sin(i + t);
+
+                    var rPct = ((i * 1.413124 - 1 * 3 * t) % 1 + 1) % 1;
+
+                    rPct = Math.pow(rPct, .8);
+                    g.strokeWeight(4 * (1 - rPct));
+                    star.idColor.stroke(g, 0, -1 + star.spiralOpacity);
+                    rPct = rPct * 1.6 - .4;
+                    var r = star.radius + 10 * Math.sin(i + 4 * t);
+                    var rInner = r * utilities.constrain(rPct - .1, 0, 1) + star.radius;
+                    var rOuter = r * utilities.constrain(rPct + .1, 0, 1) + star.radius;
+                    var spiral = -.06;
+                    var cInnerTheta = Math.cos(theta + spiral * rInner);
+                    var sInnerTheta = Math.sin(theta + spiral * rInner);
+                    var cOuterTheta = Math.cos(theta + spiral * rOuter);
+                    var sOuterTheta = Math.sin(theta + spiral * rOuter);
+                    g.line(rInner * cInnerTheta, rInner * sInnerTheta, rOuter * cOuterTheta, rOuter * sOuterTheta);
+                }
             }
         }, {
             name : "finalCollapse",
             idNumber : 4,
-            draw : function(g, star, options) {
-                
+            draw : function(g, star, context) {
+				star.glow.draw(context);
             }
         }];
-
 
         var randomState = function() {
             return states[Math.floor(Math.random() * 2)];
@@ -93,6 +94,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         // Only stars burn dust
         // They burn so long as there is fuel
         var updateDustBurning = function(star) {
+			//utilities.debugOutput(star.idNumber + " state " + star.state.idNumber);
         	// Do not burn dust or trigger anything else if the star is collapsing
         	if(star.state !== states[3]){
         		var lastElement = star.elements.burntElementID;
@@ -130,7 +132,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 	            // If a star is unable to burn energy and is marked as a star, nova it!
 	            // TO DO: || star.state === states[3] Add the ability to abort lifespans
 	            if (star.tempGenerated <= 0 && (star.state === states[0] || star.state === states[2])) {
-	            	star.state = states[1];
+	            	star.state = states[4];
 	                SNS.explode(star);
 	                startBurnLifespan(star, star.elements.totalMass);
 	            }
@@ -138,12 +140,10 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
         };
 
-
         // When enements are added to a dormant star
         var reviveStar = function(star) {
             star.state = states[2];
         }
-
         // Dust spirals into the star, star grows into its full size,
         // dust shrinks to nothing, transfers all its elements, and dies
         var startFeedLifespan = function(star, dust) {
@@ -199,10 +199,14 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 star.radius = startStarRadius - (lifespan.figuredPctCompleted * sizeToRemove);
                 //utilities.debugOutput("star radius: " + star.radius);
                 //utilities.debugOutput("% figured completed: " + lifespan.figuredPctCompleted);
+                SNS.generateSomeSparkles(star, 3);
             };
 
             var lifespanOnEnd = function() {
                 //console.log("radius at END: " + star.radius);
+                star.state = states[1];
+                // Kinda makes things lag.... probably want to tone it down?
+                SNS.generateSomeSparkles(star, Math.random() * 5 + 5);
             };
 
             var lifespanOnStart = function() {
@@ -239,6 +243,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             init : function(universe) {
                 this._super(universe);
+                this.name = UParticle.generateName();
 
                 this.initAsElementContainer();
 
@@ -247,15 +252,17 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.radius = calcStarSizeOfElements(this);
 
                 this.initFace();
-                this.density = 1.0; // affects how temperature is figured
-                this.temperature = this.density * this.elements.totalMass * settings.starTempCalcScaler; //Math.random() * 4000 + 1000;
+                this.density = 1.0;
+                // affects how temperature is figured
+                this.temperature = this.density * this.elements.totalMass * settings.starTempCalcScaler;
+                //Math.random() * 4000 + 1000;
                 //this.burningFuel = true;
 
                 this.acceptsDust = true;
                 this.spiralOpacity = 0;
 
                 stellarGame.statistics.numberOfStars++;
-                
+
                 this.glow = new Glow(this);
             },
 
@@ -263,17 +270,18 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.face = new Face.Face(this.idColor, this.idNumber);
             },
 
-            drawBackground : function(g, options) {
-                this._super(g, options);
-                //this.glow.draw(g);
+            drawBackground : function(context) {
+                this._super(context);
+				//this.glow.draw(context);
             },
 
-            drawMain : function(g, options) {
+            drawMain : function(context) {
+                this._super(context);
+                var g = context.g;
                 // Do all the other drawing
 
-                this._super(g, options);
-
-				this.state.draw(g, this, options);
+                this.state.draw(g, this, context);
+                
                 g.noStroke();
                 if (this.deleted) {
                     g.fill(.2, 0, .4);
@@ -288,23 +296,34 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                     this.face.draw(g);
 
                 }
-
-            },
-
-            drawOverlay : function(g, options) {
-                this._super(g, options);
-
-            },
-
-            update : function(time) {
-                this._super(time);
                 
+                // Not sure why you deleted this, Kate!!
+				//if (stellarGame.drawElements && this.elements) {
+				//	this.elements.draw(g, this.radius);
+				//}
+
+            },
+
+            drawOverlay : function(context) {
+                this._super(context);
+                var g = context.g;
+                g.fill(1);
+                g.text(this.name, 0, context.distanceScale * this.radius + 10);
+            },
+            
+            updateStarEvolution : function(time){
+            	updateDustBurning(this);
+            },
+
+            beginUpdate : function(time) {
+                this._super(time);
+                //utilities.debugOutput(this.idNumber + " UPDATING!!!");
+
                 this.temperature = this.density * this.elements.totalMass * settings.starTempCalcScaler;
                 //utilities.debugOutput("star " + this.idNumber + " temp " + this.temperature);
-                //this.glow.update(this.radius);
+                this.glow.update(this.radius);
                 this.debugOutput(this.state.name);
                 this.debugOutput(this.temperature);
-                updateDustBurning(this);
 
                 //utilities.debugOutput("radius: " + this.radius);
 
@@ -314,20 +333,22 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             },
 
             feedDust : function(touch, tool) {
-            	
+
                 var newDustObj = new Dust();
                 newDustObj.elements.clearAllElements();
                 newDustObj.position = new Vector();
 
-                newDustObj.position.setTo(touch.planePosition); // still off, not sure which position to grab
+                newDustObj.position.setTo(touch.planePosition);
+                // still off, not sure which position to grab
                 //console.log("New dust made at " + newDustObj.position + "+++++++++++++ " + this.position);
 
                 tool.elements.transferTo(newDustObj.elements, 1);
                 stellarGame.universe.spawn(newDustObj);
 
                 startFeedLifespan(this, newDustObj);
+
             },
-            
+
             states : states
         });
 

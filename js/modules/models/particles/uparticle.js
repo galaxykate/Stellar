@@ -7,6 +7,43 @@
 define(["inheritance", "modules/models/vector", "modules/models/elementSet", "noise", "kcolor"], function(Inheritance, Vector, ElementSet, Noise, KColor) {
     return (function() {
 
+        var endSyllables = "eum eia ia on a an ius us is ux un eus os ium o or i aa um ea ens oo ui ii".split(" ");
+        var midSyllables = "urv osh alph ongr asp ab alk aiz oph ij enj ik iy eon ectr oly er aph ion ian ank azz ill all iall elt apr el ynst udm aev ym ian atz ers yll ial iar yllb idr ats id ann ezz anth arthr erc isth uk isgr ell az arz oon arkh ic aeon ettr urth ythr ogg ast ol elz yt or em in orn yrr ysm ystr agn eops ad umb eal aur apr ael icr et elt erg iot ec ulp eg ers ict isc app ups il on av icr ert osc ydr usc yr".split(" ");
+
+        var startSyllables = "Xer Stryl Jin Micr Zib Xilb Brian Cher Vict Laur Ryl Franc Cyd Lur Xerx Lian Prisc Thel Cygn Jez Phyr Pryn Thal Xeb Zekr Sess Cec Kyrs Ver Phil Theoph Thur Luc Koch Hel Lectr Gall Laev Kat Xanth Chris Liall Ros Hyb Ith Idri Vald Ter Zen Thal Thund Shor Kur Rem Nym Hyum Melm Kuk Xen Mal Saur Vekt Vhil Tran Zar Zil Ur Zyrg Thral Torm Orth Bel Zag Chth Cyt Deuc Dos Gur Hydr Khar Lag Iag Lith Lum Lun Om Prysm".split(" ");
+
+        var generateName = function(maxCharacters) {
+            if (maxCharacters === undefined)
+                maxCharacters = 10 + Math.random() * 5;
+            var finishedName = undefined;
+            while (finishedName === undefined) {
+                var name = utilities.getRandom(startSyllables);
+                if (Math.random() > .4) {
+                    name = utilities.getRandom(midSyllables);
+                    name = name.charAt(0).toUpperCase() + name.slice(1);
+                }
+                var syllCount = Math.floor(Math.random() * Math.random() * 5);
+                for (var i = 0; i < syllCount; i++) {
+
+                    var syl = utilities.getRandom(midSyllables);
+                    name += syl;
+                    if (syl.length * syl.length * Math.random() < 1)
+                        name += syl;
+
+                }
+                name += utilities.getRandom(endSyllables);
+
+                if (name.length < maxCharacters)
+                    finishedName = name;
+            }
+            return name;
+
+        };
+
+        for (var i = 0; i < 50; i++) {
+            //  console.log(generateName(6 + Math.random() * 25));
+        }
+
         var noise = new Noise();
 
         // Private functions
@@ -74,8 +111,24 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.debugOutputLines = [];
             },
 
+            setTarget : function(target) {
+                this.target = target;
+            },
+
+            //===============================================================
             // Update this particle according to physics
             beginUpdate : function(time) {
+
+                // Clear the output
+                this.clearDebugOutput();
+
+                // Has this particle been updated in a while?
+                var t = time.ellapsed;
+                if (this.lastUpdate === undefined) {
+                    this.lastUpdate = 0;
+                    this.initialUpdate();
+                }
+
                 this.totalForce.mult(0);
 
             },
@@ -86,11 +139,19 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 var noiseScale = .0040;
                 var nx = this.position.x * noiseScale;
                 var ny = this.position.y * noiseScale;
-                var t = time.total * .03;
+                var t = time.total * .02;
                 var theta = 20 * noise.noise2D(nx + t + this.idNumber * 39, ny + t);
-                var r = this.mass * 60;
+                var r = this.mass * 60 + (1 + 1 * Math.sin(this.idNumber));
 
-                //       this.totalForce.addPolar(r, theta);
+                if (this.target) {
+                    var targetOffset = Vector.sub(this.position, this.target);
+                    console.log(targetOffset);
+                    if (targetOffset.magnitude() < 10)
+                        this.target = undefined;
+                    this.totalForce.addMultiple(targetOffset, -10);
+                }
+
+                this.totalForce.addPolar(r, theta);
             },
 
             updatePosition : function(time) {
@@ -101,40 +162,10 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
             finishUpdate : function(time) {
                 this.velocity.mult(this.drag);
-                this.update(time);
+                this.cleanup();
             },
 
-            update : function(time) {
-                // Clear the output
-                var t = time.ellapsed;
-                if (this.lastUpdate === undefined) {
-                    this.lastUpdate = 0;
-                    this.initialUpdate();
-                }
-
-                this.clearDebugOutput();
-
-                var d = this.position.magnitude();
-
-                if (d === 0 || d === NaN)
-                    d = .001;
-
-                var outside = Math.max(0, d - 200);
-                var gravity = -Math.pow(outside, 2) / d;
-                // this.totalForce.setToMultiple(this.position, gravity);
-
-                var noiseScale = .0040;
-                var nx = this.position.x * noiseScale;
-                var ny = this.position.y * noiseScale;
-                var t = time.total * .1;
-                var ellapsed = time.ellapsed;
-                var theta = 16 * noise.noise2D(nx + t + this.idNumber * 39, ny + t);
-                var r = 190;
-                // this.totalForce.addPolar(r, theta);
-
-                this.velocity.addMultiple(this.totalForce, ellapsed);
-                this.position.addMultiple(this.velocity, ellapsed);
-                this.velocity.mult(this.drag);
+            cleanup : function(time) {
 
                 //DEBUG CHECKING
                 if (this.DEBUGPOSITION) {
@@ -145,12 +176,13 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 }
 
-                if (this.elements !== undefined) {
-                    this.updateElements();
-                }
-
                 for (var i = 0; i < this.lifespans.length; i++) {
                     this.lifespans[i].update();
+                }
+
+                // Remove this if the elements have bottomed out
+                if (this.elements && this.elements.totalMass === 0) {
+                    this.remove();
                 }
 
             },
@@ -158,19 +190,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             // Give this object a bunch of elements
             initAsElementContainer : function() {
                 this.elements = new ElementSet(this);
-
-            },
-
-            updateElements : function() {
-                // Do something with the new element amounts
-                //this.elements.setTotalMass(); // this is set by elements.siphon()
-
-                if (this.elements.totalMass === 0) {
-                    this.remove();
-                    // removal of this happence twice for some reason. Not sure why!
-                    //console.log("CALLING THIS.REMOVE");
-                }
-
             },
 
             initAsParticle : function() {
@@ -181,37 +200,27 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.mass = 1;
                 this.drag = .93;
             },
-
             initAsTouchable : function() {
                 this.touchable = true;
                 this.touchHeld = false;
 
             },
-
             touchStart : function(touch) {
                 this.touchHeld = true;
             },
             touchEnd : function(touch) {
                 this.touchHeld = false;
             },
+            drawBackground : function(context) {
 
-            drawBackground : function(g, options) {
+            },
+
+            drawMain : function(context) {
 
             },
 
-            drawMain : function(g, options) {
-
-                this.idColor.fill(g);
-                g.noStroke();
-                if (this.deleted) {
-                    g.fill(.2, 0, .4);
-                    g.stroke(1, 0, 1, .7);
-                }
-
-                g.ellipse(0, 0, this.radius, this.radius);
-
-            },
-            drawOverlay : function(g, options) {
+            drawOverlay : function(context) {
+                var g = context.g;
                 //var h = (this.idNumber * .212 + .3) % 1;
                 if (this.touchHeld) {
 
@@ -219,10 +228,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     g.noFill();
                     g.strokeWeight(5);
                     g.ellipse(0, 0, this.radius + 10, this.radius + 10);
-                }
-
-                if (stellarGame.drawElements && this.elements) {
-                    this.elements.draw(g, this.radius);
                 }
 
                 // Draw the text
@@ -239,20 +244,20 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 }
             },
 
-            draw : function(g, options) {
+            draw : function(context) {
 
-                switch(options.layer) {
+                switch(context.layer) {
                     case "bg":
-                        this.drawBackground(g, options);
+                        this.drawBackground(context);
                         break;
 
                     case "main":
-                        this.drawMain(g, options);
+                        this.drawMain(context);
 
                         break;
 
                     case "overlay":
-                        this.drawOverlay(g, options);
+                        this.drawOverlay(context);
                         break;
 
                 }
@@ -274,7 +279,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 }
 
             },
-
             drawAsBlinkenStar : function(g, segmentDetail, useNoise, useTriangle) {
                 var i, j;
                 var t = stellarGame.time.universeTime;
@@ -311,11 +315,12 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     g.endShape();
                 }
             },
-
             toString : function() {
                 return "p" + this.idNumber + this.position;
             },
         });
+
+        UParticle.generateName = generateName;
         return UParticle;
     })();
 

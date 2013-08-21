@@ -4,16 +4,20 @@
 
 // Its the Universe!
 
-define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules/models/ui/uiManager', 'voronoi'], function(Vector, KColor, QuadTree, particleTypes, uiManager, Voronoi) {
+define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules/models/ui/uiManager', 'voronoi', 'chanceTable'], function(Vector, KColor, QuadTree, particleTypes, uiManager, Voronoi, ChanceTable) {
     var backgroundLayers = 3;
     var backgroundStarDensity = 40;
     var Universe = Class.extend({
         init : function() {
             backgroundStars = [];
 
+            this.spawnTable = new ChanceTable();
+            this.spawnTable.addOption(particleTypes.Star, "star", 1);
+
             this.touchMarker = new particleTypes.UParticle();
             this.touchMarker.name = "Touch Marker";
-            this.touchMarker.drawMain = function(g, options) {
+            this.touchMarker.drawMain = function(context) {
+                var g = context.g;
                 g.fill(.55, 1, 1);
                 g.noStroke();
                 g.ellipse(0, 0, 20, 20);
@@ -33,7 +37,9 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
             this.camera.center.name = "Camera";
             this.camera.center.drawUntransformed = true;
-            this.camera.center.drawMain = function(g, options) {
+
+            // Set how the camera draws
+            this.camera.center.drawMain = function(context) {
                 if (stellarGame.options.drawCamera) {
                     g.noFill();
                     g.strokeWeight(1);
@@ -46,7 +52,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
                         points[i] = new Vector(this.position);
                         points[i].addPolar(30, i * 2 * Math.PI / segments);
                     }
-                    options.universeView.drawShape(g, points);
+                    context.universeView.drawShape(g, points);
                 }
             };
 
@@ -81,14 +87,15 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             }
         },
 
-        drawBackgroundStars : function(g, options) {
+        drawBackgroundStars : function(context) {
+            g = context.g;
             var t = stellarGame.time.universeTime;
             g.noStroke();
             for (var i = 0; i < backgroundLayers; i++) {
                 utilities.debugOutput("BG Stars: " + backgroundStars[i].length);
 
                 for (var j = 0; j < backgroundStars[i].length; j++) {
-                    var camera = options.universeView.camera;
+                    var camera = context.universeView.camera;
                     var scale = 4000 * camera.zoom / (camera.zoom + z);
 
                     var x = backgroundStars[i][j][0] - .01 * camera.center.position.y;
@@ -140,16 +147,16 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
         // Draw the universes background
         // May be camera-dependent, eventually
-        draw : function(g, options) {
+        draw : function(context) {
 
-            if (options.layer === 'bg') {
-                this.drawBackgroundStars(g, options);
+            if (context.layer === 'bg') {
+                this.drawBackgroundStars(context);
             }
 
-            if (options.layer === 'overlay') {
+            if (context.layer === 'overlay') {
                 if (stellarGame.options.drawQuadTree) {
                     g.pushMatrix();
-                    this.quadTree.drawTree(g, options);
+                    this.quadTree.drawTree(context);
                     g.popMatrix();
                 }
             }
@@ -166,15 +173,33 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             // Use the current tool
 
             stellarGame.time.universeTime = time.total;
+            stellarGame.time.updateCount++;
 
+            // Get all the active objects that are regions
             this.activeRegions = _.filter(activeObjects, function(obj) {
                 return obj.isRegion;
             });
 
+            // If a region is on screen, but not generated, generate (aka fill) it
+            $.each(this.activeRegions, function(index, region) {
+                if (!region.generated) {
+                    region.generate(universe);
+                }
+            });
+
+            // update the touch object
             stellarGame.touch.update();
 
+            // Update all the particle physics
             $.each(activeObjects, function(index, obj) {
                 obj.beginUpdate(time);
+            });
+            
+            // Update the stars' evolutions at the current speed
+            // Need beginUpdate to happen first so that a star's temperature is calculated
+            $.each(activeObjects, function(index, obj) {
+                if (obj.updateStarEvolution)
+                    obj.updateStarEvolution(time);
             });
 
             $.each(activeObjects, function(index, obj) {
@@ -188,9 +213,12 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             $.each(activeObjects, function(index, obj) {
                 obj.finishUpdate(time);
             });
+            
+            
 
             uiManager.update();
 
+            // Remove dead object, replace misplaced ones, etc
             this.quadTree.cleanup();
         },
 
@@ -238,13 +266,9 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
                 region.createFromCell(cell);
             });
 
-            this.generateRegion({
-                center : new Vector(0, 0, 0),
-                w : 8000,
-                h : 7500
-            });
         },
 
+        // Is this region on screen for the first time?
         generateRegion : function(region) {
 
             // Pick some random locations in the region

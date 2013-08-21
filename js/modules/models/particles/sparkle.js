@@ -32,7 +32,7 @@ define(["modules/models/vector", "uparticle", 'lifespan'], function(Vector, UPar
 
         var Sparkle = UParticle.extend({
 
-            init : function(universe, parent) {
+            init : function(universe, parent, color) {
                 this._super(universe);
 				this.scale = .5;
 				this.baseOpacity = .2;
@@ -41,6 +41,14 @@ define(["modules/models/vector", "uparticle", 'lifespan'], function(Vector, UPar
 				if(parent !== undefined){
                 	this.parent = parent;
                 }
+				this.color = this.idColor;
+				if(color !== undefined) {
+					//console.log("I AM SETTING A NEW COLOR: " + this.color);
+					this.color = color;
+					//console.log("I AM SETTING A NEW COLOR: " + this.color);
+				} else {
+					//console.log(":(");
+				}
 				
 				this.type = "sparkle";
 				
@@ -49,24 +57,28 @@ define(["modules/models/vector", "uparticle", 'lifespan'], function(Vector, UPar
 				stellarGame.statistics.numberofSparkles++;
             },
 
-            drawBackground : function(g, options) {
-				this.idColor.fill(g, -.8, .5);
+            drawBackground : function(context) {
+            	var g = context.g;
+				this.color.fill(g, -.4, .5);
                 g.noStroke();
                 //g.ellipse(0, 0, this.radius, this.radius);
 
             },
 
-            drawMain : function(g, options) {
-				this.idColor.fill(g, .9, 1);
+            drawMain : function(context) {
+            	var g = context.g
+				this.color.fill(g, .9, 1);
+				//console.log("Coloring: " + this.color);
                 var t = stellarGame.time.universeTime;
                 var radius = this.radius*this.scale;
                 g.noStroke();
-                var points = 5;
+                var points = Math.random() * 2 + 5;
                 var starLevels = 2;
                 for (var j = 0; j < starLevels; j++) {
                     var jPct = j * 1.0 / (starLevels - 1);
                     //utilities.debugOutput(this.idNumber + " / " + j + ": " + (.2 + jPct));
-                    g.fill(.65, (.3 - .3 * jPct), 1, this.baseOpacity + this.opacityOffset + jPct);
+                    //g.fill(.65, (.3 - .3 * jPct), 1, this.baseOpacity + this.opacityOffset + jPct);
+                    this.color.fill(g, (.3 - .3 * jPct), this.baseOpacity + this.opacityOffset + jPct);
                     g.beginShape();
                     g.vertex(0, 0);
                     var pop = 0;
@@ -80,7 +92,7 @@ define(["modules/models/vector", "uparticle", 'lifespan'], function(Vector, UPar
                         var sparkle = 1.1 * utilities.pnoise(t * 2 + theta + this.idNumber);
                         sparkle = Math.pow(sparkle, 2);
 
-                        var r = .6 * radius * (spike * sparkle);
+                        var r = (Math.random() + .6) * radius * (spike * sparkle);
 
                         r += 1 + 1.5 * pop;
                         r *= radius * .7 * (1.2 - Math.pow(.7 * jPct, 1));
@@ -90,7 +102,7 @@ define(["modules/models/vector", "uparticle", 'lifespan'], function(Vector, UPar
                 }
             },
 
-            drawOverlay : function(g, options) {
+            drawOverlay : function(context) {
 
             },
 
