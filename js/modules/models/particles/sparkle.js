@@ -34,7 +34,7 @@ define(["modules/models/vector", "uparticle", 'lifespan'], function(Vector, UPar
 
             init : function(universe, parent, color) {
                 this._super(universe);
-				this.scale = .5;
+				this.scale = .4;
 				this.baseOpacity = .2;
 				this.maxOpacity = 1 + this.baseOpacity;
                 this.opacityOffset = 0;

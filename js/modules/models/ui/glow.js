@@ -19,6 +19,7 @@ define(["inheritance", "modules/models/vector", "kcolor"], function(Inheritance,
 				this.glowIntensity = 0.1; // the transparency of each circle
 				//console.log("Glow initated: " + this.baseRadius + ", " + this.glowScale);
 				this.color = parent.idColor.clone();
+				this.pulse = true;
             },
 
             update : function(radius) {
@@ -33,8 +34,10 @@ define(["inheritance", "modules/models/vector", "kcolor"], function(Inheritance,
 					}
 					this.glowScale = this.baseRadius * 1.9 - this.baseRadius;
 				}
-				if(stellarGame.time.updateCount%10 < 5) this.radiusModifier += .2 + (radius / 100);
-				else this.radiusModifier -= .2 + (radius / 100);
+				if(this.pulse){
+					if(stellarGame.time.updateCount%10 < 5) this.radiusModifier += .2 + (radius / 100);
+					else this.radiusModifier -= .2 + (radius / 100);
+				}
             },
             
             draw : function(context) {

@@ -207,6 +207,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 star.state = states[1];
                 // Kinda makes things lag.... probably want to tone it down?
                 SNS.generateSomeSparkles(star, Math.random() * 5 + 5);
+                star.glow.pulse = false;
             };
 
             var lifespanOnStart = function() {
