@@ -322,8 +322,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             },
 
             beginUpdate : function(time) {
-                this._super(time);
-                //utilities.debugOutput(this.idNumber + " UPDATING!!!");
+                this._super(time);//utilities.debugOutput(this.idNumber+ " UPDATING!!!");
 
                 this.temperature = this.density * this.elements.totalMass * settings.starTempCalcScaler;
                 //utilities.debugOutput("star " + this.idNumber + " temp " + this.temperature);

@@ -172,10 +172,12 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
             // Update the stars' evolutions at the current speed
             // Need beginUpdate to happen first so that a star's temperature is calculated
-            $.each(activeObjects, function(index, obj) {
-                if (obj.updateStarEvolution)
-                    obj.updateStarEvolution(time);
-            });
+            if (stellarGame.options.simStarEvolution) {
+                $.each(activeObjects, function(index, obj) {
+                    if (obj.updateStarEvolution)
+                        obj.updateStarEvolution(time);
+                });
+            }
 
             // Update all the particle physics
             $.each(activeObjects, function(index, obj) {
