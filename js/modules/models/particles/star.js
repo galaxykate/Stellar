@@ -297,6 +297,12 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 var g = context.g;
                 g.fill(1);
                 g.text(this.name, 0, context.distanceScale * this.radius + 10);
+
+                if (context.mode.index < 2) {
+                    if (this.elements) {
+                        this.elements.draw(context.g, this.radius);
+                    }
+                }
             },
 
             update : function(time) {

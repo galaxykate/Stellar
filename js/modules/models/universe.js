@@ -30,7 +30,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             this.makeBackgroundStars();
             this.makeUniverseTree();
             this.generateStartRegion();
-            
+
             this.camera = new particleTypes.Camera();
             this.spawn(this.camera);
 
@@ -162,6 +162,12 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
             // update the touch object
             stellarGame.touch.update();
+
+            // Does the activeObjects list contain the camera?
+            var cameraActive = $.inArray(this.camera, activeObjects);
+            utilities.debugOutput("Camera active " + cameraActive);
+            if (cameraActive < 0)
+                activeObjects.push(this.camera);
 
             // Update the stars' evolutions at the current speed
             $.each(activeObjects, function(index, obj) {
@@ -301,7 +307,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
         spawn : function(object) {
             this.quadTree.insert(object);
         },
-        
+
         initStatistics : function() {
             stellarGame.statistics.numberOfTrails = 0;
             stellarGame.statistics.numberOfStars = 0;
@@ -313,9 +319,9 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
         getQuadrantsInRegion : function(region, quads, g) {
             return quadTree.getQuadrantsInRegion(region, quads, g);
         },
-        
+
         addScrollingMovement : function(v) {
-           
+
             this.camera.velocity.addMultiple(v, 1);
             utilities.touchOutput("Camera Velocity: " + this.camera.velocity);
 

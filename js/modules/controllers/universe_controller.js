@@ -109,8 +109,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
 
             // Mousewheel zooming
             $("body").mousewheel(function(event, delta) {
-                console.log(delta);
-
+             
                 var zoomCurrent = universeView.camera.zoom;
                 universeView.camera.setZoom(zoomCurrent + delta * .003);
                 event.preventDefault();
@@ -194,7 +193,6 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
                     touch.activeTool.touchUp(touch);
                 }
                 dragCount = 0;
-                console.log("Dragging " + touch.dragging);
             };
 
             var touchDown = function(p) {

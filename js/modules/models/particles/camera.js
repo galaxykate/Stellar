@@ -38,6 +38,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
 
             focusOn : function(object) {
                 var camera = this;
+                camera.focusObject = object;
                 camera.setTarget({
                     position : object.position,
                     onHit : function() {
@@ -50,6 +51,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
             },
 
             finishUpdate : function(time) {
+                utilities.debugOutput("Camera pos: " + this.position);
                 this._super(time);
                 if (this.zoomTarget) {
                     if (Math.abs(this.zoomTarget - this.zoom) < .02) {
@@ -59,19 +61,29 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
                         this.setZoom(this.zoom + this.zoomTargetDistance * .02);
 
                 }
+
+                // Set to the current orbit
+                var angle = -Math.PI / 2 - .1 - this.zoom;
+                this.setOrbit(300 + this.distance * 1000, this.rotation, Math.PI + angle);
+
+                utilities.debugOutput("Focus on " + this.focusObject);
             },
 
-            setOrbit : function(center, r, theta, phi) {
+            setOrbit : function(r, theta, phi) {
                 var camera = this;
                 var threeCamera = this.threeCamera;
                 camera.orbitDistance = r;
                 camera.orbitTheta = theta;
                 camera.orbitPhi = phi;
+                var center = this.position;
                 camera.orbitPosition = new Vector(center);
                 camera.orbitPosition.addSpherical(r, theta, phi);
                 threeCamera.position.set(center.x + r * Math.cos(theta) * Math.cos(phi), center.y + r * Math.sin(theta) * Math.cos(phi), center.z + r * Math.sin(phi));
                 threeCamera.up = new THREE.Vector3(0, 0, 1);
                 threeCamera.lookAt(center);
+                
+                            utilities.debugOutput("ThreeCam pos " + threeCamera.position.x.toFixed(1)  + " " +  threeCamera.position.y.toFixed(1)  + " " +  threeCamera.position.z.toFixed(1) );
+    
 
                 threeCamera.updateMatrix();
                 // make sure camera's local matrix is updated

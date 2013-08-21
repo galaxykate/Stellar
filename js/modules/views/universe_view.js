@@ -104,7 +104,6 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 starUIHolder.append(div);
             }
 
-       
         },
 
         isOnScreen : function(p) {
@@ -129,9 +128,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             time.total = currentTime;
             utilities.debugOutput("Update " + time.total.toFixed(2) + " fps: " + (1 / time.ellapsed).toFixed(2));
 
-            var angle = -Math.PI / 2 - .1 - this.camera.zoom;
-            this.camera.setOrbit(this.camera.position, 300 + this.camera.distance * 1000, this.camera.rotation, Math.PI + angle);
-
+      
             this.activeQuadrants = [];
 
             // Compile all of the quadrants that are on screen
@@ -156,8 +153,6 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
         //=================================================================================
         //=================================================================================
         //
-
-
 
         //=================================================================================
         //=================================================================================
@@ -184,6 +179,8 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 mode : getModeFromDistance(this.camera.orbitDistance),
                 angle : this.camera.orbitPhi,
             };
+
+            utilities.debugOutput(context.mode.index + ": " + context.mode.pct);
 
             // Draw eaach layer in order
             context.layer = "bg";
@@ -356,7 +353,6 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 renderer.render(scene, threeCamera);
             };
 
-            camera.setOrbit(new Vector(0, 0, 0), 1200, 1.2, .6);
             scene = new THREE.Scene();
 
             // add the camera to the scene

@@ -139,23 +139,25 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
             addForces : function(time) {
 
-                // Adding a noise force
-                var noiseScale = .0040;
-                var nx = this.position.x * noiseScale;
-                var ny = this.position.y * noiseScale;
-                var t = time.total * .02;
-                var theta = 20 * noise.noise2D(nx + t + this.idNumber * 39, ny + t);
-                var r = this.mass * 60 + (1 + 1 * Math.sin(this.idNumber));
+                if (stellarGame.options.randomMovement) {
+                    // Adding a noise force
+                    var noiseScale = .0040;
+                    var nx = this.position.x * noiseScale;
+                    var ny = this.position.y * noiseScale;
+                    var t = time.total * .02;
+                    var theta = 20 * noise.noise2D(nx + t + this.idNumber * 39, ny + t);
+                    var r = this.mass * 60 + (1 + 1 * Math.sin(this.idNumber));
 
-                if (this.target) {
-                    this.velocity.mult(.92);
-                    var targetOffset = Vector.sub(this.position, this.target.position);
-                    if (targetOffset.magnitude() < 10)
-                        this.target.onHit();
-                    this.totalForce.addMultiple(targetOffset, -10);
+                    if (this.target) {
+                        this.velocity.mult(.92);
+                        var targetOffset = Vector.sub(this.position, this.target.position);
+                        if (targetOffset.magnitude() < 10)
+                            this.target.onHit();
+                        this.totalForce.addMultiple(targetOffset, -10);
+                    }
+
+                    this.totalForce.addPolar(r, theta);
                 }
-
-                this.totalForce.addPolar(r, theta);
             },
 
             updatePosition : function(time) {
