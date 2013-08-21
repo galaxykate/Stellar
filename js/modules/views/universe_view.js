@@ -128,7 +128,6 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             time.total = currentTime;
             utilities.debugOutput("Update " + time.total.toFixed(2) + " fps: " + (1 / time.ellapsed).toFixed(2));
 
-      
             this.activeQuadrants = [];
 
             // Compile all of the quadrants that are on screen
@@ -137,6 +136,8 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             // Compile all the active objects
             this.activeObjects = [];
             var contentsArrays = [];
+            utilities.debugArrayOutput(this.activeQuadrants);
+
             $.each(this.activeQuadrants, function(index, quad) {
                 contentsArrays[index] = quad.contents;
             });

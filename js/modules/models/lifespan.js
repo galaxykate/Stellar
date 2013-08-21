@@ -38,6 +38,7 @@ define(["inheritance"], function(Inheritance) {
             },
             
             abort : function() {
+            	console.log(this.idNumber + " ABORTING!!!");
             	this.end();
             },
             

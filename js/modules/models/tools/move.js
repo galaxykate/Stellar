@@ -30,29 +30,35 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 var tool = this;
                 // Release all the elements as a dust cloud
 
-                if (touch.overObjects.length > 0 && touch.overObjects[0].acceptsDust) {
-                    // All objects that "acceptDust" must have a .feedDust() public function
-                    console.log("Feeding dust to: " );
-                    console.log(touch.overObjects[0]);
-                    touch.overObjects[0].feedDust(touch, tool);
+                // find the first object that accepts dust
+                var target = undefined;
+                for (var i = 0; i < touch.overObjects.length; i++) {
+                    if (touch.overObjects[i].acceptsDust) {
+                        target = touch.overObjects[i];
+                        break;
+                    }
 
-                } else {
-                	if (touch.overObjects.length > 0){
-                		console.log("Object touched does not accept dust: " );
-                		console.log(touch.overObjects[0]);
-                		console.log("touch object length : " + touch.overObjects.length);
-                	} else {
-                		console.log("No object touched: sending dust to inventory");
-                	}
+                }
+
+                if (target) {
+                    // All objects that "acceptDust" must have a .feedDust() public function
+                    console.log("Feeding dust to: ");
+                    console.log(target);
+                    target.feedDust(touch, tool);
+
+                    // If there's enought dust in here
                     if (tool.elements.totalMass > minDustMass) {
 
                         // Transfer 100% of the elements to the new popup Inventory!
                         var playerInventory = uiManager.getPlayerInventory();
 
-                       	tool.elements.transferTo(playerInventory.contents["playerElements"].elementsHolder, 1);
-                       	playerInventory.contents["playerElements"].elementsHolder.updateAllElementsInDiv();
+                        tool.elements.transferTo(playerInventory.contents["playerElements"].elementsHolder, 1);
+                        playerInventory.contents["playerElements"].elementsHolder.updateAllElementsInDiv();
                     }
+                } else {
+                    console.log("No object touched: sending dust to inventory");
                 }
+
             },
 
             // Choose mode
@@ -65,8 +71,8 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 this.moveWithOffset(touch);
 
                 $.each(touch.overObjects, function(index, obj) {
-                    
-                   utilities.touchOutput("Siphon " + obj);
+
+                    utilities.touchOutput("Siphon " + obj);
                     if (obj.siphonable)
                         tool.elements.siphon(obj.elements, 1);
 
@@ -86,7 +92,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 g.fill(1, 0, 1, .4);
                 g.ellipse(0, 0, 10, 10);
 
-             //   this.drawDirection(g, p);
+                //   this.drawDirection(g, p);
 
                 g.fill(1, 0, 1);
                 g.text(this.elements.totalMass, 5, 15);
@@ -128,7 +134,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
                 if (this.mode === COLLECT) {
                     if (stellarGame.touch.pressed) {
-                      //  this.drawDirection(g, p);
+                        //  this.drawDirection(g, p);
                     }
                 }
                 g.popMatrix();

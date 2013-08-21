@@ -228,16 +228,17 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         };
 
 		// Only burns 1 element at a time
-        ElementSet.prototype.burnSomeFuel = function(temp) {
+        ElementSet.prototype.burnSomeFuel = function(temp, time) {
             var amountToRemove = 0;
             this.heatGenerated = 0;
             this.burntElementID = -1;
-            var burning = false;
+            this.burning = false;
+            var t = time.ellapsed +1;
             if (temp >= PPCHAINREACTIONTEMP) {
                 if (this.elementQuantity[0] > CUTOFFAMOUNT) {// should be > 4
-                    burning = true;
+                    this.burning = true;
                     this.burntElementID = 0;
-                    amountToRemove = this.elementQuantity[0] * settings.elementBurnAmtScaler;
+                    amountToRemove = this.elementQuantity[0] * settings.elementBurnAmtScaler * 5* t;
                     this.elementQuantity[0] -= amountToRemove;
                     this.elementQuantity[1] += amountToRemove / 4;
                     utilities.debugOutput("-H: " + amountToRemove);
@@ -247,10 +248,10 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
             //utilities.debugOutput("Element Quantity: " + this.elementQuantity);
 
             if (temp >= TAPREACTIONTEMP){ //&& burning === false) {
-                if (this.elementQuantity[1] > CUTOFFAMOUNT * 2) {// Leave PLENTY for fusion later? Or just change it so all fusion happens at all times?
-                    burning = true;
+                if (this.elementQuantity[1] > CUTOFFAMOUNT) {// Leave PLENTY for fusion later? Or just change it so all fusion happens at all times?
+                    this.burning = true;
                     this.burntElementID = 1;
-                    amountToRemove = this.elementQuantity[1] * settings.elementBurnAmtScaler;
+                    amountToRemove = this.elementQuantity[1] * settings.elementBurnAmtScaler * 3* t;
                     this.elementQuantity[1] -= amountToRemove;
                     this.elementQuantity[2] += amountToRemove / 4;
                     utilities.debugOutput("-HE: " + amountToRemove);
@@ -268,9 +269,9 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 			if (temp >= CHEREACTIONTEMP){ //&& burning === false) {
                 if (this.elementQuantity[2] > amountToRemove // Both elements to convert need to have at least that much in them
                 	&& this.elementQuantity[1] > amountToRemove) {
-                    burning = true;
+                    this.burning = true;
                     this.burntElementID = 2;
-                    amountToRemove = this.elementQuantity[2] * settings.elementBurnAmtScaler;
+                    amountToRemove = this.elementQuantity[2] * settings.elementBurnAmtScaler * t;
                     this.elementQuantity[2] -= amountToRemove; // C
                     this.elementQuantity[1] -= amountToRemove; // He
                     this.elementQuantity[3] += amountToRemove; // O
@@ -283,9 +284,9 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 			if (temp >= OHEREACTIONTEMP){ //&& burning === false) {
                 if (this.elementQuantity[3] > amountToRemove // Both elements to convert need to have at least that much in them
                 	&& this.elementQuantity[1] > amountToRemove) {
-                    burning = true;
+                    this.burning = true;
                     this.burntElementID = 3;
-                    amountToRemove = this.elementQuantity[3] * settings.elementBurnAmtScaler;
+                    amountToRemove = this.elementQuantity[3] * settings.elementBurnAmtScaler * t;
                     this.elementQuantity[3] -= amountToRemove; // O
                     this.elementQuantity[1] -= amountToRemove; // He
                     this.elementQuantity[4] += amountToRemove; // SI
@@ -298,9 +299,9 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 			if (temp >= SIHEREACTIONTEMP){ //&& burning === false) {
                 if (this.elementQuantity[4] > amountToRemove // Both elements to convert need to have at least that much in them
                 	&& this.elementQuantity[1] > amountToRemove) {
-                    burning = true;
+                    this.burning = true;
                     this.burntElementID = 4;
-                    amountToRemove = this.elementQuantity[4] * settings.elementBurnAmtScaler;
+                    amountToRemove = this.elementQuantity[4] * settings.elementBurnAmtScaler * t;
                     this.elementQuantity[4] -= amountToRemove; // SI
                     this.elementQuantity[1] -= amountToRemove; // He
                     this.elementQuantity[5] += amountToRemove; // FE
@@ -313,9 +314,9 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 			if (temp >= FEHEREACTIONTEMP){ //&& burning === false) {
                 if (this.elementQuantity[5] > amountToRemove // Both elements to convert need to have at least that much in them
                 	&& this.elementQuantity[1] > amountToRemove) {
-                    burning = true;
+                    this.burning = true;
                     this.burntElementID = 5;
-                    amountToRemove = this.elementQuantity[5] * settings.elementBurnAmtScaler;
+                    amountToRemove = this.elementQuantity[5] * settings.elementBurnAmtScaler * t;
                     this.elementQuantity[5] -= amountToRemove; // FE
                     this.elementQuantity[1] -= amountToRemove; // He
                     this.elementQuantity[6] += amountToRemove; // AU
@@ -328,9 +329,9 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 			if (temp >= AUHEREACTIONTEMP){ //&& burning === false) {
                 if (this.elementQuantity[6] > amountToRemove // Both elements to convert need to have at least that much in them
                 	&& this.elementQuantity[1] > amountToRemove) {
-                    burning = true;
+                    this.burning = true;
                     this.burntElementID = 6;
-                    amountToRemove = this.elementQuantity[6] * settings.elementBurnAmtScaler;
+                    amountToRemove = this.elementQuantity[6] * settings.elementBurnAmtScaler * t;
                     this.elementQuantity[6] -= amountToRemove; // AU
                     this.elementQuantity[1] -= amountToRemove; // He
                     this.elementQuantity[7] += amountToRemove; // U

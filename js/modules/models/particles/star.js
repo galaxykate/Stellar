@@ -94,13 +94,13 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
         // Only stars burn dust
         // They burn so long as there is fuel
-        var updateDustBurning = function(star) {
+        var updateDustBurning = function(star, time) {
 			//utilities.debugOutput(star.idNumber + " state " + star.state.idNumber);
         	// Do not burn dust or trigger anything else if the star is collapsing
         	//if(star.state !== states[3]){
         		var lastElement = star.elements.burntElementID;
         		
-        		star.elements.burnSomeFuel(star.temperature);
+        		star.elements.burnSomeFuel(star.temperature, time);
             	star.tempGenerated = star.elements.heatGenerated;
             	
             	// If we ran out of elements to currently burn and isn't already collapsing...
@@ -133,7 +133,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 	
 	            // If a star is unable to burn energy and is marked as a star, nova it!
 	            // TO DO: || star.state === states[3] Add the ability to abort lifespans
-	            if (star.tempGenerated <= 0 && (star.state === states[0] || star.state === states[2])) {
+	            if (star.tempGenerated <= 0 && star.elements.burning === false && (star.state === states[0] || star.state === states[2])) {
 	            	star.state = states[4];
 	                SNS.explode(star);
 	                startBurnLifespan(star, star.elements.totalMass);
@@ -202,6 +202,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 //utilities.debugOutput("star radius: " + star.radius);
                 //utilities.debugOutput("% figured completed: " + lifespan.figuredPctCompleted);
                 //SNS.generateSomeSparkles(star, 3);
+                if(star.state !== star.states[4]) lifespan.abort();
             };
 
             var lifespanOnEnd = function() {
@@ -324,7 +325,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             },
             
             updateStarEvolution : function(time){
-            	updateDustBurning(this);
+            	updateDustBurning(this, time);
             },
 
             beginUpdate : function(time) {
@@ -335,6 +336,10 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.glow.update(this.radius);
                 this.debugOutput(this.state.name);
                 this.debugOutput(this.temperature);
+                this.debugOutput(this.elements.burning);
+                this.debugOutput(this.elements.heatGenerated);
+                this.debugOutput(this.elements.burntElementID);
+                
 
                 //utilities.debugOutput("radius: " + this.radius);
 

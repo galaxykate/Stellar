@@ -98,6 +98,8 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
         	else star.position.y--;
         	
         	updateCount++;
+        	
+        	if(star.state !== star.states[3]) lifespan.abort();
         };
         
         var lifespanOnEnd = function() {

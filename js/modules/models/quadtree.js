@@ -59,7 +59,7 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
             // Whenever this gets implemented
             stellarGame.statistics.numItemsInQuadTree--;
         },
-        
+
         getQuadrantIndex : function(p) {
             // Get the quadrant
             var dx = p.x - this.center.x;
@@ -170,20 +170,23 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
 
         //
 
-        draw : function(g, options) {
+        draw : function(context) {
+            var g = context.g;
             g.rectMode(g.RADIUS);
 
             var h = (this.level * .231 + .1) % 1;
             g.strokeWeight(1);
-            if (this.isOnScreen(options.universeView)) {
-                g.strokeWeight(4);
-
+            g.stroke(h, 1, 1, .3);
+            g.noFill();
+            if (this.isOnScreen(context.universeView)) {
+                g.strokeWeight(2);
+                g.stroke(h, 1, 1);
+                if (this.level === maxLevels)
+                    g.fill(h, 1, 1);
             }
 
-            g.stroke(h, 1, 1);
-            g.noFill();
             var r = this.radius - this.level * .2;
-            options.universeView.drawShape(g, this.corners);
+            context.universeView.drawShape(g, this.corners);
             //  options.drawText(g, this.angle, this.center, 0, 0);
 
         },

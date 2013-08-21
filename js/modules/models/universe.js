@@ -129,9 +129,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
             if (context.layer === 'overlay') {
                 if (stellarGame.options.drawQuadTree) {
-                    g.pushMatrix();
                     this.quadTree.drawTree(context);
-                    g.popMatrix();
                 }
             }
 
