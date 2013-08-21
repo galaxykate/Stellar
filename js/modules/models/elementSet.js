@@ -11,12 +11,25 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 
     return (function() {
         // TUNING VALUES
+        
+        // For elemental fusion, see: http://en.wikipedia.org/wiki/Alpha_process
         var PPCHAINREACTIONTEMP = 1000;
         // proto-proton chain reaction: 4 H to 1 HE
 
         var TAPREACTIONTEMP = 2000;
         // triple-alpha process : 3 HE to 1 C
-
+		
+		var CHEREACTIONTEMP = 2500;
+		var OHEREACTIONTEMP = 3000;
+		var SIHEREACTIONTEMP = 3500;
+		var FEHEREACTIONTEMP = 5000;
+		var AUHEREACTIONTEMP = 10000;
+		// C + He = O
+		// O + He = Ne // Ignore
+		// Ne + He = Mg // ignore
+		// Mg + He = Si // FUDGE to O + He
+		// Si + He = S // FUDGE to Si + He = Fe
+		// Au and U should only be made via supernova of an iron-rich star
         var MADEUPSTUFFTEMP = 3000;
         // all other elements will convert on a 4-to-1 ratio
         // until more research is done on this
@@ -62,18 +75,19 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         };
 
         // Make the Vector class
-        function ElementSet(parent) {
+        function ElementSet(parent, numElements) {
             this.elementQuantity = [];
             this.parent = parent;
-
             // How many elements does this start with?
-            var maxElements = 1 + Math.floor(Math.random() * Math.random() * activeElements.length);
+            //var maxElements = 1 + Math.floor(Math.random() * Math.random() * activeElements.length);
+            var maxElements = 0; // all stars should start off with 1 element: HYDROGEN!
+            if(numElements !== undefined) maxElements = numElements;
             var previousElement = Math.random() * 1000;
             for (var i = 0; i < activeElements.length; i++) {
                 this.elementQuantity[i] = 0;
                 // Each element should be a little less frequent then the element before
                 if (i <= maxElements) {
-                    this.elementQuantity[i] = previousElement * (.3 + .4 * Math.random());
+                    this.elementQuantity[i] = Math.ceil(previousElement * (.3 + .4 * Math.random()));
                     previousElement = this.elementQuantity[i];
                 }
 
@@ -226,24 +240,106 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
                     amountToRemove = this.elementQuantity[0] * settings.elementBurnAmtScaler;
                     this.elementQuantity[0] -= amountToRemove;
                     this.elementQuantity[1] += amountToRemove / 4;
-                    //utilities.debugOutput("REMOVING SOME HYDROGEN?: " + amountToRemove);
+                    utilities.debugOutput("-H: " + amountToRemove);
                     this.heatGenerated += HEATSCALAR;
                 }
             }
             //utilities.debugOutput("Element Quantity: " + this.elementQuantity);
 
-            if (temp >= TAPREACTIONTEMP && burning === false) {
-                if (this.elementQuantity[1] > CUTOFFAMOUNT) {// should be > 3
+            if (temp >= TAPREACTIONTEMP){ //&& burning === false) {
+                if (this.elementQuantity[1] > CUTOFFAMOUNT * 2) {// Leave PLENTY for fusion later? Or just change it so all fusion happens at all times?
                     burning = true;
                     this.burntElementID = 1;
                     amountToRemove = this.elementQuantity[1] * settings.elementBurnAmtScaler;
                     this.elementQuantity[1] -= amountToRemove;
                     this.elementQuantity[2] += amountToRemove / 4;
-                    //utilities.debugOutput("REMOVING SOME HELIUM?: " + amountToRemove);
+                    utilities.debugOutput("-HE: " + amountToRemove);
                     this.heatGenerated += HEATSCALAR * 2;
                 }
             }
-
+            
+            /*CHEREACTIONTEMP = 2500;
+			var OHEREACTIONTEMP = 3000;
+			var SIHEREACTIONTEMP = 3500;
+			var FEHEREACTIONTEMP = 5000;
+			var AUHEREACTIONTEMP*/
+			
+			// C + HE = O
+			if (temp >= CHEREACTIONTEMP){ //&& burning === false) {
+                if (this.elementQuantity[2] > amountToRemove // Both elements to convert need to have at least that much in them
+                	&& this.elementQuantity[1] > amountToRemove) {
+                    burning = true;
+                    this.burntElementID = 2;
+                    amountToRemove = this.elementQuantity[2] * settings.elementBurnAmtScaler;
+                    this.elementQuantity[2] -= amountToRemove; // C
+                    this.elementQuantity[1] -= amountToRemove; // He
+                    this.elementQuantity[3] += amountToRemove; // O
+                    utilities.debugOutput("-C: " + amountToRemove);
+                    this.heatGenerated += HEATSCALAR * 3;
+                }
+            }
+            
+            // O + HE = SI // TOTALLY NOT REAL
+			if (temp >= OHEREACTIONTEMP){ //&& burning === false) {
+                if (this.elementQuantity[3] > amountToRemove // Both elements to convert need to have at least that much in them
+                	&& this.elementQuantity[1] > amountToRemove) {
+                    burning = true;
+                    this.burntElementID = 3;
+                    amountToRemove = this.elementQuantity[3] * settings.elementBurnAmtScaler;
+                    this.elementQuantity[3] -= amountToRemove; // O
+                    this.elementQuantity[1] -= amountToRemove; // He
+                    this.elementQuantity[4] += amountToRemove; // SI
+                    utilities.debugOutput("-O: " + amountToRemove);
+                    this.heatGenerated += HEATSCALAR * 2;
+                }
+            }
+            
+            // SI + HE = FE // TOTALLY NOT REAL
+			if (temp >= SIHEREACTIONTEMP){ //&& burning === false) {
+                if (this.elementQuantity[4] > amountToRemove // Both elements to convert need to have at least that much in them
+                	&& this.elementQuantity[1] > amountToRemove) {
+                    burning = true;
+                    this.burntElementID = 4;
+                    amountToRemove = this.elementQuantity[4] * settings.elementBurnAmtScaler;
+                    this.elementQuantity[4] -= amountToRemove; // SI
+                    this.elementQuantity[1] -= amountToRemove; // He
+                    this.elementQuantity[5] += amountToRemove; // FE
+                    utilities.debugOutput("-SI: " + amountToRemove);
+                    this.heatGenerated += HEATSCALAR * 1;
+                }
+            }
+            
+            // FE + HE = AU // TOTALLY NOT REAL
+			if (temp >= FEHEREACTIONTEMP){ //&& burning === false) {
+                if (this.elementQuantity[5] > amountToRemove // Both elements to convert need to have at least that much in them
+                	&& this.elementQuantity[1] > amountToRemove) {
+                    burning = true;
+                    this.burntElementID = 5;
+                    amountToRemove = this.elementQuantity[5] * settings.elementBurnAmtScaler;
+                    this.elementQuantity[5] -= amountToRemove; // FE
+                    this.elementQuantity[1] -= amountToRemove; // He
+                    this.elementQuantity[6] += amountToRemove; // AU
+                    utilities.debugOutput("-FE: " + amountToRemove);
+                    this.heatGenerated -= HEATSCALAR;
+                }
+            }
+            
+            // FE + HE = AU // TOTALLY NOT REAL
+			if (temp >= AUHEREACTIONTEMP){ //&& burning === false) {
+                if (this.elementQuantity[6] > amountToRemove // Both elements to convert need to have at least that much in them
+                	&& this.elementQuantity[1] > amountToRemove) {
+                    burning = true;
+                    this.burntElementID = 6;
+                    amountToRemove = this.elementQuantity[6] * settings.elementBurnAmtScaler;
+                    this.elementQuantity[6] -= amountToRemove; // AU
+                    this.elementQuantity[1] -= amountToRemove; // He
+                    this.elementQuantity[7] += amountToRemove; // U
+                    utilities.debugOutput("-AU: " + amountToRemove);
+                    this.heatGenerated -= HEATSCALAR * 2;
+                }
+            }
+            
+			/*
             for (var i = 2; i < activeElements.length - 1; i++) {
                 if (temp >= MADEUPSTUFFTEMP && burning === false) {
                     if (this.elementQuantity[i] > CUTOFFAMOUNT) {// should be > 4
@@ -257,7 +353,7 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
                         // Iron burns MUCH dimmer and does not produce enough energy
                     }
                 }
-            }
+            }*/
 
             this.setTotalMass();
 

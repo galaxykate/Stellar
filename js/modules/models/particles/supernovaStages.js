@@ -12,7 +12,7 @@
  */
 
 
-define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "dust", "modules/models/ui/glow"], function(Inheritance, Vector, Lifespan, Dust, Glow) {
+define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "dust", "modules/models/ui/glow", particleTypePath + 'sparkle'], function(Inheritance, Vector, Lifespan, Dust, Glow, Sparkle) {
 
 	// Step 1 -- handled in star with help from elementSet
 	
@@ -24,6 +24,8 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
     	var lifespan = new Lifespan(duration);
         var startStarRadius = star.radius;
         var sizeToRemove = star.radius * collapseScale;
+        if(startStarRadius - sizeToRemove <= 5) sizeToRemove = startStarRadius -5;
+        if(sizeToRemove <= 0) sizeToRemove = 0;
         var triggeredFadeOut = false;
 
         var lifespanUpdate = function() {
@@ -38,6 +40,7 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
 
         var lifespanOnEnd = function() {
 			star.state = star.states[2];
+			star.density += .5;
         };
 
         var lifespanOnStart = function() {
@@ -132,11 +135,33 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
         //star.burningFuel = false;
        
     };
+    
+    
+    var generateSomeSparkles = function(star, num){
+    	
+		var numOfSparkles = Math.random() * 10 + 10;
+		if(num !== undefined) numOfSparkles = num;
+		
+		star.mySparkleCount = Math.floor(numOfSparkles);
+		
+		for(var i = 0; i < numOfSparkles; i++){
+			var newSparkle = new Sparkle(stellarGame.universe, undefined, star.idColor.clone());
+			var SPARKLEEXPLOSIONVELOCITY = Math.random() * 1200 + 300;
+			newSparkle.drag = .9999;
+			newSparkle.position = star.position.clone();
+    		
+    		// give it a velocity directly away from the explosion
+    		newSparkle.velocity.setTo(Math.random() * SPARKLEEXPLOSIONVELOCITY - (SPARKLEEXPLOSIONVELOCITY/2), Math.random()*SPARKLEEXPLOSIONVELOCITY - (SPARKLEEXPLOSIONVELOCITY/2));
+
+    		stellarGame.universe.spawn(newSparkle);
+		}
+	};
 
     return {
         collapse:collapse,
         fullCollapse:fullCollapse, 
-        explode:explode
+        explode:explode,
+        generateSomeSparkles:generateSomeSparkles
     };
 
 });

@@ -27,13 +27,14 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "up
             drawBackground : function(context) {
                 this._super(context);
                 var g = context.g;
+                /* // Turning off dust background circles because it feels unnecessary
                 if (context.mode.index <= 2) {
                     if (stellarGame.drawDust) {
                         this.idColor.fill(g, -.8, .5);
                         g.noStroke();
                         g.ellipse(0, 0, this.radius, this.radius);
                     }
-                }
+                }*/
             },
 
             drawMain : function(context) {

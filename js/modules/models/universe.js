@@ -147,6 +147,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             // Use the current tool
 
             stellarGame.time.universeTime = time.total;
+            stellarGame.time.updateCount++;
 
             // Get all the active objects that are regions
             this.activeRegions = _.filter(activeObjects, function(obj) {
@@ -170,6 +171,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
                 activeObjects.push(this.camera);
 
             // Update the stars' evolutions at the current speed
+            // Need beginUpdate to happen first so that a star's temperature is calculated
             $.each(activeObjects, function(index, obj) {
                 if (obj.updateStarEvolution)
                     obj.updateStarEvolution(time);
