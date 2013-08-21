@@ -167,6 +167,7 @@ require.config({
         'jQueryUI' : 'libs/jquery-ui',
         'jQueryUITouchPunch' : 'libs/jquery.ui.touch-punch',
         'jQueryHammer' : 'libs/jquery.hammer',
+        'mousewheel' : 'libs/jquery.mousewheel',
         'voronoi' : 'libs/rhill-voronoi-core',
         'underscore' : 'libs/underscore',
         'processing' : 'libs/processing-1.4.1',
@@ -197,6 +198,11 @@ require.config({
         },
         'jQueryUI' : {
             exports : '$',
+            deps : ['jQuery']
+        },
+
+        'mousewheel' : {
+            exports : 'mousewheel',
             deps : ['jQuery']
         },
         'underscore' : {

@@ -4,7 +4,7 @@
 
 // Create the way that the game will render on-screen
 
-define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"], function(Vector, $, $, KColor) {
+define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor", "mousewheel"], function(Vector, $, $, KColor, mousewheel) {
     var maxHistory = 50;
     return (function() {
 
@@ -107,9 +107,21 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
 
         var initTouchFunctions = function() {
 
+            // Mousewheel zooming
+            $("body").mousewheel(function(event, delta) {
+                console.log(delta);
+
+                var zoomCurrent = universeView.camera.zoom;
+                universeView.camera.setZoom(zoomCurrent + delta * .003);
+                event.preventDefault();
+
+            });
+
             // Clear the touch output and get the objects/regions that it's over
             var updateTouchContext = function() {
                 utilities.clearTouchOutput();
+
+                utilities.touchOutput("Last action: " + touch.lastAction);
                 utilities.touchOutput("Current Tool: " + touch.activeTool);
                 utilities.touchOutput("Last : " + touch.lastActionOutput);
 
@@ -124,21 +136,32 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
             var dragCount = 0;
             // Move the primary touch/mouse to this positon
             var touchDrag = function(p) {
-
-                // Count how long it's been dragged
-                dragCount++;
-                if (dragCount > 3)
-                    touch.pressed = true;
+                utilities.touchOutput("drag count : " + dragCount);
 
                 if (touch.pressed) {
-                    if (p !== undefined) {
-                        updateTouchPositions(p);
+
+                    // Count how long it's been dragged
+                    if (!touch.dragging) {
+                        dragCount++;
+                        if (dragCount > 30) {
+                            touch.dragging = true;
+                            console.log("Dragging set to " + touch.dragging);
+                        }
                     }
 
-                    updateTouchContext();
+                    if (touch.dragging) {
+                        if (p !== undefined) {
+                            updateTouchPositions(p);
+                        }
 
-                    if (touch.region)
-                        touch.region.setOwner(player);
+                        updateTouchContext();
+
+                        if (touch.region)
+                            touch.region.setOwner(player);
+
+                        if (touch.activeTool)
+                            touch.activeTool.touchDrag(touch);
+                    }
                 }
             };
 
@@ -152,14 +175,16 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
                 if (touch.overObjects.length > 0) {
 
                     console.log("CLICK " + touch.overObjects[0]);
-                    universeView.focusOn(touch.overObjects[0]);
+                    universeView.camera.focusOn(touch.overObjects[0]);
                 } else
                     console.log("CLICKED NOTHING");
             };
 
             var touchUp = function(p) {
+                console.log("TOUCH UP");
                 updateTouchContext();
 
+                touch.dragging = false;
                 touch.pressed = false;
                 touch.dragOffset.mult(0);
                 touch.lastReleased.setTo(p);
@@ -169,11 +194,12 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
                     touch.activeTool.touchUp(touch);
                 }
                 dragCount = 0;
+                console.log("Dragging " + touch.dragging);
             };
 
             var touchDown = function(p) {
                 updateTouchContext();
-
+                touch.pressed = true;
                 touch.lastPressed.setTo(p)
 
                 if (touch.activeTool !== undefined) {
@@ -263,25 +289,20 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor"]
         var addUI = function() {
 
             var zoomDefault = .2;
-            function setZoom(value) {
-                var distance = Math.pow(value, 3);
-                universeView.setCamera({
-                    distance : distance,
-                    zoom : value
-                });
-            };
+
             $("#zoom_slider").slider({
                 orientation : "vertical",
                 range : "min",
-                min : .01,
-                max : 1,
+                min : tuning.minZoom,
+                max : tuning.maxZoom,
                 value : zoomDefault,
                 step : .01,
                 slide : function(event, ui) {
-                    setZoom(ui.value);
+                    universeView.camera.setZoom(ui.value);
                 }
             });
-            setZoom(zoomDefault);
+            
+            universeView.camera.setZoom(zoomDefault);
 
             var rotationDefault = .2;
             $("#rotation_slider").slider({

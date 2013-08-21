@@ -1,8 +1,15 @@
 body {
-
+	scroll:hidden;
 }
+
 #app {
 	z-index: 0;
+	position: relative;
+}
+
+
+#giant_overlay {
+	z-index: 100;
 	position: relative;
 }
 
@@ -19,8 +26,11 @@ body {
 	z-index: 20;
 	position: relative;
 	float: left;
-	width: 600px;
-	height: 400px;
+	width: 620px;
+	height: 420px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	
 	background-color: rgba(50, 255, 90, 1);
 }
 
@@ -146,6 +156,7 @@ body {
 
 .nav_button {
 	font-size: 70%;
+	font: 7px arial, sans-serif, caption;
 }
 
 #options_panel {

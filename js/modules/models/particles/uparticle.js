@@ -111,6 +111,10 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 this.debugOutputLines = [];
             },
 
+            pinTo : function(pinnedTo) {
+                this.pinnedTo = pinnedTo;
+            },
+
             setTarget : function(target) {
                 this.target = target;
             },
@@ -144,10 +148,10 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 var r = this.mass * 60 + (1 + 1 * Math.sin(this.idNumber));
 
                 if (this.target) {
-                    var targetOffset = Vector.sub(this.position, this.target);
-                    console.log(targetOffset);
+                    this.velocity.mult(.92);
+                    var targetOffset = Vector.sub(this.position, this.target.position);
                     if (targetOffset.magnitude() < 10)
-                        this.target = undefined;
+                        this.target.onHit();
                     this.totalForce.addMultiple(targetOffset, -10);
                 }
 
@@ -162,6 +166,10 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
             finishUpdate : function(time) {
                 this.velocity.mult(this.drag);
+
+                if (this.pinnedTo) {
+                    this.position.setTo(this.pinnedTo);
+                }
                 this.cleanup();
             },
 
@@ -218,7 +226,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             drawMain : function(context) {
 
             },
-
             drawOverlay : function(context) {
                 var g = context.g;
                 //var h = (this.idNumber * .212 + .3) % 1;
@@ -243,7 +250,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     })
                 }
             },
-
             draw : function(context) {
 
                 switch(context.layer) {

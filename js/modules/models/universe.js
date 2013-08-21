@@ -301,6 +301,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
         spawn : function(object) {
             this.quadTree.insert(object);
         },
+        
         initStatistics : function() {
             stellarGame.statistics.numberOfTrails = 0;
             stellarGame.statistics.numberOfStars = 0;
@@ -312,7 +313,9 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
         getQuadrantsInRegion : function(region, quads, g) {
             return quadTree.getQuadrantsInRegion(region, quads, g);
         },
+        
         addScrollingMovement : function(v) {
+           
             this.camera.velocity.addMultiple(v, 1);
             utilities.touchOutput("Camera Velocity: " + this.camera.velocity);
 
