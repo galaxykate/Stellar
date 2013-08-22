@@ -24,13 +24,33 @@ define(["modules/models/elementSet", "kcolor", "modules/models/vector", "particl
 
             // Define tools for each of the active elements
             $.each(ElementSet.activeElements, function(index, element) {
-                var addElement = new toolTypes.Add(inventory, {
+                var addElementTool = new toolTypes.Add(inventory, {
                     type : 'element',
+                    label : element.symbol,
+                    id : "add_" + element.symbol,
                     element : element,
                     rate : 5,
                 });
-                inventory.addTool(addElement);
+                inventory.addTool(addElementTool);
             });
+
+            // Add heat and cold tools
+            var heatTool = new toolTypes.Add(inventory, {
+                type : 'temperature',
+                label : "Heat",
+                id : "add_heat",
+                rate : 5,
+            });
+
+            var coldTool = new toolTypes.Add(inventory, {
+                type : 'temperature',
+                label : "Cold",
+                id : "add_cold",
+                rate : 5,
+            });
+
+            inventory.addTool(heatTool);
+            inventory.addTool(coldTool);
 
             var spawnables = [{
                 name : "Star",

@@ -17,13 +17,14 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             name : "degenerate",
             idNumber : 1,
             draw : function(g, star, context) {
-				star.glow.draw(context); // maybe do something else? Dunno...
+                star.glow.draw(context);
+                // maybe do something else? Dunno...
             }
         }, {
             name : "burning",
             idNumber : 2,
             draw : function(g, star, context) {
-            	//utilities.debugOutput(star.idNumber + " burning " + star.elements.burntElementID);
+                //utilities.debugOutput(star.idNumber + " burning " + star.elements.burntElementID);
                 var segments = 25;
                 var theta;
                 var r;
@@ -54,7 +55,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             name : "collapsing",
             idNumber : 3,
             draw : function(g, star, context) {
-            	//utilities.debugOutput(star.idNumber + " collapsing");
+                //utilities.debugOutput(star.idNumber + " collapsing");
                 // Draw a spiral
                 g.stroke(1, 0, 1, .8);
                 //utilities.debugOutput("collapsing!!!");
@@ -64,7 +65,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                     var theta = i * Math.PI * 2 / streaks + .2 * Math.sin(i + t);
 
                     var rPct = ((i * 1.413124 - 1 * 3 * t) % 1 + 1) % 1;
-					
+
                     rPct = Math.pow(rPct, .8);
                     g.strokeWeight(4 * (1 - rPct));
                     star.idColor.stroke(g, 0, -1 + star.spiralOpacity);
@@ -84,7 +85,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             name : "finalCollapse",
             idNumber : 4,
             draw : function(g, star, context) {
-				star.glow.draw(context);
+                star.glow.draw(context);
             }
         }];
 
@@ -95,50 +96,49 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         // Only stars burn dust
         // They burn so long as there is fuel
         var updateDustBurning = function(star, time) {
-			//utilities.debugOutput(star.idNumber + " state " + star.state.idNumber);
-        	// Do not burn dust or trigger anything else if the star is collapsing
-        	//if(star.state !== states[3]){
-        		var lastElement = star.elements.burntElementID;
-        		
-        		star.elements.burnSomeFuel(star.temperature, time);
-            	star.tempGenerated = star.elements.heatGenerated;
-            	
-            	// If we ran out of elements to currently burn and isn't already collapsing...
-            	if(lastElement !== -1 && lastElement !== undefined && star.elements.burntElementID === -1
-            		&& star.state !== states[3]){
-            		//console.log(star.idNumber + " last element: " + lastElement + " burntElementID: " + star.elements.burntElementID);
-            		// And we have transitioned to burning a new element...
-            		//if(lastElement !== star.elements.burntElementID){
-            			//console.log(star.idNumber + " COLLAPSING");
-            			// take a break from burning elements to collapse slightly with a lifespan
-            			// the value there is how much mass of the star to lose in percentage.
-            			// SNS.collapse sets the state to states[3]
-            			// We can change it based on which element was last burnt!
-            			if(star.radius > 50){
-            				SNS.collapse(star, 0.6);
-            			} else if (star.radius > 20){
-	            			SNS.collapse(star, 0.4);
-	            		} else {
-	            			SNS.collapse(star, 0.2);
-	            		}
-            		//}
-            	}
-            
-	            //utilities.debugOutput("temp: " + star.tempGenerated);
-	
-	            // If the star is able to burn energy again and is not as burning, change it back to burning!
-	            if (star.tempGenerated > 0) {
-	                reviveStar(star);
-	            }
-	
-	            // If a star is unable to burn energy and is marked as a star, nova it!
-	            // TO DO: || star.state === states[3] Add the ability to abort lifespans
-	            if (star.tempGenerated <= 0 && star.elements.burning === false && (star.state === states[0] || star.state === states[2])) {
-	            	star.state = states[4];
-	                SNS.explode(star);
-	                startBurnLifespan(star, star.elements.totalMass);
-	            }
-           //}
+            //utilities.debugOutput(star.idNumber + " state " + star.state.idNumber);
+            // Do not burn dust or trigger anything else if the star is collapsing
+            //if(star.state !== states[3]){
+            var lastElement = star.elements.burntElementID;
+
+            star.elements.burnSomeFuel(star.temperature, time);
+            star.tempGenerated = star.elements.heatGenerated;
+
+            // If we ran out of elements to currently burn and isn't already collapsing...
+            if (lastElement !== -1 && lastElement !== undefined && star.elements.burntElementID === -1 && star.state !== states[3]) {
+                //console.log(star.idNumber + " last element: " + lastElement + " burntElementID: " + star.elements.burntElementID);
+                // And we have transitioned to burning a new element...
+                //if(lastElement !== star.elements.burntElementID){
+                //console.log(star.idNumber + " COLLAPSING");
+                // take a break from burning elements to collapse slightly with a lifespan
+                // the value there is how much mass of the star to lose in percentage.
+                // SNS.collapse sets the state to states[3]
+                // We can change it based on which element was last burnt!
+                if (star.radius > 50) {
+                    SNS.collapse(star, 0.6);
+                } else if (star.radius > 20) {
+                    SNS.collapse(star, 0.4);
+                } else {
+                    SNS.collapse(star, 0.2);
+                }
+                //}
+            }
+
+            //utilities.debugOutput("temp: " + star.tempGenerated);
+
+            // If the star is able to burn energy again and is not as burning, change it back to burning!
+            if (star.tempGenerated > 0) {
+                reviveStar(star);
+            }
+
+            // If a star is unable to burn energy and is marked as a star, nova it!
+            // TO DO: || star.state === states[3] Add the ability to abort lifespans
+            if (star.tempGenerated <= 0 && star.elements.burning === false && (star.state === states[0] || star.state === states[2])) {
+                star.state = states[4];
+                SNS.explode(star);
+                startBurnLifespan(star, star.elements.totalMass);
+            }
+            //}
 
         };
 
@@ -202,13 +202,14 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 //utilities.debugOutput("star radius: " + star.radius);
                 //utilities.debugOutput("% figured completed: " + lifespan.figuredPctCompleted);
                 //SNS.generateSomeSparkles(star, 3);
-                if(star.state !== star.states[4]) lifespan.abort();
+                if (star.state !== star.states[4])
+                    lifespan.abort();
             };
 
             var lifespanOnEnd = function() {
                 //console.log("radius at END: " + star.radius);
                 star.state = states[1];
-                
+
                 // Kinda makes things lag.... probably want to tone it down?
                 //SNS.generateSomeSparkles(star, Math.random() * 5 + 5);
                 star.glow.pulse = false;
@@ -277,7 +278,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             drawBackground : function(context) {
                 this._super(context);
-				//this.glow.draw(context);
+                //this.glow.draw(context);
             },
 
             drawMain : function(context) {
@@ -286,7 +287,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 // Do all the other drawing
 
                 this.state.draw(g, this, context);
-                
+
                 g.noStroke();
                 if (this.deleted) {
                     g.fill(.2, 0, .4);
@@ -301,20 +302,20 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                     this.face.draw(g);
 
                 }
-                
+
                 // Not sure why you deleted this, Kate!!
-				//if (stellarGame.drawElements && this.elements) {
-				//	this.elements.draw(g, this.radius);
-				//}
+                //if (stellarGame.drawElements && this.elements) {
+                //	this.elements.draw(g, this.radius);
+                //}
 
             },
 
             drawOverlay : function(context) {
                 this._super(context);
                 var g = context.g;
-                if(stellarGame.options.showStarNames){
-	                g.fill(1);
-	                g.text(this.name, 0, context.distanceScale * this.radius + 10);
+                if (stellarGame.options.showStarNames) {
+                    g.fill(1);
+                    g.text(this.name, 0, context.distanceScale * this.radius + 10);
                 }
 
                 if (context.mode.index < 2) {
@@ -323,13 +324,14 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                     }
                 }
             },
-            
-            updateStarEvolution : function(time){
-            	updateDustBurning(this, time);
+
+            updateStarEvolution : function(time) {
+                updateDustBurning(this, time);
             },
 
             beginUpdate : function(time) {
-                this._super(time);//utilities.debugOutput(this.idNumber+ " UPDATING!!!");
+                this._super(time);
+                //utilities.debugOutput(this.idNumber+ " UPDATING!!!");
 
                 this.temperature = this.density * this.elements.totalMass * settings.starTempCalcScaler;
                 //utilities.debugOutput("star " + this.idNumber + " temp " + this.temperature);
@@ -339,13 +341,25 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.debugOutput(this.elements.burning);
                 this.debugOutput(this.elements.heatGenerated);
                 this.debugOutput(this.elements.burntElementID);
-                
 
                 //utilities.debugOutput("radius: " + this.radius);
 
                 //this.radius = calcStarSizeOfElements(this) + this.radiusModifier;
 
                 this.face.update(time, this.radius, this.radius);
+            },
+
+            // Add temperature (or subtract it) from this star
+            addTemperature : function(amt) {
+                this.temperature += amt / this.elements.totalMass;
+                console.log("Temperature of " + this.name + " now " + this.temperature);
+                // Do something here
+            },
+
+            // Add pressure (or subtract it) from this star
+            addPressure : function(amt) {
+                // Do something here
+                console.log("Pressure of " + this.name + " now " + this.pressure);
             },
 
             feedDust : function(touch, tool) {

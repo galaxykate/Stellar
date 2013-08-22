@@ -14,10 +14,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
         AddTool = Tool.extend({
             init : function(inventory, item) {
-                this._super(inventory, 'add_' + item.element.name, item.element.name);
-
-                console.log("Create add tool for ");
-                console.log(item.element);
+                this._super(inventory, item.label, item.id);
                 this.item = item;
                 this.rate = item.rate;
             },
@@ -27,18 +24,37 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
             },
 
-            addElement : function(obj) {
-                if (this.item.element) {
+            addTo : function(obj) {
+                var item = this.item;
+                // console.log("Add " + this.label + " to " + obj.name);
 
-                    var element = this.item.element;
-                    if (obj.elements !== undefined) {
-                        console.log("Add element " + element);
-                        utilities.touchOutput("add " + element.name + " to " + obj);
-                        // if (obj.siphonable)
-                        obj.elements.addElement(element.name, 100);
-                    }
+                switch(item.type) {
 
+                    // Add an element
+                    case 'element' :
+                        var element = this.item.element;
+                        if (obj.elements !== undefined) {
+                            // if (obj.siphonable)
+                            obj.elements.addElement(element.name, 100);
+                        }
+
+                        break;
+
+                    // Add or remove temperature
+                    case 'temperature':
+                        if (obj.addTemperature)
+                            obj.addTemperature(item.rate);
+                        break;
+
+                    case 'pressure':
+                        if (obj.addPressure)
+                            obj.addPressure(item.rate);
+                        break;
+
+                    default:
+                        break;
                 }
+
             },
 
             // Choose mode
@@ -46,7 +62,8 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 var tool = this;
                 // Add the element to whatevers underneath
                 $.each(touch.overObjects, function(index, obj) {
-                    tool.addElement(obj, tool.item.element);
+
+                    tool.addTo(obj);
                 });
             },
 
@@ -54,7 +71,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
             onDrag : function(touch) {
                 var tool = this;
                 $.each(touch.overObjects, function(index, obj) {
-                    tool.addElement(obj, tool.item.element);
+                    tool.addTo(obj);
                 });
 
             },
