@@ -100,7 +100,6 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             // Do not burn dust or trigger anything else if the star is collapsing
             //if(star.state !== states[3]){
             var lastElement = star.elements.burntElementID;
-
             star.elements.burnSomeFuel(star.temperature, time);
             star.tempGenerated = star.elements.heatGenerated;
 
@@ -260,7 +259,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.initFace();
                 this.density = 1.0;
                 // affects how temperature is figured
-                this.temperature = this.density * this.elements.totalMass * settings.starTempCalcScaler;
+                this.temperature = this.density * this.elements.totalMass * tuning.starTempCalcScaler;
                 //Math.random() * 4000 + 1000;
                 //this.burningFuel = true;
 
@@ -333,7 +332,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this._super(time);
                 //utilities.debugOutput(this.idNumber+ " UPDATING!!!");
 
-                this.temperature = this.density * this.elements.totalMass * settings.starTempCalcScaler;
+                this.temperature = this.density * this.elements.totalMass * tuning.starTempCalcScaler;
                 //utilities.debugOutput("star " + this.idNumber + " temp " + this.temperature);
                 this.glow.update(this.radius);
                 this.debugOutput(this.state.name);

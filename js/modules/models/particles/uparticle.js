@@ -199,6 +199,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
             // Give this object a bunch of elements
             initAsElementContainer : function() {
+            	//console.log(this.idNumber + " initAsElementContainer");
                 this.elements = new ElementSet(this);
             },
 

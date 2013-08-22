@@ -134,23 +134,25 @@ define(["inheritance", "modules/models/vector", "kcolor", "uparticle"], function
             },
 
             drawMain : function(context) {
-                this._super(context);
-                var g = context.g;
-
-                g.noFill();
-
-                this.idColor.stroke(g, .2, 1);
-                g.strokeWeight(1);
-                if (this.owner !== undefined) {
-                    this.owner.idColor.fill(g, .2 + .2 * Math.sin(this.idNumber), -.6 + .2 * Math.sin(5 * this.idNumber));
-                    this.owner.idColor.stroke(g, .2, 1);
+            	if(stellarGame.options.drawRegions){
+	                this._super(context);
+	                var g = context.g;
+	
+	                g.noFill();
+	
+	                this.idColor.stroke(g, .2, 1);
+	                g.strokeWeight(1);
+	                if (this.owner !== undefined) {
+	                    this.owner.idColor.fill(g, .2 + .2 * Math.sin(this.idNumber), -.6 + .2 * Math.sin(5 * this.idNumber));
+	                    this.owner.idColor.stroke(g, .2, 1);
+	                }
+	                if (stellarGame.touch.region === this) {
+	                    this.idColor.fill(g, .5, -.6);
+	                }
+	                //  g.noStroke();
+	
+	                context.universeView.drawShape(g, this.points);
                 }
-                if (stellarGame.touch.region === this) {
-                    this.idColor.fill(g, .5, -.6);
-                }
-                //  g.noStroke();
-
-                context.universeView.drawShape(g, this.points);
 
             },
             drawOverlay : function(context) {
