@@ -39,18 +39,36 @@ define(["modules/models/elementSet", "kcolor", "modules/models/vector", "particl
                 type : 'temperature',
                 label : "Heat",
                 id : "add_heat",
-                rate : 5,
+                rate : 50,
             });
 
             var coldTool = new toolTypes.Add(inventory, {
                 type : 'temperature',
                 label : "Cold",
                 id : "add_cold",
-                rate : 5,
+                rate : -50,
             });
 
             inventory.addTool(heatTool);
             inventory.addTool(coldTool);
+
+            // Add inflate and squeeze tools
+            var squeezeTool = new toolTypes.Add(inventory, {
+                type : 'pressure',
+                label : "Squeeze",
+                id : "add_pressure",
+                rate : 50,
+            });
+
+            var inflateTool = new toolTypes.Add(inventory, {
+                type : 'pressure',
+                label : "Inflate",
+                id : "sub_pressure",
+                rate : -50,
+            });
+
+            inventory.addTool(squeezeTool);
+            inventory.addTool(inflateTool);
 
             var spawnables = [{
                 name : "Star",
