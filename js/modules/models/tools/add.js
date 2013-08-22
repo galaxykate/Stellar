@@ -13,8 +13,13 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
         // MoveTool: A tool to move the camera
 
         AddTool = Tool.extend({
-            initializeTool : function() {
+            init : function(inventory, item) {
+                this._super(inventory, 'add_' + item.element.name, item.element.name);
 
+                console.log("Create add tool for ");
+                console.log(item.element);
+                this.item = item;
+                this.rate = item.rate;
             },
 
             // Release any dust
@@ -23,10 +28,16 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
             },
 
             addElement : function(obj) {
-                if (obj.elements !== undefined) {
-                    utilities.touchOutput("add Hydrogen to " + obj);
-                    // if (obj.siphonable)
-                    obj.elements.addElement("Hydrogen", 100);
+                if (this.item.element) {
+
+                    var element = this.item.element;
+                    if (obj.elements !== undefined) {
+                        console.log("Add element " + element);
+                        utilities.touchOutput("add " + element.name + " to " + obj);
+                        // if (obj.siphonable)
+                        obj.elements.addElement(element.name, 100);
+                    }
+
                 }
             },
 
@@ -34,23 +45,19 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
             onDown : function(touch) {
                 var tool = this;
                 // Add the element to whatevers underneath
-
                 $.each(touch.overObjects, function(index, obj) {
-                    tool.addElement(obj);
-
+                    tool.addElement(obj, tool.item.element);
                 });
-
             },
 
+            // Dragging, and holding
             onDrag : function(touch) {
                 var tool = this;
                 $.each(touch.overObjects, function(index, obj) {
-                    tool.addElement(obj);
-
+                    tool.addElement(obj, tool.item.element);
                 });
 
             },
-
             drawCursor : function(g, p, scale) {
 
                 var t = stellarGame.time.universeTime;

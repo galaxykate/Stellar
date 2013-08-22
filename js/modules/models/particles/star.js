@@ -14,7 +14,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             }
         }, {
-            name : "nova",
+            name : "degenerate",
             idNumber : 1,
             draw : function(g, star, context) {
 				star.glow.draw(context); // maybe do something else? Dunno...
@@ -37,6 +37,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
                     star.idColor.stroke(g);
                 }
+                g.strokeWeight(2);
                 g.beginShape();
                 var t = stellarGame.time.universeTime;
 
@@ -63,7 +64,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                     var theta = i * Math.PI * 2 / streaks + .2 * Math.sin(i + t);
 
                     var rPct = ((i * 1.413124 - 1 * 3 * t) % 1 + 1) % 1;
-
+					
                     rPct = Math.pow(rPct, .8);
                     g.strokeWeight(4 * (1 - rPct));
                     star.idColor.stroke(g, 0, -1 + star.spiralOpacity);
@@ -93,17 +94,18 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
         // Only stars burn dust
         // They burn so long as there is fuel
-        var updateDustBurning = function(star) {
+        var updateDustBurning = function(star, time) {
 			//utilities.debugOutput(star.idNumber + " state " + star.state.idNumber);
         	// Do not burn dust or trigger anything else if the star is collapsing
-        	if(star.state !== states[3]){
+        	//if(star.state !== states[3]){
         		var lastElement = star.elements.burntElementID;
         		
-        		star.elements.burnSomeFuel(star.temperature);
+        		star.elements.burnSomeFuel(star.temperature, time);
             	star.tempGenerated = star.elements.heatGenerated;
             	
-            	// If we ran out of elements to currently burn...
-            	if(lastElement !== -1 && lastElement !== undefined && star.elements.burntElementID === -1){
+            	// If we ran out of elements to currently burn and isn't already collapsing...
+            	if(lastElement !== -1 && lastElement !== undefined && star.elements.burntElementID === -1
+            		&& star.state !== states[3]){
             		//console.log(star.idNumber + " last element: " + lastElement + " burntElementID: " + star.elements.burntElementID);
             		// And we have transitioned to burning a new element...
             		//if(lastElement !== star.elements.burntElementID){
@@ -124,19 +126,19 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             
 	            //utilities.debugOutput("temp: " + star.tempGenerated);
 	
-	            // If the star is able to burn energy again and is marked as a nova, change it back to a star
-	            if (star.tempGenerated > 0 && star.state === states[1]) {
+	            // If the star is able to burn energy again and is not as burning, change it back to burning!
+	            if (star.tempGenerated > 0) {
 	                reviveStar(star);
 	            }
 	
 	            // If a star is unable to burn energy and is marked as a star, nova it!
 	            // TO DO: || star.state === states[3] Add the ability to abort lifespans
-	            if (star.tempGenerated <= 0 && (star.state === states[0] || star.state === states[2])) {
+	            if (star.tempGenerated <= 0 && star.elements.burning === false && (star.state === states[0] || star.state === states[2])) {
 	            	star.state = states[4];
 	                SNS.explode(star);
 	                startBurnLifespan(star, star.elements.totalMass);
 	            }
-           }
+           //}
 
         };
 
@@ -199,14 +201,17 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 star.radius = startStarRadius - (lifespan.figuredPctCompleted * sizeToRemove);
                 //utilities.debugOutput("star radius: " + star.radius);
                 //utilities.debugOutput("% figured completed: " + lifespan.figuredPctCompleted);
-                SNS.generateSomeSparkles(star, 3);
+                //SNS.generateSomeSparkles(star, 3);
+                if(star.state !== star.states[4]) lifespan.abort();
             };
 
             var lifespanOnEnd = function() {
                 //console.log("radius at END: " + star.radius);
                 star.state = states[1];
+                
                 // Kinda makes things lag.... probably want to tone it down?
-                SNS.generateSomeSparkles(star, Math.random() * 5 + 5);
+                //SNS.generateSomeSparkles(star, Math.random() * 5 + 5);
+                star.glow.pulse = false;
             };
 
             var lifespanOnStart = function() {
@@ -307,8 +312,10 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             drawOverlay : function(context) {
                 this._super(context);
                 var g = context.g;
-                g.fill(1);
-                g.text(this.name, 0, context.distanceScale * this.radius + 10);
+                if(stellarGame.options.showStarNames){
+	                g.fill(1);
+	                g.text(this.name, 0, context.distanceScale * this.radius + 10);
+                }
 
                 if (context.mode.index < 2) {
                     if (this.elements) {
@@ -318,7 +325,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             },
             
             updateStarEvolution : function(time){
-            	updateDustBurning(this);
+            	updateDustBurning(this, time);
             },
 
             beginUpdate : function(time) {
@@ -329,6 +336,10 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.glow.update(this.radius);
                 this.debugOutput(this.state.name);
                 this.debugOutput(this.temperature);
+                this.debugOutput(this.elements.burning);
+                this.debugOutput(this.elements.heatGenerated);
+                this.debugOutput(this.elements.burntElementID);
+                
 
                 //utilities.debugOutput("radius: " + this.radius);
 

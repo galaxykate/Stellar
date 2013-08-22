@@ -246,7 +246,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     var textX = this.radius * .85 + 5;
                     var textY = this.radius * .74 + 5;
 
-                    g.text(this.idNumber, textX, textY);
+                    //g.text(this.idNumber, textX, textY);
                     $.each(this.debugOutputLines, function(index, line) {
                         g.text(line, textX, textY + 12 * (index + 1));
                     })

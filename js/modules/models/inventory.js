@@ -22,8 +22,15 @@ define(["modules/models/elementSet", "kcolor", "modules/models/vector", "particl
             this.defaultTool = moveTool;
             this.addTool(moveTool);
 
-            var addTest = new toolTypes.Add(this, "Hydrogen", "hydrogen");
-            this.addTool(addTest);
+            // Define tools for each of the active elements
+            $.each(ElementSet.activeElements, function(index, element) {
+                var addElement = new toolTypes.Add(inventory, {
+                    type : 'element',
+                    element : element,
+                    rate : 5,
+                });
+                inventory.addTool(addElement);
+            });
 
             var spawnables = [{
                 name : "Star",

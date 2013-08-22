@@ -21,7 +21,25 @@ define(["inheritance"], function(Inheritance) {
                 this.onUpdatePcts = [];
                 this.lifespan = lifeprogress; // TOTAL TIME
                 this.progress = 0; // TIME PROGRESSED
+                this.tags = [];
                 //console.log("lifespan initiated: " + this.idNumber + " with progress " + this.lifespan);
+            },
+            
+            addTag : function(name){
+            	this.tags.push(name);
+            },
+            
+            hasTag : function(name){
+            	for(var i = 0; i < this.tags.length; i++){
+            		utilities.debugOutput("Is tag?: " + name + " === " + this.tags[i]);
+            		if(this.tags[i] === name) return true;
+            	}
+            	return false;
+            },
+            
+            abort : function() {
+            	console.log(this.idNumber + " ABORTING!!!");
+            	this.end();
             },
             
             // =============== custom functions to be set by the implementer ==============

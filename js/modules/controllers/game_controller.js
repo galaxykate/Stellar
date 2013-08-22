@@ -10,10 +10,11 @@ define(['modules/controllers/universe_controller', 'jQueryUI'], function(univers
 
         console.log("Init singleton game controller");
         var privateVar = '';
-        
-            stellarGame.addOption("simStarEvolution", false);
-        stellarGame.addOption("drawQuadTree", false);
 
+        stellarGame.addOption("showText", false);
+        stellarGame.addOption("showStarNames", true);
+        stellarGame.addOption("simStarEvolution", false);
+        stellarGame.addOption("drawQuadTree", false);
 
         function initializeDevUI() {
 
