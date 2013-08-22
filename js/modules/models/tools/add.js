@@ -16,6 +16,8 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
             init : function(inventory, item) {
                 this._super(inventory, item.label, item.id);
                 this.item = item;
+                if (this.item.maxTargets === undefined)
+                    this.item.maxTargets = 1;
                 this.rate = item.rate;
             },
 
@@ -32,47 +34,59 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
                     // Add an element
                     case 'element' :
-                        var element = this.item.element;
+                        var element = item.element;
                         if (obj.elements !== undefined) {
                             // if (obj.siphonable)
-                            obj.elements.addElement(element.name, 100);
+                            obj.elements.addElement(element.name, item.rate);
+                            return true;
                         }
 
                         break;
 
                     // Add or remove temperature
                     case 'temperature':
-                        if (obj.addTemperature)
+                        if (obj.addTemperature) {
                             obj.addTemperature(item.rate);
+                            return true;
+                        }
                         break;
 
                     case 'pressure':
-                        if (obj.addPressure)
+                        if (obj.addPressure) {
                             obj.addPressure(item.rate);
+                            return true;
+                        }
                         break;
 
                     default:
                         break;
                 }
+                return false;
+            },
 
+            // Add to a list of objects
+            addToObjects : function(objects) {
+                var tool = this;
+                var count = 0;
+                $.each(objects, function(index, obj) {
+                    if (count < tool.item.maxTargets) {
+                        var successful = tool.addTo(obj);
+                        if (successful)
+                            count++;
+                    }
+                });
             },
 
             // Choose mode
             onDown : function(touch) {
-                var tool = this;
-                // Add the element to whatevers underneath
-                $.each(touch.overObjects, function(index, obj) {
 
-                    tool.addTo(obj);
-                });
+                // Add the element to whatevers underneath
+                this.addToObjects(touch.overObjects);
             },
 
             // Dragging, and holding
             onDrag : function(touch) {
-                var tool = this;
-                $.each(touch.overObjects, function(index, obj) {
-                    tool.addTo(obj);
-                });
+                this.addToObjects(touch.overObjects);
 
             },
             drawCursor : function(g, p, scale) {
