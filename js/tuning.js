@@ -19,6 +19,9 @@ var tuning = {
     
     // Temperature generation scalar: multiples the amount found in the reactions.js
     elementBurnTempGenerationScalar : 1,
+    
+    // The amount of residual elements to leave in the star
+    elementBurnElementMin : 40,
 
     // Star temperature is based on density and mass of the star
     // density * totalMass * starTempCalcScalar
@@ -26,6 +29,11 @@ var tuning = {
     // Setting very low will turn off supernova.
     // Setting very high will ensure stars reach full supernova state
     starTempCalcScaler : 10,
+    
+    // How much star radii fluctuate during collapse
+    starCollapseRadiusScalar : 1,
+    // How much star density changes during collapse
+    starCollapseDensityScalar : 1,
 
     starReactionTempScale : 1,
 };

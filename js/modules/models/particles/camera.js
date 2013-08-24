@@ -51,7 +51,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
             },
 
             finishUpdate : function(time) {
-                utilities.debugOutput("Camera pos: " + this.position);
+                //utilities.debugOutput("Camera pos: " + this.position);
                 this._super(time);
                 if (this.zoomTarget) {
                     if (Math.abs(this.zoomTarget - this.zoom) < .02) {
@@ -66,7 +66,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
                 var angle = -Math.PI / 2 - .1 - this.zoom;
                 this.setOrbit(300 + this.distance * 1000, this.rotation, Math.PI + angle);
 
-                utilities.debugOutput("Focus on " + this.focusObject);
+                //utilities.debugOutput("Focus on " + this.focusObject);
             },
 
             setOrbit : function(r, theta, phi) {
@@ -82,7 +82,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
                 threeCamera.up = new THREE.Vector3(0, 0, 1);
                 threeCamera.lookAt(center);
                 
-                            utilities.debugOutput("ThreeCam pos " + threeCamera.position.x.toFixed(1)  + " " +  threeCamera.position.y.toFixed(1)  + " " +  threeCamera.position.z.toFixed(1) );
+                            //utilities.debugOutput("ThreeCam pos " + threeCamera.position.x.toFixed(1)  + " " +  threeCamera.position.y.toFixed(1)  + " " +  threeCamera.position.z.toFixed(1) );
     
 
                 threeCamera.updateMatrix();

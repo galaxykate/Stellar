@@ -68,7 +68,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             var t = stellarGame.time.universeTime;
             g.noStroke();
             for (var i = 0; i < backgroundLayers; i++) {
-                utilities.debugOutput("BG Stars: " + backgroundStars[i].length);
+                //utilities.debugOutput("BG Stars: " + backgroundStars[i].length);
 
                 for (var j = 0; j < backgroundStars[i].length; j++) {
                     var camera = context.universeView.camera;

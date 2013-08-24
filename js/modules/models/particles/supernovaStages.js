@@ -18,6 +18,7 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
 	
 	// Step 2
     var collapse = function(star, collapseScale, duration) {
+    	/*
     	star.state = star.states[3];
     	if(duration === undefined) duration = 3;
     	
@@ -55,7 +56,7 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
         lifespan.onStart(lifespanOnStart);
         lifespan.addTag("starStageDependent");
 
-        star.lifespans.push(lifespan);
+        star.lifespans.push(lifespan);*/
     };
     
     var spiralOpacitySpan = function(star, fadeIn, duration) {
@@ -169,6 +170,7 @@ define(["inheritance", "modules/models/vector",'lifespan', particleTypePath + "d
         collapse:collapse,
         fullCollapse:fullCollapse, 
         explode:explode,
+        spiralOpacitySpan:spiralOpacitySpan,
         generateSomeSparkles:generateSomeSparkles
     };
 

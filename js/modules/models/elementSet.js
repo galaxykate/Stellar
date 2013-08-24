@@ -216,7 +216,7 @@ define(["modules/models/elements", "modules/models/reactions", "jQueryUI"], func
             var amountToAdd = 0;
             var elemID = -1;
             this.heatGenerated = 0;
-            this.burntElementID = -1;
+            this.burntElementID = [];
             this.burning = false;
             var t = time.ellapsed + 1;
             var elemSet = this;
@@ -229,14 +229,16 @@ define(["modules/models/elements", "modules/models/reactions", "jQueryUI"], func
 	            	$.each(Reactions[i].input, function(key, value) {
 	            		if(key !== "minTemp"){
 	            			elemID = activeElements[key].id;
-	            			utilities.debugOutput(elemSet.parent.idNumber + " burn: " + elemID);
+	            			//utilities.debugOutput(elemSet.parent.idNumber + " burn: " + elemID);
 	            			amountToRemove = tuning.elementBurnAmt * value * t;
-	            			elemSet.elementQuantity[elemID] -= amountToRemove;
-	            			utilities.debugOutput("burning... " + amountToRemove);
-	            			elemSet.burning = true;
-	            			elemSet.burntElementID = elemID;
-	            			
-	            			reactionSatisfied = true;
+	            			if(elemSet.elementQuantity[elemID] >= amountToRemove + tuning.elementBurnElementMin){
+		            			elemSet.elementQuantity[elemID] -= amountToRemove;
+		            			//utilities.debugOutput("burning... " + amountToRemove);
+		            			elemSet.burning = true;
+		            			elemSet.burntElementID.push(elemID);
+		            			
+		            			reactionSatisfied = true;
+	            			}
 	            		}
 			        });
 		        }
@@ -245,32 +247,46 @@ define(["modules/models/elements", "modules/models/reactions", "jQueryUI"], func
 			        $.each(Reactions[i].output, function(key, value) {
 	            		if(key !== "heat"){
 	            			elemID = activeElements[key].id;
-	            			utilities.debugOutput("generate: " + elemID);
+	            			//utilities.debugOutput("generate: " + elemID);
 	            			amountToAdd = tuning.elementBurnAmt * value * t;
 	            			elemSet.elementQuantity[elemID] += amountToAdd;
-	            			utilities.debugOutput("generating... " + amountToAdd);
+	            			//utilities.debugOutput("generating... " + amountToAdd);
 	            		} else {
 	            			elemSet.heatGenerated += value * tuning.elementBurnTempGenerationScalar;
 	            		}
 			        });
 		        }
             }
-            /*
-            if (temp >= PPCHAINREACTIONTEMP) {
-                if (this.elementQuantity[0] > CUTOFFAMOUNT) {// should be > 4
-                    this.burning = true;
-                    this.burntElementID = 0;
-                    amountToRemove = this.elementQuantity[0] * settings.elementBurnAmtScaler * 5 * t;
-                    this.elementQuantity[0] -= amountToRemove;
-                    this.elementQuantity[1] += amountToRemove / 4;
-                    utilities.debugOutput("-H: " + amountToRemove);
-                    this.heatGenerated += HEATSCALAR;
-                }
-            }*/
 
             this.setTotalMass();
+        }
+        
+        ElementSet.prototype.canBurnFuel = function(temp, time) {
+        	var t = time.ellapsed + 1;
+        	var elemSet = this;
+        	
+        	for(var i = 0; i < Reactions.length; i++){
+            	var reactionSatisfied = false;
+            	if(temp >= Reactions[i].input.minTemp){
+            		var satisfiedNum = 0;
+            		var satisfiedTargetNum = 0;
+	            	$.each(Reactions[i].input, function(key, value) {
+	            		if(key !== "minTemp"){
+	            			satisfiedTargetNum ++;
+	            			elemID = activeElements[key].id;
+	            			amountToRemove = tuning.elementBurnAmt * value * t;
+	            			if(elemSet.elementQuantity[elemID] >= amountToRemove + tuning.elementBurnElementMin){
+		            			satisfiedNum ++;
+	            			} 
+	            		}
+			        });
+			        if(satisfiedNum === satisfiedTargetNum) return true;
+		        }
+            }
+            return false;
 
         }
+        
         /* triggers when a supernova occurs
          * densityPerc: The percent of elements, from least dense to most dense. 1 = 100%, sheds some of all elements the star contains
          * 				Provides a hard cut-off point of the other two functions.
@@ -363,6 +379,47 @@ define(["modules/models/elements", "modules/models/reactions", "jQueryUI"], func
                     }
                 }
 
+            }
+        };
+        
+        ElementSet.prototype.drawAsSlice = function(g, radius, burning) {
+            var currentRadius = radius;
+            
+            for (var i = 0; i < activeElements.length; i++) {
+                var pctElement = this.elementQuantity[i]/this.totalMass;
+                var r = pctElement * radius;
+                var wiggleR;
+                var segments = 25;
+                var theta;
+                var layers = 2;
+				//utilities.debugOutput("Ugh " + $.inArray(i, this.burntElementID));
+				
+				g.fill(.1 * i, 1, 1);
+				/*
+                if(burning && $.inArray(i, this.burntElementID) >= 0){
+	                utilities.debugOutput("drawing squiggle for " + i);
+	                g.stroke(.1 * i, 1, 1);
+	                g.strokeWeight(2);
+	                g.beginShape();
+	                var t = stellarGame.time.universeTime;
+	
+	                for (var j = 0; j < layers; j++) {
+	                    for (var k = 0; k < segments; k++) {
+	                        theta = (k * 2 * Math.PI) / segments;
+	                        wiggleR = 2*(1+ utilities.pnoise(theta, t * 2 + j * 100)) + r;
+	                        g.vertex(wiggleR * Math.cos(theta), wiggleR * Math.sin(theta));
+	                    }
+	                }
+	                g.endShape(g.CLOSE);
+                } else {*/
+                	//utilities.debugOutput("drawing NO squiggle for " + i);
+                	g.noStroke();
+	                
+	                g.ellipse(0, 0, currentRadius, currentRadius);
+                //}
+                
+                currentRadius -= r;
+            
             }
         };
 
