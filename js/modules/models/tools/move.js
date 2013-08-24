@@ -69,7 +69,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
             onDrag : function(touch) {
                 var tool = this;
                 var target = undefined;
-                this.moveWithOffset(touch);
+                
 
                 $.each(touch.overObjects, function(index, obj) {
 
@@ -77,8 +77,8 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                     if (obj.siphonable)
                         tool.elements.siphon(obj.elements, 1);
                         
-					if (touch.overObjects[i].acceptsDust) {
-                        target = touch.overObjects[i];
+					if (touch.overObjects[index].acceptsDust) {
+                        target = touch.overObjects[index];
                     }
                 });
                 
@@ -87,6 +87,8 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 if (target) {
                 	target.hover = true;
                 }
+                
+                this.moveWithOffset(touch);
 
             },
             drawCursor : function(g, p, scale) {

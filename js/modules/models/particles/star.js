@@ -155,50 +155,6 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         // They burn so long as there is fuel
         var updateDustBurning = function(star, time) {
         	star.state.update(star, time);
-            //utilities.debugOutput(star.idNumber + " state " + star.state.idNumber);
-            // Do not burn dust or trigger anything else if the star is collapsing
-            //if(star.state !== states[3]){
-            	/*
-            var lastElement = star.elements.burntElementID;
-            star.elements.burnSomeFuel(star.temperature, time);
-            star.tempGenerated = star.elements.heatGenerated;
-
-            // If we ran out of elements to currently burn and isn't already collapsing...
-            if (lastElement !== -1 && lastElement !== undefined && star.elements.burntElementID === -1 && star.state !== states[3]) {
-                //console.log(star.idNumber + " last element: " + lastElement + " burntElementID: " + star.elements.burntElementID);
-                // And we have transitioned to burning a new element...
-                //if(lastElement !== star.elements.burntElementID){
-                //console.log(star.idNumber + " COLLAPSING");
-                // take a break from burning elements to collapse slightly with a lifespan
-                // the value there is how much mass of the star to lose in percentage.
-                // SNS.collapse sets the state to states[3]
-                // We can change it based on which element was last burnt!
-                if (star.radius > 50) {
-                    SNS.collapse(star, 0.6);
-                } else if (star.radius > 20) {
-                    SNS.collapse(star, 0.4);
-                } else {
-                    SNS.collapse(star, 0.2);
-                }
-                //}
-            }
-
-            //utilities.debugOutput("temp: " + star.tempGenerated);
-
-            // If the star is able to burn energy again and is not as burning, change it back to burning!
-            if (star.tempGenerated > 0) {
-                reviveStar(star);
-            }
-
-            // If a star is unable to burn energy and is marked as a star, nova it!
-            // TO DO: || star.state === states[3] Add the ability to abort lifespans
-            if (star.tempGenerated <= 0 && star.elements.burning === false && (star.state === states[0] || star.state === states[2])) {
-                star.state = states[4];
-                SNS.explode(star);
-                startBurnLifespan(star, star.elements.totalMass);
-            }
-            //}
-			*/
         };
 
         // When enements are added to a dormant star
@@ -335,7 +291,9 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
                 stellarGame.statistics.numberOfStars++;
 
-                this.glow = new Glow(this);
+                this.glow = new Glow(this, 1, 20);
+                this.selection = new Glow(this, 1, 20, true, true);
+                this.selection.inverted = true;
             },
 
             initFace : function() {
@@ -345,6 +303,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             drawBackground : function(context) {
                 this._super(context);
                 this.glow.draw(context);
+                if(this.hover) this.selection.draw(context);
+                this.hover = false;
             },
 
             drawMain : function(context) {
@@ -390,6 +350,8 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                         this.elements.draw(context.g, this.radius);
                     }
                 }
+                
+                
             },
 
             updateStarEvolution : function(time) {
@@ -415,6 +377,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 //this.radius = calcStarSizeOfElements(this) + this.radiusModifier;
 
                 this.face.update(time, this.radius, this.radius);
+                if(this.hover) this.selection.update(this.radius);
             },
 
             // Add temperature (or subtract it) from this star
