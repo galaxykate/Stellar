@@ -46,17 +46,18 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                     console.log(target);
                     target.feedDust(touch, tool);
 
+                    
+                } else {
+                    console.log("No object touched: sending dust to inventory");
                     // If there's enought dust in here
-                    if (tool.elements.totalMass > minDustMass) {
+                    //if (tool.elements.totalMass > minDustMass) {
 
                         // Transfer 100% of the elements to the new popup Inventory!
                         var playerInventory = uiManager.getPlayerInventory();
 
                         tool.elements.transferTo(playerInventory.contents["playerElements"].elementsHolder, 1);
                         playerInventory.contents["playerElements"].elementsHolder.updateAllElementsInDiv();
-                    }
-                } else {
-                    console.log("No object touched: sending dust to inventory");
+                    //}
                 }
 
             },
