@@ -410,8 +410,9 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             },
 
-            states : states
+            //states : states
         });
+        Star.states = states;
 
         return Star;
     })();

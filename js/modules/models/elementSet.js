@@ -80,6 +80,19 @@ define(["modules/models/elements", "modules/models/reactions", "jQueryUI"], func
             //this.parent.updateElements(); // causes errors because this.parent.elements is not set yet!
 
         };
+        
+        //===============================================================
+        //===============================================================
+        //===============================================================
+        // Getters
+        ElementSet.prototype.getAmtByName = function(name) {
+        	return this.elementQuantity[activeElements[name].id];
+        }
+        
+        ElementSet.prototype.getPctByName = function(name) {
+        	return getAmtByName(name)/this.totalMass();
+        }
+        
 
         //===============================================================
         //===============================================================

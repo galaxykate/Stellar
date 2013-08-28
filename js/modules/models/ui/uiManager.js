@@ -8,14 +8,14 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 
     return (function() {
     	var playerInventory;
-    	var infoScreen;
+    	var questScreen;
 
         function init() {
             console.log("INIT UI");
 
 
             makeInventoryPopup();
-            //makeMainMenu();
+            makeMainMenu();
         };
         
         function makeInventoryPopup() {
@@ -38,24 +38,24 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    };
 	    
 	    function makeMainMenu() {
-	    	infoScreen = new Popup("#universe");
+	    	questScreen = new Popup("#universe");
 	    	
 	    	var universeWidth = gameView.universeView.dimensions.width;
 	    	var universeHeight = gameView.universeView.dimensions.height;
 	    	
-	    	infoScreen.addState("closed", universeWidth-40, 0, 20, 20, 0.5);
-	    	infoScreen.addState("open", 20, 20, universeWidth-50, universeHeight-50, 1);
-	    	//infoScreen.addTransition("open", "closed", "click");
-	    	infoScreen.addTransition("closed", "open", "click", false);
-	    	infoScreen.setState("closed");
-	    	infoScreen.addCloseDiv();
+	    	questScreen.addState("closed", universeWidth-40, 140, 20, 20, 0.5);
+	    	questScreen.addState("open", 20, 20, universeWidth-50, universeHeight-50, 1);
+	    	questScreen.addTransition("open", "closed", "click");
+	    	questScreen.addTransition("closed", "open", "click", false);
+	    	questScreen.setState("closed");
+	    	questScreen.addCloseDiv();
 	    	
 	    	var menu = new PopupContents();
-	    	infoScreen.addContents("menu", menu);
+	    	questScreen.addContents("menu", menu);
 	    	
-	    	var stats = new PopupContents();
-	    	stats.initStatisticsHTMLHolder();
-	    	infoScreen.addContents("stats", stats);
+	    	//var stats = new PopupContents();
+	    	//stats.initStatisticsHTMLHolder();
+	    	//questScreen.addContents("stats", stats);
 	    };
 	    
 	    function generateUniverseStatistics(){
@@ -70,12 +70,22 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    	// For element holder stuff :)
 	    	playerInventory.update();
 	    	//utilities.debugOutput("updating in uiManager");
-	    }
+	    };
+	    
+	    function getInventoryElementAmt(name) {
+	    	return getPlayerInventory().contents["playerElements"].elementsHolder.getAmtByName(name);
+	    };
+	    
+	    function getInventoryElementPct(name){
+	    	return getPlayerInventory().contents["playerElements"].elementsHolder.getPctByName(name);
+	    };
 
         return {
             init : init,
             getPlayerInventory : getPlayerInventory,
-            update: update
+            update: update,
+            getInventoryElementAmt: getInventoryElementAmt,
+            getInventoryElementPct: getInventoryElementPct,
         };
 
     })();

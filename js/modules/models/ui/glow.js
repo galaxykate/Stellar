@@ -76,7 +76,7 @@ define(["inheritance", "modules/models/vector", "kcolor"], function(Inheritance,
 						else bright = 0.1* (this.depth-i)/this.depth;
 						
 						g.fill(1, 0, 1, bright);
-						console.log(this.parent.radius + " vs. " + this.glowScale);
+						//console.log(this.parent.radius + " vs. " + this.glowScale);
 					} else {
 						if(!this.inverted) this.color.fill(g, i/this.depth, this.glowIntensity);//-i/this.depth * 
 						else this.color.fill(g, (this.depth-i)/this.depth, this.glowIntensity);
