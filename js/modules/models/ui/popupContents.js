@@ -29,6 +29,11 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
 
     	};
     	
+    	function wrapTextIntoHTML(divID, str){
+    		var div = $("#" + divID);
+    		div.html(str);
+    	}
+    	
     	function wrapStatisticsIntoHTML(divID){
     		var html = "";
     		var div = $("#" + divID);
@@ -45,7 +50,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
     		//console.log(div);
     	};
     	
-    	function emptHTMLContents(divID){
+    	function emptyHTMLContents(divID){
     		var div = $("#" + divID);
     		div.html = "";
     	};
@@ -103,7 +108,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
 					var parent = $("#" + this.parentDivID)
 					parent.append(div); 
 					
-					setInterval(function(){wrapStatisticsIntoHTML(id)},1000);
+					//setInterval(function(){wrapStatisticsIntoHTML(id)},1000);
     				
     				// ========================================
             		

@@ -4,18 +4,23 @@
 
 // Its the Universe!
 
-define(["modules/models/quests/quests", "modules/models/quests/quest"], function(Quests, Quest) {
+define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/models/ui/uiManager"], function(Quests, Quest, uiManager) {
 
     return (function() {
     	var questLibrary = [];
     	var activeQuests = [];
     	var currentLevel = 0;
+    	var questScreenDivID = "";
 
         function init() {
             console.log("INIT QUESTS");
+            questScreenDivID = uiManager.getQuestScreen().parentDivID;
+            //var div = $("#" + questScreenDivID);
+	    	//div.html("Quest Log");
+            //console.log("Quest div: " + questScreenDivID);
             
 			for(var i = 0; i < Quests.length; i++){
-				var q = new Quest(i);
+				var q = new Quest(i, questScreenDivID);
 				q.setQuestName(Quests[i].name);
 				q.level = Quests[i].level;
 				q.giverType = Quests[i].giver;
@@ -33,13 +38,18 @@ define(["modules/models/quests/quests", "modules/models/quests/quest"], function
         	for(var i = 0; i < questLibrary.length; i++){
         		if(questLibrary[i].level <= currentLevel && questLibrary[i].finished !== true){
         			questLibrary[i].start();
+        			questLibrary[i].createDiv();
         		}
         	}
         };
         
         function update(){
+        	updateQuestUI();
         	for(var i = 0; i < questLibrary.length; i++){
         		questLibrary[i].update(); // started/finished is checked in the quest itself
+        		if(questLibrary[i].started === true){
+        			questLibrary[i].updateHTMLText();
+        		}
         	}
         };
 		/*
@@ -50,11 +60,20 @@ define(["modules/models/quests/quests", "modules/models/quests/quest"], function
 		function removeQuestFromActive(quest){
 			activeQuests.splice(activeQuests.indexOf(quest.idNumber), 1);
 		}*/
+		
+		function updateQuestUI(){
+			
+		};
+		
+		function makeQuestDiv(quest){
+			
+		};
 
         return {
             init : init,
             startAllViableQuests : startAllViableQuests,
             update : update,
+            updateQuestUI : updateQuestUI,
         };
 
     })();

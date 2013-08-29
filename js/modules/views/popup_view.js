@@ -45,12 +45,12 @@ define(["inheritance"], function(Inheritance) {
             	//console.log("removed div " + this.divID + " from: " + this.parentStr);
             },
 
-			createPopupDiv : function(x, y, wid, hei, opa) {
+			createPopupDiv : function(text, x, y, wid, hei, opa) {
 				
 				//this.removePopupDiv();
 				
                 this.options = {
-                    html : "Pop Up<br>",
+                    html : text + "<br>",
                     "class" : "popup",
                     "id" : this.divID,
                     top: y,
@@ -73,7 +73,7 @@ define(["inheritance"], function(Inheritance) {
            			html : "X",
                     "class" : "closeButton",
                     "id" : this.divID + "_close",
-                    top: 0,
+                    top: 10,
                     left: div.width()-20,
                     width: 20,
                     height: 20,

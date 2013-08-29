@@ -15,6 +15,9 @@ define(["inheritance"], function(Inheritance) {
                 idCount++;
 				this.setFunction(func);
 				this.setDescription(desc);
+				
+				// Set by quest to see if it's been triggered properly
+				this.satisfied = false;
             },
             
             // =============== custom functions to be set by the implementer ==============

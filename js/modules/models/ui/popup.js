@@ -9,7 +9,7 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
 
         var Popup = Class.extend({
 
-            init : function(parentString) {
+            init : function(parentString, text) {
 				//console.log("Init a popup!!!");
 				this.states = [];
 				this.transitions = [];
@@ -18,7 +18,7 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
 				this.view = new PopupView(parentString);
 				this.controller = new PopupController();
 				this.activeState = null;
-				this.view.createPopupDiv(0, 0, 0, 0);
+				this.view.createPopupDiv(text, 0, 0, 0, 0);
 				this.hasCloseDiv = false;
             	
             },

@@ -8,7 +8,7 @@ define(["inheritance", "modules/models/quests/condition"], function(Inheritance,
         // Private functions
         var Quest = Class.extend({
         	
-            init : function(id) {
+            init : function(id, questScreenDivID) {
                 this.idNumber = id;
                 
                 this.started = false;
@@ -16,6 +16,9 @@ define(["inheritance", "modules/models/quests/condition"], function(Inheritance,
                 this.satisfiedCount = 0;
                 this.figuredPctCompleted = 0;
                 this.conditions = [];
+                
+                this.parentDivID = questScreenDivID;
+                this.divID = questScreenDivID + "_quest" + this.idNumber;
             },
             
 			addCondition : function (func, desc){
@@ -53,7 +56,12 @@ define(["inheritance", "modules/models/quests/condition"], function(Inheritance,
 	            	this.satisfiedCount = 0;
 	            	for(var i = 0; i < this.conditions.length; i++){
 	            		//console.log(this.conditions[i].truthCheck);
-	            		if(this.conditions[i].truthCheck() === true) this.satisfiedCount++;
+	            		if(this.conditions[i].truthCheck() === true){
+	            			this.conditions[i].satisfied = true;
+	            			//console.log("satisfied: " + this.conditions[i].satisfied);
+	            			console.log("satisfied conditon: " + this.conditions[i].description);
+	            			this.satisfiedCount++;
+	            		}
 	            	}
 	            	this.figuredPctCompleted = this.satisfiedCount/this.conditions.length;
 	            	if(this.figuredPctCompleted === 1){
@@ -79,6 +87,53 @@ define(["inheritance", "modules/models/quests/condition"], function(Inheritance,
             restart : function() {
             	this.started = false;
                 this.finished = false;
+            },
+            
+            /**** VIEW STUFF ****/
+            createDiv : function() {
+            	var options = {
+	                html : this.toString(true),
+	                "class" : "quest",
+	                "id" : this.divID
+	            };
+	            
+				var div = $('<div/>', options);
+				var parent = $("#" + this.parentDivID);
+				parent.append(div); 
+            },
+           
+            updateHTMLText : function(){
+            	var div = $("#" + this.divID);
+	    		div.html(this.toString(true));
+            },
+            /********************/
+            
+            toString : function(html) {
+            	
+            	var newline;
+            	var str = "";
+            	
+            	if(html !== undefined && html === true) {
+            		newline = "<br>";
+            		str += "<b>" + this.name + "</b>";
+            	} else { 
+            		newline = "/n";
+            		str += this.name;
+            	}
+            	
+            	if(this.finished) str += ": COMPLETED!";
+            	else str += "  (" + this.figuredPctCompleted*100 + "%)";
+            	
+            	for(var i = 0; i < this.conditions.length; i++){
+            		str += newline;
+            		str += " - " + this.conditions[i].description + ": ";
+            		//utilities.debugOutput("Satisfied?: " + this.conditions[i].satisfied);
+            		if(this.conditions[i].satisfied === true) str += "Satisfied";
+            		else str += "Not Satisfied";
+            	}
+            	
+            	return str;
+            	
             }
         });
         return Quest;
