@@ -8,7 +8,7 @@
 define(['modules/models/ui/uiManager', particleTypePath + "star"], function(uiManager, Star) {
     return (function() {
         return [
-        {
+        
         	// ----------------------------------
         	// ------- giver: global -----------
         	// ----------------------------------
@@ -16,9 +16,10 @@ define(['modules/models/ui/uiManager', particleTypePath + "star"], function(uiMa
         	// Global quests can be seen more like facebook quests/achievements:
         	// permanently achieved once all conditions are satisfied at one time
         	
+        {
         	// Requres gathering elements with the move tool (and dumping them into the inventory?)
         	name : "Inventory Use: Helium",
-        	progression : 0,
+        	level : 0,
         	giver : "global",
         	
         	conditions : [
@@ -29,10 +30,11 @@ define(['modules/models/ui/uiManager', particleTypePath + "star"], function(uiMa
 		        	desc : "Get some helium in your inventory",
 	        	},
         	],
+        }, {
         	
         	// Requires navigation away from the home star
         	name : "Discover a New Star",
-        	progression : 0,
+        	level : 1,
         	giver : "global",
         	
         	conditions : [
@@ -43,10 +45,11 @@ define(['modules/models/ui/uiManager', particleTypePath + "star"], function(uiMa
 		        	desc : "Go out into the wilderness and find a new star!",
 	        	},
         	],
+        }, {
         	
         	// Interacting with the various space elements
         	name : "Clear a Dust Trail",
-        	progression : 0,
+        	level : 1,
         	giver : "global",
         	
         	conditions : [
@@ -57,7 +60,7 @@ define(['modules/models/ui/uiManager', particleTypePath + "star"], function(uiMa
 		        	desc : "Gather all dust nodes from a trail of dust.",
 	        	},
         	],
-        	
+        }, {
         	// ----------------------------------
         	// ------- giver: critter -----------
         	// ----------------------------------
@@ -66,7 +69,7 @@ define(['modules/models/ui/uiManager', particleTypePath + "star"], function(uiMa
         	// They will reject/leave a star if the conditions are no longer satisfied
         	
         	name : "Hydrogen Home",
-        	progression : 0,
+        	level : 0,
         	giver : "critter",
         	
         	conditions : [
@@ -77,9 +80,9 @@ define(['modules/models/ui/uiManager', particleTypePath + "star"], function(uiMa
 		        	desc : "I require a star that is nothing but Hydrogen.",
 	        	},
         	],
-        	
+        }, {
         	name : "Zero Degrees",
-        	progression : 0,
+        	level : 0,
         	giver : "critter",
         	
         	conditions : [
@@ -90,9 +93,9 @@ define(['modules/models/ui/uiManager', particleTypePath + "star"], function(uiMa
 		        	desc : "I need a star that is cold as ice.",
 	        	},
         	],
-        	
+        }, {
         	name : "Stable Burning Sun",
-        	progression : 0,
+        	level : 1,
         	giver : "critter",
         	
         	conditions : [
@@ -103,10 +106,7 @@ define(['modules/models/ui/uiManager', particleTypePath + "star"], function(uiMa
 		        	desc : "I can only live by a star if it is alive and actively burning elements.",
 	        	},
         	],
-        	
-        },
-            
-        ];
+        }];
     })();
 
 });

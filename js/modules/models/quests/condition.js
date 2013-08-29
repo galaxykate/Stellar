@@ -13,8 +13,8 @@ define(["inheritance"], function(Inheritance) {
             init : function(func, desc) {
                 this.idNumber = idCount;
                 idCount++;
-				setFunction(func);
-				setDescription(desc);
+				this.setFunction(func);
+				this.setDescription(desc);
             },
             
             // =============== custom functions to be set by the implementer ==============
@@ -30,7 +30,7 @@ define(["inheritance"], function(Inheritance) {
             },
             
             truthCheck : function(){
-            	if(this.truthTest()) return true;
+            	if(this.truthTest() === true) return true;
             	else return false;
             }
 

@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules/models/ui/uiManager', 'voronoi', 'chanceTable'], function(Vector, KColor, QuadTree, particleTypes, uiManager, Voronoi, ChanceTable) {
+define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules/models/ui/uiManager', 'voronoi', 'chanceTable', 'modules/models/quests/questManager'], function(Vector, KColor, QuadTree, particleTypes, uiManager, Voronoi, ChanceTable, QuestManager) {
     var backgroundLayers = 3;
     var initialUpdate = true;
     var backgroundStarDensity = 40;
@@ -205,6 +205,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             });
 
             uiManager.update();
+            QuestManager.update();
 
             // Remove dead object, replace misplaced ones, etc
             this.quadTree.cleanup();
