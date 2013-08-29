@@ -53,7 +53,7 @@ define(["inheritance", "modules/models/quests/condition"], function(Inheritance,
 	            	this.satisfiedCount = 0;
 	            	for(var i = 0; i < this.conditions.length; i++){
 	            		//console.log(this.conditions[i].truthCheck);
-	            		if(this.conditions[i].truthCheck === true) this.satisfiedCount++;
+	            		if(this.conditions[i].truthCheck() === true) this.satisfiedCount++;
 	            	}
 	            	this.figuredPctCompleted = this.satisfiedCount/this.conditions.length;
 	            	if(this.figuredPctCompleted === 1){

@@ -30,8 +30,12 @@ define(["inheritance"], function(Inheritance) {
             },
             
             truthCheck : function(){
-            	if(this.truthTest() === true) return true;
-            	else return false;
+            	//utilities.debugOutput("cond: " + this.truthTest());
+            	if(this.truthTest() === true){
+            		return true;
+            	} else { 
+            		return false;
+            	}
             }
 
         });

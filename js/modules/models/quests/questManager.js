@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(["modules/models/quests/quests", "modules/models/quests/quest", 'modules/views/game_view', "modules/models/ui/popup", "modules/models/ui/popupContents"], function(Quests, Quest, gameView, Popup, PopupContents) {
+define(["modules/models/quests/quests", "modules/models/quests/quest"], function(Quests, Quest) {
 
     return (function() {
     	var questLibrary = [];

@@ -25,7 +25,8 @@ define(['modules/models/ui/uiManager', particleTypePath + "star"], function(uiMa
         	conditions : [
         		{
 		        	func : function(){
-		        		return uiManager.getInventoryElementAmt("Helium");
+		        		if(uiManager.getInventoryElementAmt("Helium") > 0) return true;
+		        		else return false;
 		        	},
 		        	desc : "Get some helium in your inventory",
 	        	},
@@ -69,7 +70,7 @@ define(['modules/models/ui/uiManager', particleTypePath + "star"], function(uiMa
         	// They will reject/leave a star if the conditions are no longer satisfied
         	
         	name : "Hydrogen Home",
-        	level : 0,
+        	level : 1,
         	giver : "critter",
         	
         	conditions : [
@@ -82,7 +83,7 @@ define(['modules/models/ui/uiManager', particleTypePath + "star"], function(uiMa
         	],
         }, {
         	name : "Zero Degrees",
-        	level : 0,
+        	level : 1,
         	giver : "critter",
         	
         	conditions : [
