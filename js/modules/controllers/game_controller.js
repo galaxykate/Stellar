@@ -16,6 +16,13 @@ define(['modules/controllers/universe_controller', 'jQueryUI'], function(univers
         stellarGame.addOption("simStarEvolution", true);
         stellarGame.addOption("drawQuadTree", false);
         stellarGame.addOption("drawRegions", false);
+        
+        // Our old buttons at the top
+        stellarGame.addOption("drawFaces", false);
+        stellarGame.addOption("drawElements", true);
+        stellarGame.addOption("drawStars", true);
+        stellarGame.addOption("drawDust", true);
+        stellarGame.addOption("drawCritters", true);
 
         function initializeDevUI() {
 
@@ -24,7 +31,7 @@ define(['modules/controllers/universe_controller', 'jQueryUI'], function(univers
 
             // Turn all the settings into buttons at the top
             // Add new toggles here
-            var settings = [{
+            var settings = [/*{
                 id : "drawFaces",
                 displayName : "Draw Faces"
             }, {
@@ -39,7 +46,7 @@ define(['modules/controllers/universe_controller', 'jQueryUI'], function(univers
             }, {
                 id : "drawCritters",
                 displayName : "Draw Critters"
-            }, ];
+            },*/ ];
 
             // Go through and add each as a labelled checkbox, then turn those into a JQUERYUI toggle
             $.each(settings, function(index, setting) {

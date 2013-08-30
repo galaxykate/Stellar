@@ -301,56 +301,57 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             },
 
             drawBackground : function(context) {
-                this._super(context);
-                this.glow.draw(context);
-                if(this.hover) this.selection.draw(context);
-                this.hover = false;
+            	if(stellarGame.options.drawStars){
+	                this._super(context);
+	                this.glow.draw(context);
+	                if(this.hover) this.selection.draw(context);
+	                this.hover = false;
+                }
             },
 
             drawMain : function(context) {
-                this._super(context);
-                var g = context.g;
-                // Do all the other drawing
-
-                this.state.draw(g, this, context);
-
-                g.noStroke();
-                if (this.deleted) {
-                    g.fill(.2, 0, .4);
-                    g.stroke(1, 0, 1, .7);
-                }
-
-                this.idColor.fill(g);
-                g.ellipse(0, 0, this.radius, this.radius);
-                this.elements.drawAsSlice(g, this.radius);
-
-                if (stellarGame.drawFaces) {
-
-                    this.face.draw(g);
-
-                }
-
-                // Not sure why you deleted this, Kate!!
-                //if (stellarGame.drawElements && this.elements) {
-                //	this.elements.draw(g, this.radius);
-                //}
-
+            	if(stellarGame.options.drawStars){
+	                this._super(context);
+	                var g = context.g;
+	                // Do all the other drawing
+	
+	                this.state.draw(g, this, context);
+	
+	                g.noStroke();
+	                if (this.deleted) {
+	                    g.fill(.2, 0, .4);
+	                    g.stroke(1, 0, 1, .7);
+	                }
+	
+	                this.idColor.fill(g);
+	                g.ellipse(0, 0, this.radius, this.radius);
+	                this.elements.drawAsSlice(g, this.radius);
+	
+	                this.face.draw(g);
+	
+	
+	                // Not sure why you deleted this, Kate!!
+	                //if (stellarGame.drawElements && this.elements) {
+	                //	this.elements.draw(g, this.radius);
+	                //}
+				}
             },
 
             drawOverlay : function(context) {
-                this._super(context);
-                var g = context.g;
-                if (stellarGame.options.showStarNames) {
-                    g.fill(1);
-                    g.text(this.name, 0, context.distanceScale * this.radius + 10);
+            	if(stellarGame.options.drawStars){
+	                this._super(context);
+	                var g = context.g;
+	                if (stellarGame.options.showStarNames) {
+	                    g.fill(1);
+	                    g.text(this.name, 0, context.distanceScale * this.radius + 10);
+	                }
+	
+	                if (context.mode.index < 2) {
+	                    if (this.elements) {
+	                        this.elements.draw(context.g, this.radius);
+	                    }
+	                }
                 }
-
-                if (context.mode.index < 2) {
-                    if (this.elements) {
-                        this.elements.draw(context.g, this.radius);
-                    }
-                }
-                
                 
             },
 

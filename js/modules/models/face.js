@@ -11,36 +11,41 @@ define(["inheritance", "modules/models/vector", "modules/models/eye"], function(
         // functions from Kate's example
 
         function drawRightProfile(g) {
-        	g.pushMatrix();
-        	g.scale(-1, 1);
-        	g.scale(.8, .9); // Make the eye slightly smaller so that it appears to have been shortened a bit by the profile view
-        	g.translate(-1* this.faceWidth / 1.5, 0);
-        	this.rightEye.draw(g);
-        	g.popMatrix();
+        	if (stellarGame.options.drawFaces) {
+	        	g.pushMatrix();
+	        	g.scale(-1, 1);
+	        	g.scale(.8, .9); // Make the eye slightly smaller so that it appears to have been shortened a bit by the profile view
+	        	g.translate(-1* this.faceWidth / 1.5, 0);
+	        	this.rightEye.draw(g);
+	        	g.popMatrix();
+        	}
         }
 
         function drawFace(g) {
-      
-            g.pushMatrix();
-            drawHalfFace(g, false, this);
-            g.popMatrix();
-            g.pushMatrix();
-            g.scale(-1, 1);
-            drawHalfFace(g, true, this);
-            g.popMatrix();
+      		if (stellarGame.options.drawFaces) {
+	            g.pushMatrix();
+	            drawHalfFace(g, false, this);
+	            g.popMatrix();
+	            g.pushMatrix();
+	            g.scale(-1, 1);
+	            drawHalfFace(g, true, this);
+	            g.popMatrix();
+            }
 
         };
 
         function drawHalfFace(g, leftFace, faceClass) {
-            g.pushMatrix();
-            //g.translate(0, faceClass.faceWidth/4);
-            g.translate(faceClass.faceWidth / 1.9, 0);
-            //console.log("translating...? " + faceClass.faceWidth/4)
-            if (leftFace)
-                faceClass.leftEye.draw(g);
-            else
-                faceClass.rightEye.draw(g);
-            g.popMatrix();
+        	if (stellarGame.options.drawFaces) {
+	            g.pushMatrix();
+	            //g.translate(0, faceClass.faceWidth/4);
+	            g.translate(faceClass.faceWidth / 1.9, 0);
+	            //console.log("translating...? " + faceClass.faceWidth/4)
+	            if (leftFace)
+	                faceClass.leftEye.draw(g);
+	            else
+	                faceClass.rightEye.draw(g);
+	            g.popMatrix();
+            }
 
         }
 
