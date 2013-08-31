@@ -54,9 +54,11 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
                         // Transfer 100% of the elements to the new popup Inventory!
                         var playerInventory = uiManager.getPlayerInventory();
-
+						if(tool.elements.totalMass > 0) playerInventory.flash();
                         tool.elements.transferTo(playerInventory.contents["playerElements"].elementsHolder, 1);
+                        
                         playerInventory.contents["playerElements"].elementsHolder.updateAllElementsInDiv();
+                        
                     //}
                 }
 

@@ -117,6 +117,11 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
             	}
             },
             
+            flash : function() {
+            	//console.log("FLASHY FLASH");
+            	this.view.highlightDiv(this.view.divID, this.states[this.activeState].opacity);
+            },
+            
             
         });
 

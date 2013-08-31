@@ -13,7 +13,6 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
         function init() {
             console.log("INIT UI");
 
-
             makeInventoryPopup();
             makeMainMenu();
         };
@@ -23,7 +22,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
         	
 	        var universeHeight = gameView.universeView.dimensions.height;
 	        
-	        playerInventory.addState("closed", 0, 0, 20, universeHeight, 0.1);
+	        playerInventory.addState("closed", 0, 0, 20, universeHeight, 0.3);
 	        playerInventory.addState("open", 0, 0, 150, universeHeight, 1);
 	        playerInventory.addTransition("open", "closed", "mouseleave", true);
 	        playerInventory.addTransition("closed", "open", "mousedown", true);
@@ -43,7 +42,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    	var universeWidth = gameView.universeView.dimensions.width;
 	    	var universeHeight = gameView.universeView.dimensions.height;
 	    	
-	    	questScreen.addState("closed", universeWidth-40, 140, 40, 20, 0.5);
+	    	questScreen.addState("closed", universeWidth-40, 140, 40, 20, 0.3);
 	    	questScreen.addState("open", 20, 20, universeWidth-50, universeHeight-50, 1);
 	    	questScreen.addTransition("open", "closed", "click");
 	    	questScreen.addTransition("closed", "open", "click", false);
@@ -67,7 +66,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    };
 	    
 	    function getQuestScreen(){
-	    	return questScreen.contents["quests"];
+	    	return questScreen;
 	    };
 	    
 	    function update() {

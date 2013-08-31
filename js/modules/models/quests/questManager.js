@@ -14,7 +14,7 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
 
         function init() {
             console.log("INIT QUESTS");
-            questScreenDivID = uiManager.getQuestScreen().parentDivID;
+            questScreenDivID = uiManager.getQuestScreen().contents["quests"].parentDivID;
             //var div = $("#" + questScreenDivID);
 	    	//div.html("Quest Log");
             //console.log("Quest div: " + questScreenDivID);
@@ -49,6 +49,10 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
         		questLibrary[i].update(); // started/finished is checked in the quest itself
         		if(questLibrary[i].started === true){
         			questLibrary[i].updateHTMLText();
+        			if(questLibrary[i].finished === true && questLibrary[i].fanfair === false){
+        				uiManager.getQuestScreen().flash();
+        				questLibrary[i].fanfair = true;
+        			}
         		}
         	}
         };

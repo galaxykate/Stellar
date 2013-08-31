@@ -32,6 +32,36 @@ define(["inheritance"], function(Inheritance) {
 				// Access parent via $("#universe") er $(this.parentStr)
             },
             
+            // Function added in uiManager
+            highlightDiv : function(divID, finalOpacity){
+            	//var div = 
+            	//console.log(divID);
+            	//console.log($("#" + divID));
+            	
+            	$("#" + divID)
+            	.animate({ opacity: ".9" }, 100)
+            	.delay(100)
+            	.animate({ opacity: finalOpacity }, 100)
+            	.delay(100)
+            	.animate({ opacity: ".9" }, 100)
+            	.delay(100)
+            	//.animate({ opacity: finalOpacity }, 100)
+            	//.delay(100)
+            	//.animate({ opacity: ".9" }, 100)
+            	//.delay(100)
+            	.animate({ opacity: finalOpacity }, 100);
+            	/*
+            	.animate({
+            		opacity: ".9"
+            	}, 1000).animate({
+            		opacity: ".1"
+            	}, 1000, function() {
+            		console.log("Flash animation completed");
+            	});*/
+            	//$(divID).effect("pulsate", { times:3 }, 2000); 
+            	//$(divID).fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100);
+            	//$(divID).animateHighlight("#dd0000", 1000);
+            },
             
             // Do this after all the controls and states have been set
             appendPopupDiv : function() {
@@ -115,7 +145,15 @@ define(["inheritance"], function(Inheritance) {
             	div.css('height', hei + 'px');
             	div.css({ opacity: opa });
             	
-            }
+            },
+            //$.fn.animateHighlight = function(highlightColor, duration) {
+            animateHighlight : function(highlightColor, duration) {
+			    var highlightBg = highlightColor || "#FFFF9C";
+			    var animateMs = duration || 1500;
+			    var originalBg = this.css("backgroundColor");
+			    this.stop().css("background-color", highlightBg).animate({backgroundColor: originalBg}, animateMs);
+			}
+            
         });
 
         return PopupView;

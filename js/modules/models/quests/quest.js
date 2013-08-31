@@ -11,6 +11,7 @@ define(["inheritance", "modules/models/quests/condition"], function(Inheritance,
             init : function(id, questScreenDivID) {
                 this.idNumber = id;
                 
+                this.fanfair = false; // to see if the quest screen flash played
                 this.started = false;
                 this.finished = false;
                 this.satisfiedCount = 0;
