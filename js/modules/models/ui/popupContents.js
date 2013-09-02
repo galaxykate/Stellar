@@ -8,6 +8,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
     return (function() {
     	var htmlCount = 0;
     	
+    	
     	// ========================================
     	// View stuff
     	function createDivForAllElements(parentID, id) {
@@ -21,11 +22,6 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
 			
 			var parent = $("#" + parentID)
 			parent.append(div); 
-			
-			//console.log('appending ' + id + " to " + parentID);
-			
-			//console.log(parent);
-			//console.log(div);
 
     	};
     	
@@ -56,6 +52,22 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
     	};
     	
     	// =========================================
+    	
+    	// Trying for mini processing windows
+    	initProcessing = function(g) {
+            g.size(20, 20);
+
+            g.colorMode(g.HSB, 1);
+            g.background(.45, 1, 1);
+
+            // Set the drawing function of processing (used for both drawing and updating)
+            g.draw = function() {
+                //if (stellarGame.ready) {
+                //    universeView.update(g.millis() * .001);
+                //    universeView.draw(g);
+                //}
+            };
+        };
     	
 
         var PopupContents = Class.extend({

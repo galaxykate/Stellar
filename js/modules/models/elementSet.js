@@ -449,7 +449,7 @@ define(["modules/models/elements", "modules/models/reactions", "jQueryUI"], func
 
                 elementSet.varMouseDown = false;
             });
-
+			elementSet.processings = [];
             for (var i = 0; i < activeElements.length; i++) {
                 //if(this.elementQuantity[i] > 0){
                 this.createSpanForElement(parentID, activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i]);
@@ -467,10 +467,18 @@ define(["modules/models/elements", "modules/models/reactions", "jQueryUI"], func
 
         ElementSet.prototype.createSpanForElement = function(parentID, elementID, elementName, elementAmount) {
             var elementSet = this;
+            
+            var newCanvas = 
+			    $('<canvas/>',{'id':this.parentIDFromUI + "_" + elementID + "_canvas"})
+			    .width(20)
+			    .height(20);
+			console.log(newCanvas);
+			
 
             var options = {
-                html : elementName + ": " + elementAmount + "<br>",
-                "class" : "element",
+                //html : elementName + ": " + elementAmount + "<br>",
+                //"class" : "element",
+                "class" : "elementCanvasHolder",
                 "id" : this.parentIDFromUI + "_" + elementID,
 
                 // ========= controller stuff ===========
@@ -503,6 +511,7 @@ define(["modules/models/elements", "modules/models/reactions", "jQueryUI"], func
             };
 
             var span = $('<span/>', options);
+            span.append(newCanvas);
             if (elementAmount <= 0) {
                 //span.hide();
                 span.css({
@@ -514,11 +523,28 @@ define(["modules/models/elements", "modules/models/reactions", "jQueryUI"], func
             var parent = $("#" + parentID);
             parent.append(span);
 
+			
+			var processing = new Processing(this.parentIDFromUI + "_" + elementID + "_canvas", function(g) {
+
+                g.size(30, 30);
+
+                g.colorMode(g.HSB, 1);
+                g.background(1, 0, .7, .3);
+                //g.background(250, 250, 250, .3);
+                g.noStroke();
+                g.fill(.1*activeElements[elementName].id, 1, 1);
+                g.draw = function() {
+                	g.ellipse(15, 15, 5, 5);
+                };
+
+			});
+			elementSet.processings.push(processing);
+			 
         };
 
         ElementSet.prototype.updateSpanForElement = function(elementID, elementName, elementAmount) {
             var span = $("#" + this.parentIDFromUI + "_" + elementID);
-            span.html(elementName + ": " + elementAmount + "<br>");
+            //span.html(elementName + ": " + elementAmount + "<br>");
 
             //utilities.debugOutput("elementSet update this.siphoning/siphonElements: " + this.siphoning + ", " + this.siphonElements);
 

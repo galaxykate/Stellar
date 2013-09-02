@@ -42,7 +42,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    	var universeWidth = gameView.universeView.dimensions.width;
 	    	var universeHeight = gameView.universeView.dimensions.height;
 	    	
-	    	questScreen.addState("closed", universeWidth-40, 140, 40, 20, 0.3);
+	    	questScreen.addState("closed", universeWidth-50, 140, 40, 20, 0.3);
 	    	questScreen.addState("open", 20, 20, universeWidth-50, universeHeight-50, 1);
 	    	questScreen.addTransition("open", "closed", "click");
 	    	questScreen.addTransition("closed", "open", "click", false);

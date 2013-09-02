@@ -45,10 +45,6 @@ define(["inheritance"], function(Inheritance) {
             	.delay(100)
             	.animate({ opacity: ".9" }, 100)
             	.delay(100)
-            	//.animate({ opacity: finalOpacity }, 100)
-            	//.delay(100)
-            	//.animate({ opacity: ".9" }, 100)
-            	//.delay(100)
             	.animate({ opacity: finalOpacity }, 100);
             	/*
             	.animate({
