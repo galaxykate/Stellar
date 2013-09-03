@@ -34,9 +34,6 @@ define(["inheritance"], function(Inheritance) {
             
             // Function added in uiManager
             highlightDiv : function(divID, finalOpacity){
-            	//var div = 
-            	//console.log(divID);
-            	//console.log($("#" + divID));
             	
             	$("#" + divID)
             	.animate({ opacity: ".9" }, 100)
@@ -46,17 +43,7 @@ define(["inheritance"], function(Inheritance) {
             	.animate({ opacity: ".9" }, 100)
             	.delay(100)
             	.animate({ opacity: finalOpacity }, 100);
-            	/*
-            	.animate({
-            		opacity: ".9"
-            	}, 1000).animate({
-            		opacity: ".1"
-            	}, 1000, function() {
-            		console.log("Flash animation completed");
-            	});*/
-            	//$(divID).effect("pulsate", { times:3 }, 2000); 
-            	//$(divID).fadeIn(100).fadeOut(100).fadeIn(100).fadeOut(100);
-            	//$(divID).animateHighlight("#dd0000", 1000);
+
             },
             
             // Do this after all the controls and states have been set

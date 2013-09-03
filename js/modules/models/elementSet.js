@@ -452,7 +452,7 @@ define(["modules/models/elements", "modules/models/reactions", "jQueryUI"], func
 			elementSet.processings = [];
             for (var i = 0; i < activeElements.length; i++) {
                 //if(this.elementQuantity[i] > 0){
-                this.createSpanForElement(parentID, activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i]);
+                this.createSpanForElement(parentID, activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i], i);
                 //}
             }
         };
@@ -461,11 +461,11 @@ define(["modules/models/elements", "modules/models/reactions", "jQueryUI"], func
         ElementSet.prototype.updateAllElementsInDiv = function() {
 
             for (var i = 0; i < activeElements.length; i++) {
-                this.updateSpanForElement(activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i]);
+                this.updateSpanForElement(activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i], i);
             }
         };
 
-        ElementSet.prototype.createSpanForElement = function(parentID, elementID, elementName, elementAmount) {
+        ElementSet.prototype.createSpanForElement = function(parentID, elementID, elementName, elementAmount, i) {
             var elementSet = this;
             
             var newCanvas = 
@@ -522,32 +522,46 @@ define(["modules/models/elements", "modules/models/reactions", "jQueryUI"], func
 
             var parent = $("#" + parentID);
             parent.append(span);
-
 			
 			var processing = new Processing(this.parentIDFromUI + "_" + elementID + "_canvas", function(g) {
 
                 g.size(30, 30);
-
                 g.colorMode(g.HSB, 1);
-                g.background(1, 0, .7, .3);
-                //g.background(250, 250, 250, .3);
-                g.noStroke();
-                g.fill(.1*activeElements[elementName].id, 1, 1);
+                
+                g.id = i;
+                g.elementAmount = 2;
+                
                 g.draw = function() {
-                	g.ellipse(15, 15, 5, 5);
+                	g.background(1, 0, .7, .3);
+	                //g.background(250, 250, 250, .3);
+	                g.noStroke();
+	                g.fill(.1*g.id, 1, 1);
+	                
+                	var element = g.elementAmount;
+                	if(elementAmount <= 2) {
+                		//console.log("*** " + g.id + ": " + elementAmount);
+                		element = 2;
+                	}
+                	var radius = 4 * Math.log(element);
+                	//console.log("rad: " + radius);
+                	//utilities.debugOutput("Rad " + elementID + ": " + radius);
+                	g.ellipse(15, 15, radius, radius);
                 };
 
 			});
 			elementSet.processings.push(processing);
 			 
         };
+        
+        ElementSet
 
-        ElementSet.prototype.updateSpanForElement = function(elementID, elementName, elementAmount) {
+        ElementSet.prototype.updateSpanForElement = function(elementID, elementName, elementAmount, i) {
             var span = $("#" + this.parentIDFromUI + "_" + elementID);
             //span.html(elementName + ": " + elementAmount + "<br>");
-
-            //utilities.debugOutput("elementSet update this.siphoning/siphonElements: " + this.siphoning + ", " + this.siphonElements);
-
+			//utilities.debugOutput(i+ " eS: " + elementAmount);
+			this.processings[i].elementAmount = elementAmount;
+			//if(stellarGame.time.universeTime <= 1) console.log(this.processings[i]);
+			
             if (elementAmount <= 0) {
                 //span.hide();
                 span.css({
