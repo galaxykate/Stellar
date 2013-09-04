@@ -29,10 +29,12 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
 				
 				this.emotion = new Emotion.Emotion(universe, this.radius + 20);
 				stellarGame.statistics.numberOfCritters++;
+				//console.log("Initing critter: " + this.idNumber);
             },
             
-            drawBackground: function(g, options) {
-            	if(stellarGame.drawCritters){
+            drawBackground: function(context) {
+            	if(stellarGame.options.drawCritters){
+            		var g = context.g;
 					this.idColor.fill(g, -.2, 0);
 	                
 	                this.tailVector.setTo(0,0);
@@ -62,8 +64,10 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
             	}
             },
             
-            drawMain : function(g, options) {
-            	if(stellarGame.drawCritters){
+            drawMain : function(context) {
+            	utilities.debugOutput("drawing critter " + this.idNumber);
+            	if(stellarGame.options.drawCritters){
+            		var g = context.g;
             		//console.log("critter draw main: true!");
 
 	                g.pushMatrix();
@@ -77,16 +81,32 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
                 }
             },
             
-            drawOverlay : function(g, options) {
-            	if(stellarGame.drawCritters){
+            drawOverlay : function(context) {
+            	if(stellarGame.options.drawCritters){
+            		this._super(context);
             		//console.log("critter draw overlay: true!");
             		//this.emotion.drawOverlay(g, options);
+            		this.drawDebug(context.g);
             	}
             }, 
             
-            update : function(time) {
-                //this._super(time);
-                this.frontAngle = utilities.pnoise(0.1*time.total + (100*this.idNumber))*Math.PI*2;
+            drawDebug : function(g){
+            	g.stroke(1);
+            	g.strokeWeight(1);
+            	g.noFill();
+            	var center = new Vector();
+            	var frontVector = new Vector();
+            	frontVector.setToPolar(10, this.frontAngle);
+				frontVector.drawCircle(g, 2);
+				
+				g.stroke(.8, .8, 1);
+				center.drawLineTo(g, this.velocity);
+				
+            },
+            
+            beginUpdate : function(time) {
+                this._super(time);
+                this.frontAngle = 0;//utilities.pnoise(0.1*time.total + (100*this.idNumber))*Math.PI*2;
                 
                 //console.log("num segments: " + this.numSegments);
                 this.backAngle = this.frontAngle - Math.PI;
@@ -99,25 +119,22 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
 	            	var connectSpot = new Vector(this.tailSegments[i-1].x, this.tailSegments[i-1].y);
 	            	connectSpot.addPolar(this.radius/(i+1)*2, this.backAngle);
 	            	this.tailSegments[i] = this.tailSegments[i].lerp(connectSpot, .1);
-	            	/*
-	            	if(this.idNumber == 22){
-	            		utilities.debugOutput(i + ": " + this.tailSegments[i]);
-	                	utilities.debugOutput(this.tailSegments[i-1]);
-	                }*/
 	            }
 	            
 	            
                 
                 //utilities.debugOutput(this.idNumber + ": " + this.frontAngle + " /// " + this.backAngle);
                 
-                //this.totalForce.setToMultiple(this.position, 0);
-                this.totalForce.addPolar(.1, this.frontAngle);
-                this.velocity.setToPolar(10, this.frontAngle);
-                this.position.addMultiple(this.velocity, time.ellapsed);
+                // This velocity calculation makes the critters constantly 'fall' and I don't know why.
+                //this.velocity.setToPolar(10, this.frontAngle);
+                //this.position.addMultiple(this.velocity, time.ellapsed);
                 
                 this.face.update(time, this.radius, this.radius);
                 
                 this.emotion.update(time);
+                
+        		this.debugOutput(this.velocity);
+        		this.debugOutput(this.position);
             }
         });
 

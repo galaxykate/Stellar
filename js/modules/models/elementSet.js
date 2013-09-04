@@ -472,7 +472,7 @@ define(["modules/models/elements", "modules/models/reactions", "jQueryUI"], func
 			    $('<canvas/>',{'id':this.parentIDFromUI + "_" + elementID + "_canvas"})
 			    .width(20)
 			    .height(20);
-			console.log(newCanvas);
+			//console.log(newCanvas);
 			
 
             var options = {

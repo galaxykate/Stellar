@@ -14,7 +14,8 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
             stellarGame.player.idColor = new KColor(Math.random(), 1, 1);
             this.spawnTable = new ChanceTable();
-            this.spawnTable.addOption(particleTypes.Star, "star", 1);
+            //this.spawnTable.addOption(particleTypes.Star, "star", .01);
+            this.spawnTable.addOption(particleTypes.Critter, "critter", 1);
 
             this.touchMarker = new particleTypes.UParticle();
             this.touchMarker.name = "Touch Marker";
@@ -279,14 +280,14 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
                 } else {
                     var obj;
-                    if (Math.random() > .8) {
+                    if (Math.random() > .7) {
                         obj = new particleTypes.Trailhead();
-                    } else if (Math.random() > .2) {
+                    } else if (Math.random() > .7) {
                         obj = new particleTypes.Star();
                     }
-                    //else {
-                    //  obj = new particleTypes.Critter();
-                    //}
+                    else {
+                      obj = new particleTypes.Critter();
+                    }
 
                     obj.position.setTo(p);
                     this.spawn(obj);
