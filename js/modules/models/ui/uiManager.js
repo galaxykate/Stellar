@@ -22,17 +22,22 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
         	
 	        var universeHeight = gameView.universeView.dimensions.height;
 	        
-	        playerInventory.addState("closed", 0, 0, 20, universeHeight, 0.3);
+	        //playerInventory.addState("closed", 0, 0, 20, universeHeight, 0.3);
 	        playerInventory.addState("open", 0, 0, 150, universeHeight, 1);
-	        playerInventory.addTransition("open", "closed", "mouseleave", true);
-	        playerInventory.addTransition("closed", "open", "mousedown", true);
-	        playerInventory.setState("closed");
+	        //playerInventory.addTransition("open", "closed", "mouseleave", true);
+	        //playerInventory.addTransition("closed", "open", "mousedown", true);
+	        //playerInventory.setState("closed");
+	        playerInventory.setState("open");
 	        
 	        var contents = new PopupContents();
 	        contents.initAsElementHolder();
 	        contents.updateElementsDrawAndUpdate();
 	        //contents.addElementsToUniverse(); // Need to figure out some other way to update an element container
 	        playerInventory.addContents("playerElements", contents);
+	        var critters = new PopupContents();
+	        playerInventory.addContents("playerCritters", critters);
+	        
+	        critters.initAsCritterHolder();
 	        
 	    };
 	    

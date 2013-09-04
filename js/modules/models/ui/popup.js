@@ -28,6 +28,7 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
             	//console.log("goodies! ");
             	//console.log(goodies);
             	this.contents[name] = goodies;
+            	if(this.contentNames.length > 0) this.view.createSpacerSpan();
             	this.contentNames.push(name);
             },
             

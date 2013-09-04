@@ -32,10 +32,14 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
                 // find the first object that accepts dust
                 var target = undefined;
+                var pickUpTarget = undefined;
                 for (var i = 0; i < touch.overObjects.length; i++) {
                     if (touch.overObjects[i].acceptsDust) {
                         target = touch.overObjects[i];
                         break;
+                    }
+                    if (touch.overObjects[i].pickupable) {
+                        pickUpTarget = touch.overObjects[i];
                     }
 
                 }
@@ -46,8 +50,15 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                     console.log(target);
                     target.feedDust(touch, tool);
 
-                    
-                } else {
+                } else if (pickUpTarget){
+                	console.log("Found something to pick up: ");
+                	console.log(pickUpTarget);
+                	var playerInventory = uiManager.getPlayerInventory();
+                	playerInventory.flash();
+                	pickUpTarget.pickUp(playerInventory.contents["playerCritters"].critterHolderID);
+                	
+                	
+                }else {
                     console.log("No object touched: sending dust to inventory");
                     // If there's enought dust in here
                     //if (tool.elements.totalMass > minDustMass) {
@@ -80,7 +91,8 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                     if (obj.siphonable)
                         tool.elements.siphon(obj.elements, 1);
                         
-					if (touch.overObjects[index].acceptsDust) {
+					if (touch.overObjects[index].acceptsDust ||
+						touch.overObjects[index].pickupable) {
                         target = touch.overObjects[index];
                     }
                 });

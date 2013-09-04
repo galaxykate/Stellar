@@ -4,7 +4,7 @@
 
 // Spacey whaaaaaales
 
-define(["inheritance", "modules/models/vector", "uparticle", "modules/models/face", "modules/models/emotion"], function(Inheritance, Vector, UParticle, Face, Emotion) {
+define(["inheritance", "modules/models/vector", "uparticle", "modules/models/face", "modules/models/emotion", "modules/models/ui/glow"], function(Inheritance, Vector, UParticle, Face, Emotion, Glow) {
     return (function() {
 
         // Make the star class
@@ -30,63 +30,83 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
 				this.emotion = new Emotion.Emotion(universe, this.radius + 20);
 				stellarGame.statistics.numberOfCritters++;
 				//console.log("Initing critter: " + this.idNumber);
+				
+				this.pickupable = true;
+				this.held = false;
+				this.homeStar = undefined;
+				this.quest = undefined;
+				this.processing = undefined;
+				
+				this.selection = new Glow(this, 1, 20, true, true);
             },
             
             drawBackground: function(context) {
             	if(stellarGame.options.drawCritters){
             		var g = context.g;
-					this.idColor.fill(g, -.2, 0);
-	                
-	                this.tailVector.setTo(0,0);
-	                var previousSize = this.radius;
-	                
-	                
-	                for(var i = 0; i < this.numSegments; i++){
-	                	//var tailWiggle = Math.sin(stellarGame.time.total + i*this.tailShrinkScale)/4
-	                	
-	                	//utilities.debugOutput(this.idNumber + ": " + this.backAngle * tailWiggle);
-	                	//this.tailVector.addPolar(previousSize, this.backAngle /** tailWiggle*/);
-	                	previousSize = previousSize * this.tailShrinkScale;
-	                	//this.tailVector.drawCircle(g, previousSize);
-	                	this.tailSegments[i].drawCircle(g, previousSize);
-	                	
-	                }
-	               
-	                
-					
-					this.idColor.fill(g, 0, 0);
-	                g.noStroke();
-	                g.ellipse(0, 0, this.radius, this.radius);
-	                
-	                //this.emotion.drawBackground(g, options);
-					
-					//console.log("critter draw bg: true!");
+            		if(this.hover) this.selection.draw(context);
+	                this.hover = false;
+            		
+            		if(this.pickupable && !this.held && this.homeStar === undefined){
+						this.idColor.fill(g, -.2, 0);
+		                
+		                this.tailVector.setTo(0,0);
+		                var previousSize = this.radius;
+		                
+		                
+		                for(var i = 0; i < this.numSegments; i++){
+		                	//var tailWiggle = Math.sin(stellarGame.time.total + i*this.tailShrinkScale)/4
+		                	
+		                	//utilities.debugOutput(this.idNumber + ": " + this.backAngle * tailWiggle);
+		                	//this.tailVector.addPolar(previousSize, this.backAngle /** tailWiggle*/);
+		                	previousSize = previousSize * this.tailShrinkScale;
+		                	//this.tailVector.drawCircle(g, previousSize);
+		                	this.tailSegments[i].drawCircle(g, previousSize);
+		                	
+		                }
+		               
+		                
+						
+						this.idColor.fill(g, 0, 0);
+		                g.noStroke();
+		                g.ellipse(0, 0, this.radius, this.radius);
+		                
+		                //this.emotion.drawBackground(g, options);
+						
+						//console.log("critter draw bg: true!");
+					}
             	}
             },
             
             drawMain : function(context) {
-            	utilities.debugOutput("drawing critter " + this.idNumber);
+            	//utilities.debugOutput("drawing critter " + this.idNumber);
             	if(stellarGame.options.drawCritters){
             		var g = context.g;
             		//console.log("critter draw main: true!");
-
-	                g.pushMatrix();
-	                g.rotate(this.frontAngle);
-	                
-	                //this.face.draw(g);
-	                this.face.drawRightProfile(g);
-	                g.popMatrix();
-	                
+					if(this.pickupable && !this.held && this.homeStar === undefined){
+		                g.pushMatrix();
+		                g.rotate(this.frontAngle);
+		                
+		                //this.face.draw(g);
+		                this.face.drawRightProfile(g);
+		                g.popMatrix();
+		                
 	                //this.emotion.drawMain(g, options);
+	                }
+	                
+	                if(this.held){
+	                	
+	                }
                 }
             },
             
             drawOverlay : function(context) {
             	if(stellarGame.options.drawCritters){
-            		this._super(context);
-            		//console.log("critter draw overlay: true!");
-            		//this.emotion.drawOverlay(g, options);
-            		this.drawDebug(context.g);
+            		if(this.pickupable && !this.held && this.homeStar === undefined){
+	            		this._super(context);
+	            		//console.log("critter draw overlay: true!");
+	            		//this.emotion.drawOverlay(g, options);
+	            		this.drawDebug(context.g);
+            		}
             	}
             }, 
             
@@ -120,9 +140,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
 	            	connectSpot.addPolar(this.radius/(i+1)*2, this.backAngle);
 	            	this.tailSegments[i] = this.tailSegments[i].lerp(connectSpot, .1);
 	            }
-	            
-	            
-                
+
                 //utilities.debugOutput(this.idNumber + ": " + this.frontAngle + " /// " + this.backAngle);
                 
                 // This velocity calculation makes the critters constantly 'fall' and I don't know why.
@@ -130,12 +148,120 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
                 //this.position.addMultiple(this.velocity, time.ellapsed);
                 
                 this.face.update(time, this.radius, this.radius);
+                if(this.hover) this.selection.update(this.radius);
                 
                 this.emotion.update(time);
                 
         		this.debugOutput(this.velocity);
         		this.debugOutput(this.position);
-            }
+            },
+            
+            pickUp : function(parentDiv) {
+            	this.pickupable = false;
+            	this.held = true;
+            	
+            	this.parentDivID = parentDiv;
+            	this.critterDivID = parentDiv + "_" + this.idNumber;
+            	this.createSpanForCritter();
+            },
+            
+            putDownOnStar : function() {
+            	
+            },
+            
+            putDownInWorld : function() {
+            	
+            },
+            
+            createSpanForCritter : function(){
+            	var critter = this;
+            
+	            var newCanvas = 
+				    $('<canvas/>',{'id':critter.critterDivID + "_canvas"})
+				    .width(20)
+				    .height(20);
+				//console.log(newCanvas);
+				
+	
+	            var options = {
+	                "class" : "elementCanvasHolder",
+	                "id" : critter.critterDivID,
+	
+	                // ========= controller stuff ===========
+	                mousedown : function() {
+	
+	                },
+	                mouseup : function() {
+	                    
+	                },
+	                mouseleave : function() {
+	                    
+	                },
+	                mouseenter : function() {
+	                    
+	                }
+	            };
+	
+	            var span = $('<span/>', options);
+	            span.append(newCanvas);
+	
+	            var parent = $("#" + critter.parentDivID);
+	            parent.append(span);
+				
+				var processing = new Processing(critter.critterDivID + "_canvas", function(g) {
+	
+	                g.size(30, 30);
+	                g.colorMode(g.HSB, 1);
+	                g.idColor = critter.idColor;
+	                g.tailSegments = critter.tailSegments;
+	                g.radius = critter.radius;
+	                g.numSegments = critter.numSegments;
+	                g.tailShrinkScale = critter.tailShrinkScale;
+	                g.time = 0;
+	                
+	                g.draw = function() {
+	                	g.background(1, 0, .7, .3);
+	                	g.time++;
+	                	
+	                	/* update */
+	                	g.pushMatrix();
+	                	g.translate(15, 15);
+	                	var frontAngle = g.time/20; // increment it based on time
+	                	var backAngle = frontAngle - Math.PI;
+		                g.tailSegments[0].setToPolar(g.radius/2, backAngle); 
+		                
+		                for(var i = 1; i < g.numSegments; i++) {
+		                	var connectSpot = new Vector(g.tailSegments[i-1].x, g.tailSegments[i-1].y);
+		                	connectSpot.addPolar(g.radius/(i+1)*.8, backAngle);
+			            	g.tailSegments[i] = g.tailSegments[i].lerp(connectSpot, .6);
+			            }
+		                
+		                /* draw */
+		                g.idColor.fill(g, -.2, 0);
+		                
+		                var previousSize = g.radius;
+						
+		                for(var i = 0; i < g.numSegments; i++){
+		                	previousSize = previousSize * g.tailShrinkScale;
+		                	//if(g.time <= 20) console.log(i + " t " + g.tailSegments[i]);
+		                	g.tailSegments[i].drawCircle(g, previousSize);
+		                	
+		                }
+						g.idColor.fill(g, 0, 0);
+		                g.noStroke();
+		                
+		                g.ellipse(0, 0, this.radius, this.radius);
+		                g.popMatrix();
+	                };
+	
+				});
+				this.processing = processing;
+            },
+            
+            drawInInventory : function() {
+            	//var div =
+            	utilities.debugOutput("Critter in " + this.critterDivID);
+            },
         });
 
         return Critter;

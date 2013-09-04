@@ -11,9 +11,24 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
     	
     	// ========================================
     	// View stuff
+    	
     	function createDivForAllElements(parentID, id) {
     		var options = {
                 html : "Elements:<br>",
+                "class" : "contentHolder",
+                "id" : id
+            };
+            
+			var div = $('<div/>', options);
+			
+			var parent = $("#" + parentID)
+			parent.append(div); 
+
+    	};
+    	
+    	function createDivForCritters(parentID, id) {
+    		var options = {
+                html : "Critters:<br>",
                 "class" : "contentHolder",
                 "id" : id
             };
@@ -81,6 +96,11 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             	this.elementsHolder = new ElementSet();
             	this.elementsHolder.siphoning = false;
             	console.log("new elementSet as elements holder: " + this.elementsHolder);
+            },
+            
+            initAsCritterHolder : function() {
+            	this.critterHolderID = this.parentDivID + "_critters";
+            	createDivForCritters(this.parentDivID, this.critterHolderID);
             },
             
             initStatisticsHTMLHolder : function() {

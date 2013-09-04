@@ -99,6 +99,24 @@ define(["inheritance"], function(Inheritance) {
            		
            	},
            	
+           	createSpacerSpan : function() {
+           		var div = $("#" + this.divID);
+           		
+           		var spacerOptions = {
+                    "id" : this.divID + "_spacer",
+                    //float: "left",
+                    width: div.width()-20,
+                    height: 150,
+                    
+           		};
+           		var spacerSpan = $('<div/>', spacerOptions);
+           		spacerSpan; // Start it out invisible because the updates don't happen by this point
+           		
+           		div.append(spacerSpan);
+           		console.log("Created spacer span");
+           		
+           	},
+           	
            	updateCloseButtonWidth : function(width) {
            		//var headDiv = $("#" + this.divID);
            		var closeDiv = $("#" + this.divID + "_close");
