@@ -92,6 +92,10 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             	
             },
             
+            initAsSelectableContents : function(){
+            	this.selectedableContents = true;
+            },
+            
             initAsElementHolder : function() {
             	this.elementsHolder = new ElementSet();
             	this.elementsHolder.siphoning = false;
