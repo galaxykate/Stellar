@@ -173,8 +173,9 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
             	
             },
             
-            createSpanForCritter : function(){
+            createSpanForCritter : function(popupContents){
             	var critter = this;
+            	this.contents = popupContents;
             
 	            var newCanvas = 
 				    $('<canvas/>',{'id':critter.critterDivID + "_canvas"})
@@ -189,10 +190,10 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
 	
 	                // ========= controller stuff ===========
 	                mousedown : function() {
-	
+						
 	                },
 	                mouseup : function() {
-	                    
+	                    this.contents.selectedDivID = critter.critterDivID;
 	                },
 	                mouseleave : function() {
 	                    

@@ -67,23 +67,6 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
     	};
     	
     	// =========================================
-    	
-    	// Trying for mini processing windows
-    	initProcessing = function(g) {
-            g.size(20, 20);
-
-            g.colorMode(g.HSB, 1);
-            g.background(.45, 1, 1);
-
-            // Set the drawing function of processing (used for both drawing and updating)
-            g.draw = function() {
-                //if (stellarGame.ready) {
-                //    universeView.update(g.millis() * .001);
-                //    universeView.draw(g);
-                //}
-            };
-        };
-    	
 
         var PopupContents = Class.extend({
 
@@ -94,11 +77,13 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             
             initAsSelectableContents : function(){
             	this.selectedableContents = true;
+            	this.selectedDivID = undefined;
             },
             
             initAsElementHolder : function() {
             	this.elementsHolder = new ElementSet();
             	this.elementsHolder.siphoning = false;
+            	this.elementsHolder.contents = this;
             	console.log("new elementSet as elements holder: " + this.elementsHolder);
             },
             
@@ -116,6 +101,20 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             	if(this.elementsHolder !== undefined){
             		this.elementsHolder.addAllElementsToADiv(this.elementsHolderID);
             	}
+            },
+            
+            setNewSelectedDivID : function(id){
+            	if(this.selectedDivID !== undefined){
+            		var oldDiv = $("#" + this.selectedDivID);
+            		oldDiv.css({
+	                    opacity : .2
+	                });
+            	}
+            	var newDiv = $("#" + id);
+            	newDiv.css({
+                    opacity : 1
+                });
+                this.selectedDivID = id;
             },
             
             // Gets set when added to a popup: generally after initation?
