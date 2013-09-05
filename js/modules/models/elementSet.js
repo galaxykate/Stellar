@@ -440,9 +440,10 @@ define(["modules/models/elements", "modules/models/reactions", "jQueryUI"], func
         // ==================== View Stuff ========================
         // ===============================================================
 
-        ElementSet.prototype.addAllElementsToADiv = function(parentID) {
+        ElementSet.prototype.addAllElementsToADiv = function(parentID, contents) {
             var elementSet = this;
             this.parentIDFromUI = parentID;
+            this.contents = contents;
 
             var parent = $("#" + parentID);
             parent.mouseleave(function() {
@@ -483,42 +484,25 @@ define(["modules/models/elements", "modules/models/reactions", "jQueryUI"], func
 
                 // ========= controller stuff ===========
                 mousedown : function() {
-
-                    //console.log("mouse down on div " + this.id);
-                    //console.log("var mousedown: true, siphoning: true, " + elementName);
-                    elementSet.varMouseDown = true;
-                    elementSet.siphoning = true;
-                    elementSet.siphonElement = elementName;
                 },
                 mouseup : function() {
-                    //console.log("mouse up on div " + this.id);
-                    //console.log("var mousedown: false, siphoning: false");
-                    elementSet.varMouseDown = false;
-                    elementSet.siphoning = false;
+                	elementSet.contents.setNewSelectedDivID(elementSet.parentIDFromUI + "_" + elementID, elementSet);
+                	elementSet.siphonElement = elementName;
+                	console.log(elementSet.siphonElement);
                 },
                 mouseleave : function() {
-                    //console.log("mouse leave on div " + this.id);
-                    //console.log("var siphoning: false ");
-                    elementSet.siphoning = false;
                 },
                 mouseenter : function() {
-                    if (elementSet.varMouseDown) {
-                        console.log("var siphoning: true, " + elementName);
-                        elementSet.siphoning = true;
-                        elementSet.siphonElement = elementName;
-                    }
+                    
                 }
             };
 
             var span = $('<span/>', options);
             span.append(newCanvas);
-            if (elementAmount <= 0) {
-                //span.hide();
-                span.css({
-                    opacity : .2
-                });
-                //console.log("hiding span " + elementName);
-            }
+            span.css({
+                opacity : .2
+            });
+         
 
             var parent = $("#" + parentID);
             parent.append(span);
@@ -553,28 +537,21 @@ define(["modules/models/elements", "modules/models/reactions", "jQueryUI"], func
 			 
         };
         
-        ElementSet
+        ElementSet.prototype.placeInUniverseFromInventory = function() {
+        	// FIND A TARGET
+        	//console.log(this);
+        	utilities.debugOutput("SIPHONING...? " + this.siphonElement);
+			stellarGame.touch.activeTool.elements.siphonOneByName(this, this.siphonElement, .01);
+			
+        };
+        
 
         ElementSet.prototype.updateSpanForElement = function(elementID, elementName, elementAmount, i) {
             var span = $("#" + this.parentIDFromUI + "_" + elementID);
             //span.html(elementName + ": " + elementAmount + "<br>");
 			//utilities.debugOutput(i+ " eS: " + elementAmount);
 			this.processings[i].elementAmount = elementAmount;
-			//if(stellarGame.time.universeTime <= 1) console.log(this.processings[i]);
 			
-            if (elementAmount <= 0) {
-                //span.hide();
-                span.css({
-                    opacity : .2
-                });
-                //console.log("hiding span " + elementName);
-            } else {
-                //span.show();
-                span.css({
-                    opacity : 1
-                });
-                //console.log("showing span " + elementName);
-            }
 
         };
 

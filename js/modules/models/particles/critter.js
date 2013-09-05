@@ -36,6 +36,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
 				this.homeStar = undefined;
 				this.quest = undefined;
 				this.processing = undefined;
+				this.type = "critter";
 				
 				this.selection = new Glow(this, 1, 20, true, true);
             },
@@ -156,26 +157,28 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
         		this.debugOutput(this.position);
             },
             
-            pickUp : function(parentDiv) {
+            pickUp : function(contents) {
             	this.pickupable = false;
             	this.held = true;
             	
-            	this.parentDivID = parentDiv;
-            	this.critterDivID = parentDiv + "_" + this.idNumber;
-            	this.createSpanForCritter();
+            	this.parentDivID = contents.critterHolderID;
+            	this.critterDivID = contents.critterHolderID + "_" + this.idNumber;
+            	this.createSpanForCritter(contents);
             },
             
-            putDownOnStar : function() {
-            	
+            
+            putDownOnStar : function(inventory, star) {
+            	console.log("HAHAHAHA PUTTING DOWN THE CRITTER NOW!")
             },
             
-            putDownInWorld : function() {
-            	
+            putDownInUniverse : function(touch) {
+            	console.log("PUT DOWN IN UNIVERSE " + touch.plainPosition);
             },
+            
             
             createSpanForCritter : function(popupContents){
             	var critter = this;
-            	this.contents = popupContents;
+            	critter.contents = popupContents;
             
 	            var newCanvas = 
 				    $('<canvas/>',{'id':critter.critterDivID + "_canvas"})
@@ -193,7 +196,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
 						
 	                },
 	                mouseup : function() {
-	                    this.contents.selectedDivID = critter.critterDivID;
+	                    critter.contents.setNewSelectedDivID(critter.critterDivID, critter);
 	                },
 	                mouseleave : function() {
 	                    
@@ -204,6 +207,9 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
 	            };
 	
 	            var span = $('<span/>', options);
+	            span.css({
+                    opacity : .2
+                });
 	            span.append(newCanvas);
 	
 	            var parent = $("#" + critter.parentDivID);

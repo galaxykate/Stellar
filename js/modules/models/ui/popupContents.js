@@ -99,22 +99,12 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             // Only call after attached to a parent: needs parentDivID
             updateIndividualElements : function() {
             	if(this.elementsHolder !== undefined){
-            		this.elementsHolder.addAllElementsToADiv(this.elementsHolderID);
+            		this.elementsHolder.addAllElementsToADiv(this.elementsHolderID, this);
             	}
             },
             
-            setNewSelectedDivID : function(id){
-            	if(this.selectedDivID !== undefined){
-            		var oldDiv = $("#" + this.selectedDivID);
-            		oldDiv.css({
-	                    opacity : .2
-	                });
-            	}
-            	var newDiv = $("#" + id);
-            	newDiv.css({
-                    opacity : 1
-                });
-                this.selectedDivID = id;
+            setNewSelectedDivID : function(id, obj){
+            	this.parentPopup.setNewSelectedDivID(id, obj);
             },
             
             // Gets set when added to a popup: generally after initation?
@@ -158,16 +148,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             		// Should be empty! Probably
             	};
             	contents.elementsHolder.update = function() {
-            		//utilities.debugOutput("UPDATING CONTENTS?!");
-            		//utilities.debugOutput("elementsHolder.siphoning: " + contents.elementsHolder.siphoning + ", " + contents.elementsHolder.siphonElement);
-            		if(contents.elementsHolder.siphoning){
-            			// siphon selected Element
-            			utilities.debugOutput("SIPHONING... " + contents.elementsHolder.siphonElement);
-            			// stellargame.touch.activeTool
-            			//console.log(stellarGame.touch.activeTool);
-            			stellarGame.touch.activeTool.elements.siphonOneByName(contents.elementsHolder, contents.elementsHolder.siphonElement, .01);
-            			
-            		}
+            		
             		contents.elementsHolder.updateAllElementsInDiv(); 
             	};
             },

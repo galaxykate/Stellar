@@ -32,8 +32,15 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
                 // find the first object that accepts dust
                 var target = undefined;
+                var dropTarget = undefined;
                 var pickUpTarget = undefined;
+                var playerInventory = uiManager.getPlayerInventory();
                 for (var i = 0; i < touch.overObjects.length; i++) {
+                	if(playerInventory.selectedObj !== undefined && playerInventory.selectedObj.type === "critter"
+                	  && touch.overObjects[i].acceptsCritters){
+                	  	dropTarget = touch.overObjects[i];
+                	  	break;
+                	}
                     if (touch.overObjects[i].acceptsDust) {
                         target = touch.overObjects[i];
                         break;
@@ -49,16 +56,23 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                     console.log("Feeding dust to: ");
                     console.log(target);
                     target.feedDust(touch, tool);
-
+                } else if (dropTarget){
+                	console.log("Found something to drop: ");
+                	console.log(dropTarget);
+                	playerInventory.selectedObj.putDownOnStar(playerInventory, dropTarget);
+                	
+                	
                 } else if (pickUpTarget){
                 	console.log("Found something to pick up: ");
                 	console.log(pickUpTarget);
-                	var playerInventory = uiManager.getPlayerInventory();
+                	
                 	playerInventory.flash();
-                	pickUpTarget.pickUp(playerInventory.contents["playerCritters"].critterHolderID);
+                	pickUpTarget.pickUp(playerInventory.contents["playerCritters"]);
                 	
                 	
-                }else {
+                } else if (playerInventory.selectedObj !== undefined && playerInventory.selectedObj.type === "critter") {
+                	playerInventory.selectedObj.putDownInUniverse(touch);
+                } else {
                     console.log("No object touched: sending dust to inventory");
                     // If there's enought dust in here
                     //if (tool.elements.totalMass > minDustMass) {

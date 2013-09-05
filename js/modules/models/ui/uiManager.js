@@ -28,6 +28,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	        //playerInventory.addTransition("closed", "open", "mousedown", true);
 	        //playerInventory.setState("closed");
 	        playerInventory.setState("open");
+	        playerInventory.addNullSelectionTool();
 	        
 	        var contents = new PopupContents();
 	        contents.initAsElementHolder();

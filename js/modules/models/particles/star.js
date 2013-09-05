@@ -285,6 +285,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 //this.burningFuel = true;
 
                 this.acceptsDust = true;
+                this.acceptsCritters = true;
                 this.spiralOpacity = 0;
                 
             	this.densityBurstTimer = 0;
