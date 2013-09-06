@@ -44,16 +44,23 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
         };
         
         function update(){
-        	updateQuestUI();
-        	for(var i = 0; i < questLibrary.length; i++){
-        		questLibrary[i].update(); // started/finished is checked in the quest itself
-        		if(questLibrary[i].started === true){
-        			questLibrary[i].updateHTMLText();
-        			if(questLibrary[i].finished === true && questLibrary[i].fanfair === false){
-        				uiManager.getQuestScreen().flash();
-        				questLibrary[i].fanfair = true;
-        			}
+        	var div = $("#" + questScreenDivID);
+        	if(stellarGame.options.showUpdateQuests){
+        		if(div.is(":visible") === false) div.show();
+	        	updateQuestUI();
+	        	for(var i = 0; i < questLibrary.length; i++){
+	        		questLibrary[i].update(); // started/finished is checked in the quest itself
+	        		if(questLibrary[i].started === true){
+	        			questLibrary[i].updateHTMLText();
+	        			if(questLibrary[i].finished === true && questLibrary[i].fanfair === false){
+	        				uiManager.getQuestScreen().flash();
+	        				questLibrary[i].fanfair = true;
+	        			}
+	        		}
         		}
+        	} else {
+        		//hide it?
+        		if(div.is(":visible")) div.hide();
         	}
         };
 		/*

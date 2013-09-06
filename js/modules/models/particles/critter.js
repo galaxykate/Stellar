@@ -161,9 +161,15 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
             	this.pickupable = false;
             	this.held = true;
             	
-            	this.parentDivID = contents.critterHolderID;
-            	this.critterDivID = contents.critterHolderID + "_" + this.idNumber;
-            	this.createSpanForCritter(contents);
+            	if(this.critterDivID === undefined){
+	            	this.parentDivID = contents.critterHolderID;
+	            	this.critterDivID = contents.critterHolderID + "_" + this.idNumber;
+	            	this.createSpanForCritter(contents);
+            	} else {
+            		var span = $("#" + this.critterDivID);
+            		span.show();
+            		this.processing.updating = true;
+            	}
             },
             
             
@@ -171,10 +177,21 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
             	console.log("HAHAHAHA PUTTING DOWN THE CRITTER NOW!")
             },
             
-            putDownInUniverse : function(touch) {
-            	console.log("PUT DOWN IN UNIVERSE " + touch.plainPosition);
+            putDownInUniverse : function(inventory, touch) {
+            	console.log("PUT DOWN IN UNIVERSE " + touch.planePosition);
+            	this.pickupable = true;
+            	this.held = false;
+            	touch.planePosition.cloneInto(this.position);
+            	inventory.setNullDivID();
+            	
+            	this.turnOffInventory();
             },
             
+            turnOffInventory : function() {
+            	this.processing.updating = false;
+            	var span = $("#" + this.critterDivID);
+            	span.hide();
+            },
             
             createSpanForCritter : function(popupContents){
             	var critter = this;
@@ -225,40 +242,43 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
 	                g.numSegments = critter.numSegments;
 	                g.tailShrinkScale = critter.tailShrinkScale;
 	                g.time = 0;
+	                g.updating = true;
 	                
 	                g.draw = function() {
-	                	g.background(1, 0, .7, .3);
-	                	g.time++;
-	                	
-	                	/* update */
-	                	g.pushMatrix();
-	                	g.translate(15, 15);
-	                	var frontAngle = g.time/20; // increment it based on time
-	                	var backAngle = frontAngle - Math.PI;
-		                g.tailSegments[0].setToPolar(g.radius/2, backAngle); 
-		                
-		                for(var i = 1; i < g.numSegments; i++) {
-		                	var connectSpot = new Vector(g.tailSegments[i-1].x, g.tailSegments[i-1].y);
-		                	connectSpot.addPolar(g.radius/(i+1)*.8, backAngle);
-			            	g.tailSegments[i] = g.tailSegments[i].lerp(connectSpot, .6);
-			            }
-		                
-		                /* draw */
-		                g.idColor.fill(g, -.2, 0);
-		                
-		                var previousSize = g.radius;
-						
-		                for(var i = 0; i < g.numSegments; i++){
-		                	previousSize = previousSize * g.tailShrinkScale;
-		                	//if(g.time <= 20) console.log(i + " t " + g.tailSegments[i]);
-		                	g.tailSegments[i].drawCircle(g, previousSize);
+	                	if(g.updating){
+		                	g.background(1, 0, .7, .3);
+		                	g.time++;
 		                	
+		                	/* update */
+		                	g.pushMatrix();
+		                	g.translate(15, 15);
+		                	var frontAngle = g.time/20; // increment it based on time
+		                	var backAngle = frontAngle - Math.PI;
+			                g.tailSegments[0].setToPolar(g.radius/2, backAngle); 
+			                
+			                for(var i = 1; i < g.numSegments; i++) {
+			                	var connectSpot = new Vector(g.tailSegments[i-1].x, g.tailSegments[i-1].y);
+			                	connectSpot.addPolar(g.radius/(i+1)*.8, backAngle);
+				            	g.tailSegments[i] = g.tailSegments[i].lerp(connectSpot, .6);
+				            }
+			                
+			                /* draw */
+			                g.idColor.fill(g, -.2, 0);
+			                
+			                var previousSize = g.radius;
+							
+			                for(var i = 0; i < g.numSegments; i++){
+			                	previousSize = previousSize * g.tailShrinkScale;
+			                	//if(g.time <= 20) console.log(i + " t " + g.tailSegments[i]);
+			                	g.tailSegments[i].drawCircle(g, previousSize);
+			                	
+			                }
+							g.idColor.fill(g, 0, 0);
+			                g.noStroke();
+			                
+			                g.ellipse(0, 0, this.radius, this.radius);
+			                g.popMatrix();
 		                }
-						g.idColor.fill(g, 0, 0);
-		                g.noStroke();
-		                
-		                g.ellipse(0, 0, this.radius, this.radius);
-		                g.popMatrix();
 	                };
 	
 				});

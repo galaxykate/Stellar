@@ -57,21 +57,23 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                     console.log(target);
                     target.feedDust(touch, tool);
                 } else if (dropTarget){
+                	// Drop target is put first, if there is one
                 	console.log("Found something to drop: ");
                 	console.log(dropTarget);
                 	playerInventory.selectedObj.putDownOnStar(playerInventory, dropTarget);
                 	
                 	
                 } else if (pickUpTarget){
+                	// All objects that go in the inventory must have a .pickUp() public function
                 	console.log("Found something to pick up: ");
                 	console.log(pickUpTarget);
                 	
                 	playerInventory.flash();
                 	pickUpTarget.pickUp(playerInventory.contents["playerCritters"]);
-                	
-                	
+
                 } else if (playerInventory.selectedObj !== undefined && playerInventory.selectedObj.type === "critter") {
-                	playerInventory.selectedObj.putDownInUniverse(touch);
+                	// If there is no drop target, but we have a critter selected, put it in the world
+                	playerInventory.selectedObj.putDownInUniverse(playerInventory, touch);
                 } else {
                     console.log("No object touched: sending dust to inventory");
                     // If there's enought dust in here
