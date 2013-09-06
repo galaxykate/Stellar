@@ -16,7 +16,7 @@ define(['modules/controllers/universe_controller', 'jQueryUI'], function(univers
         stellarGame.addOption("simStarEvolution", true);
         stellarGame.addOption("drawQuadTree", false);
         stellarGame.addOption("drawRegions", false);
-        stellarGame.addOption("showUpdateQuests", false);
+        stellarGame.addOption("showUpdateQuests", true);
         
         // Our old buttons at the top
         stellarGame.addOption("drawFaces", false);

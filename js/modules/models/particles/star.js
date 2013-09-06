@@ -35,7 +35,9 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             update : function(star, time){
             	if(star.elements.canBurnFuel(star.temperature, time)){
             		star.elements.burnSomeFuel(star.temperature, time);
-            		star.tempGenerated = star.elements.heatGenerated;
+            		//console.log(star.temperature + " += " + star.density + " * " + star.elements.heatGenerated + " * " + tuning.starTempCalcScaler);
+            		star.temperature += star.density * star.elements.heatGenerated * tuning.starTempCalcScaler;
+            		//console.log(star.temperature);
             	} else {
             		star.state = states[3];
             		star.densityBurstTimer = 0;
@@ -75,7 +77,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             name : "collapsing",
             idNumber : 3,
             updateDensity : function(star, time){
-            	star.density += 0.1 * tuning.starCollapseDensityScalar * star.densityBurstTimer;
+            	star.addPressure(tuning.starCollapseDensityScalar * star.densityBurstTimer);
             	star.densityBurstTimer = 0;
             },
             update : function(star, time){
@@ -280,7 +282,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.initFace();
                 this.density = 1.0;
                 // affects how temperature is figured
-                this.temperature = this.density * this.elements.totalMass * tuning.starTempCalcScaler;
+                this.temperature = this.density * this.elements.totalMass * tuning.starTempCalcScaler * 10000;
                 //Math.random() * 4000 + 1000;
                 //this.burningFuel = true;
 
@@ -364,7 +366,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this._super(time);
                 //utilities.debugOutput(this.idNumber+ " UPDATING!!!");
 
-                this.temperature = this.density * this.elements.totalMass * tuning.starTempCalcScaler;
+                //this.temperature = this.density * this.elements.totalMass * tuning.starTempCalcScaler;
                 //utilities.debugOutput("star " + this.idNumber + " temp " + this.temperature);
                 this.glow.update(this.radius);
                 this.debugOutput(this.state.name);
@@ -384,15 +386,17 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             // Add temperature (or subtract it) from this star
             addTemperature : function(amt) {
-                this.temperature += amt / this.elements.totalMass;
-                console.log("Temperature of " + this.name + " now " + this.temperature);
+                this.temperature += amt/10;
+                //console.log("Temperature of " + this.name + " now " + this.temperature);
                 // Do something here
             },
 
             // Add pressure (or subtract it) from this star
             addPressure : function(amt) {
                 // Do something here
-                console.log("Pressure of " + this.name + " now " + this.pressure);
+                this.density += amt / 10;
+                this.temperature += amt/10;
+                //console.log("Pressure of " + this.name + " now " + this.density);
             },
 
             feedDust : function(touch, tool) {

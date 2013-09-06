@@ -67,7 +67,7 @@ define(["inheritance", "modules/models/vector", "kcolor", "uparticle"], function
             generate : function(universe) {
                 this.generated = true;
 
-                var count = Math.random() * 4;
+                var count = Math.random() * 2; // used to be 4, made it more sparse
                 for (var i = 0; i < count; i++) {
                     var r = 10 + 60 * Math.pow(i, .7);
                     var theta = 1.6 * Math.pow(i, .7);

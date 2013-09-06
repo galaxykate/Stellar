@@ -32,6 +32,21 @@ define(['modules/models/ui/uiManager', particleTypePath + "star"], function(uiMa
 	        	},
         	],
         }, {
+        	// Requres gathering elements with the move tool (and dumping them into the inventory?)
+        	name : "Inventory Use: Oxygen",
+        	level : 0,
+        	giver : "global",
+        	
+        	conditions : [
+        		{
+		        	func : function(){
+		        		if(uiManager.getInventoryElementAmt("Oxygen") > 0) return true;
+		        		else return false;
+		        	},
+		        	desc : "Get some oxygen in your inventory",
+	        	},
+        	],
+        }, {
         	
         	// Requires navigation away from the home star
         	name : "Discover a New Star",
