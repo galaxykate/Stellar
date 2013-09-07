@@ -133,11 +133,7 @@ define(["modules/models/elementSet", "kcolor", "modules/models/vector", "particl
             // View stuff
 
             createPaletteDiv : function(parent) {
-                var palette = $('<div/>', {
-                    html : "Palette<br>",
-                    "class" : "palette ui_box",
-                });
-                parent.append(palette);
+                var palette = $('#tools_pane');
 
                 // add all the tool buttons
                 $.each(this.tools, function(index, tool) {

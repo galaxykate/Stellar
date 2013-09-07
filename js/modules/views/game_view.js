@@ -9,7 +9,7 @@ var screenResolution = {
     height : 768
 }
 
-define(["modules/views/universe_view"], function(universeView) {
+define(["modules/views/universe_view", "modules/views/elements_widget"], function(universeView, ElementsWidget) {
 
     var createOutput = function(divName) {
         var div = $("#" + divName);
@@ -47,6 +47,8 @@ define(["modules/views/universe_view"], function(universeView) {
         return output;
 
     };
+
+    var elementsWidget = new ElementsWidget($("#elements_pane"));
 
     debug = createOutput("debug_output_pane");
     debugTouch = createOutput("touch_output_pane");

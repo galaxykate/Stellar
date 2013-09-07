@@ -16,6 +16,9 @@ define(['modules/controllers/universe_controller'], function(universeController)
     stellarGame.addOption("drawCamera", false);
     stellarGame.addOption("drawActiveQuads", false);
     stellarGame.addOption("drawTouchMarker", false);
+    stellarGame.addOption("outputActiveObjects", true);
+    stellarGame.addOption("outputActiveQuads", true);
+
     stellarGame.addTuning("moveSpeed", .5, 0, 1);
 
     var slidePanels = [];
@@ -137,28 +140,16 @@ define(['modules/controllers/universe_controller'], function(universeController)
 
     });
 
-    var toolsPane = $('<div/>', {
-        id : "tools_pane",
-        html : "Tools",
-        "class" : "slideout_pane",
+    var toolsPane = $('#tools_pane');
+    var elementsPane = $('#elements_pane');
+    var backpackPane = $('#backpack_pane');
+    var inventoryPanes = [toolsPane, elementsPane, backpackPane];
+
+    $.each(inventoryPanes, function(index, pane) {
+        pane.addClass("slideout_pane");
     });
 
-    var elementsPane = $('<div/>', {
-        id : "elements_pane",
-        html : "Elements",
-        "class" : "slideout_pane",
-    });
-
-    var backpackPane = $('<div/>', {
-        id : "elements_pane",
-        html : "Elements",
-        "class" : "slideout_pane",
-    });
-
-    inventoryPanel.div.append(toolsPane);
-    inventoryPanel.div.append(elementsPane);
-    inventoryPanel.div.append(backpackPane);
-
+ 
     //======================================================
     //======================================================
     //======================================================
@@ -193,7 +184,7 @@ define(['modules/controllers/universe_controller'], function(universeController)
 
     var debugOutput = $('<div/>', {
         id : "debug_output_pane",
-        html : "Elements",
+        html : "debug output",
         "class" : "slideout_pane output_pane",
     });
 

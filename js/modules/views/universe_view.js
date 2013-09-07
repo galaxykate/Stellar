@@ -17,7 +17,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
     };
 
     var getLODFromDistance = function(d) {
-        var divisions = [300, 350, 500, 900, 1200, 2000];
+        var divisions = [300, 350, 500, 900, 2500, 12000];
         for (var i = 0; i < divisions.length - 1; i++) {
             var start = divisions[i];
             var end = divisions[i + 1];
@@ -138,7 +138,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             this.activeObjects = [];
             var contentsArrays = [];
             if (stellarGame.options.outputActiveQuads) {
-                utilities.debugArrayOutput(this.activeQuadrants);
+                debug.output(this.activeQuadrants);
             }
 
             $.each(this.activeQuadrants, function(index, quad) {
@@ -148,14 +148,14 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             // Compile all the arrays of contents into a single array
             this.activeObjects = this.activeObjects.concat.apply(this.activeObjects, contentsArrays);
 
-            if (stellarGame.options.outputDisplayObjects) {
-                utilities.debugOutput("======================================");
-                utilities.debugOutput("updating " + this.activeObjects.length);
+            if (stellarGame.options.outputActiveObjects) {
+                debug.output("======================================");
+                debug.output("updating " + this.activeObjects.length);
                 for (var i = 0; i < this.activeObjects.length; i++) {
-                    utilities.debugOutput(i + ": " + this.activeObjects[i]);
+                    debug.output(i + ": " + this.activeObjects[i]);
 
                 }
-                utilities.debugOutput("======================================");
+                debug.output("======================================");
             }
             // Update the universe
             this.universe.update(time, this.activeObjects);
@@ -278,8 +278,13 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
 
             $.each(this.activeObjects, function(index, obj) {
 
+                var centerDistance = view.camera.position.getDistanceTo(obj.position);
+              
+                // Figure out the actual lod of this object
+                context.LOD = getLODFromDistance(view.camera.orbitDistance + centerDistance);
+
                 // If this object should draw at all at this distance
-                    if (obj.minLOD === undefined || obj.minLOD >= context.LOD.index) {
+                if (obj.minLOD === undefined || obj.minLOD >= context.LOD.index) {
                     // figure out where this object is, and translate appropriately
                     g.pushMatrix();
 

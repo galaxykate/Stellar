@@ -72,7 +72,6 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             g.noStroke();
             for (var i = 0; i < backgroundLayers; i++) {
 
-
                 for (var j = 0; j < backgroundStars[i].length; j++) {
                     var camera = context.universeView.camera;
                     var scale = 4000 * camera.zoom / (camera.zoom + z);
@@ -143,7 +142,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
         //=======================================================
         //=======================================================
         //=======================================================
-        // Updateing
+        // Updating
         update : function(time, activeObjects) {
 
             var universe = this;
@@ -281,15 +280,13 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             stellarGame.statistics.bgStarCount = 0;
             stellarGame.statistics.numberofSparkles = 0;
         },
+
         getQuadrantsInRegion : function(region, quads, g) {
             return quadTree.getQuadrantsInRegion(region, quads, g);
         },
 
         addScrollingMovement : function(v) {
-
             this.camera.velocity.addMultiple(v, 1);
-            utilities.touchOutput("Camera Velocity: " + this.camera.velocity);
-
         },
     });
 
