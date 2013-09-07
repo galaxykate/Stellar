@@ -8,8 +8,10 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
     return (function() {
     	var htmlCount = 0;
     	
+    	
     	// ========================================
     	// View stuff
+    	
     	function createDivForAllElements(parentID, id) {
     		var options = {
                 html : "Elements:<br>",
@@ -21,13 +23,27 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
 			
 			var parent = $("#" + parentID)
 			parent.append(div); 
-			
-			//console.log('appending ' + id + " to " + parentID);
-			
-			//console.log(parent);
-			//console.log(div);
 
     	};
+    	
+    	function createDivForCritters(parentID, id) {
+    		var options = {
+                html : "Critters:<br>",
+                "class" : "contentHolder",
+                "id" : id
+            };
+            
+			var div = $('<div/>', options);
+			
+			var parent = $("#" + parentID)
+			parent.append(div); 
+
+    	};
+    	
+    	function wrapTextIntoHTML(divID, str){
+    		var div = $("#" + divID);
+    		div.html(str);
+    	}
     	
     	function wrapStatisticsIntoHTML(divID){
     		var html = "";
@@ -45,13 +61,12 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
     		//console.log(div);
     	};
     	
-    	function emptHTMLContents(divID){
+    	function emptyHTMLContents(divID){
     		var div = $("#" + divID);
     		div.html = "";
     	};
     	
     	// =========================================
-    	
 
         var PopupContents = Class.extend({
 
@@ -60,10 +75,21 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             	
             },
             
+            initAsSelectableContents : function(){
+            	this.selectedableContents = true;
+            	this.selectedDivID = undefined;
+            },
+            
             initAsElementHolder : function() {
             	this.elementsHolder = new ElementSet();
             	this.elementsHolder.siphoning = false;
+            	this.elementsHolder.contents = this;
             	console.log("new elementSet as elements holder: " + this.elementsHolder);
+            },
+            
+            initAsCritterHolder : function() {
+            	this.critterHolderID = this.parentDivID + "_critters";
+            	createDivForCritters(this.parentDivID, this.critterHolderID);
             },
             
             initStatisticsHTMLHolder : function() {
@@ -73,8 +99,12 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             // Only call after attached to a parent: needs parentDivID
             updateIndividualElements : function() {
             	if(this.elementsHolder !== undefined){
-            		this.elementsHolder.addAllElementsToADiv(this.elementsHolderID);
+            		this.elementsHolder.addAllElementsToADiv(this.elementsHolderID, this);
             	}
+            },
+            
+            setNewSelectedDivID : function(id, obj){
+            	this.parentPopup.setNewSelectedDivID(id, obj);
             },
             
             // Gets set when added to a popup: generally after initation?
@@ -103,7 +133,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
 					var parent = $("#" + this.parentDivID)
 					parent.append(div); 
 					
-					setInterval(function(){wrapStatisticsIntoHTML(id)},1000);
+					//setInterval(function(){wrapStatisticsIntoHTML(id)},1000);
     				
     				// ========================================
             		
@@ -118,16 +148,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             		// Should be empty! Probably
             	};
             	contents.elementsHolder.update = function() {
-            		//utilities.debugOutput("UPDATING CONTENTS?!");
-            		//utilities.debugOutput("elementsHolder.siphoning: " + contents.elementsHolder.siphoning + ", " + contents.elementsHolder.siphonElement);
-            		if(contents.elementsHolder.siphoning){
-            			// siphon selected Element
-            			utilities.debugOutput("SIPHONING... " + contents.elementsHolder.siphonElement);
-            			// stellargame.touch.activeTool
-            			//console.log(stellarGame.touch.activeTool);
-            			stellarGame.touch.activeTool.elements.siphonOneByName(contents.elementsHolder, contents.elementsHolder.siphonElement, .01);
-            			
-            		}
+            		
             		contents.elementsHolder.updateAllElementsInDiv(); 
             	};
             },

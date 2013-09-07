@@ -46,6 +46,7 @@ define(['modules/controllers/universe_controller'], function(universeController)
                 id : options.id,
                 html : options.id,
                 class : "slideout_panel",
+
             });
         } else {
             panelDiv.addClass("slideout_panel");

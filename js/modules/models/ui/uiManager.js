@@ -8,54 +8,60 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 
     return (function() {
     	var playerInventory;
-    	var infoScreen;
+    	var questScreen;
 
         function init() {
             console.log("INIT UI");
 
-
             makeInventoryPopup();
-            //makeMainMenu();
+            makeMainMenu();
         };
         
         function makeInventoryPopup() {
-        	playerInventory = new Popup("#universe");
+        	playerInventory = new Popup("#universe", "Inventory");
         	
 	        var universeHeight = screenResolution.height;
 	        
-	        playerInventory.addState("closed", 0, 0, 20, universeHeight, 0.1);
+	        playerInventory.addState("closed", 0, 0, 20, universeHeight, 0.3);
 	        playerInventory.addState("open", 0, 0, 150, universeHeight, 1);
 	        playerInventory.addTransition("open", "closed", "mouseleave", true);
 	        playerInventory.addTransition("closed", "open", "mousedown", true);
 	        playerInventory.setState("closed");
+	        //playerInventory.setState("open");
+	        playerInventory.addNullSelectionTool();
+	        playerInventory.setNullDivID();
 	        
 	        var contents = new PopupContents();
 	        contents.initAsElementHolder();
 	        contents.updateElementsDrawAndUpdate();
 	        //contents.addElementsToUniverse(); // Need to figure out some other way to update an element container
 	        playerInventory.addContents("playerElements", contents);
+	        var critters = new PopupContents();
+	        playerInventory.addContents("playerCritters", critters);
+	        
+	        critters.initAsCritterHolder();
 	        
 	    };
 	    
 	    function makeMainMenu() {
-	    	infoScreen = new Popup("#universe");
+	    	questScreen = new Popup("#universe", "Quest Log");
 	    	
 	    	var universeWidth = screenResolution.width;
 	    	var universeHeight =screenResolution.height;
 	    	
-	    	infoScreen.addState("closed", universeWidth-40, 0, 20, 20, 0.5);
-	    	infoScreen.addState("open", 20, 20, universeWidth-50, universeHeight-50, 1);
-	    	//infoScreen.addTransition("open", "closed", "click");
-	    	infoScreen.addTransition("closed", "open", "click", false);
-	    	infoScreen.setState("closed");
-	    	infoScreen.addCloseDiv();
+	    	questScreen.addState("closed", universeWidth-50, 140, 40, 20, 0.3);
+	    	questScreen.addState("open", 20, 20, universeWidth-50, universeHeight-50, 1);
+	    	questScreen.addTransition("open", "closed", "click");
+	    	questScreen.addTransition("closed", "open", "click", false);
+	    	questScreen.setState("closed");
+	    	questScreen.addCloseDiv();
 	    	
 	    	var menu = new PopupContents();
-	    	infoScreen.addContents("menu", menu);
+	    	questScreen.addContents("menu", menu);
 	    	
-	    	var stats = new PopupContents();
-	    	stats.initStatisticsHTMLHolder();
-	    	infoScreen.addContents("stats", stats);
+	    	var quests = new PopupContents();
+	    	quests.initStatisticsHTMLHolder();
+	    	questScreen.addContents("quests", quests);
 	    };
 	    
 	    function generateUniverseStatistics(){
@@ -66,16 +72,33 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    	return playerInventory;
 	    };
 	    
+	    function getQuestScreen(){
+	    	return questScreen;
+	    };
+	    
 	    function update() {
 	    	// For element holder stuff :)
 	    	playerInventory.update();
 	    	//utilities.debugOutput("updating in uiManager");
-	    }
+	    	//QuestManager.updateQuestUI(questScreen.contents["quests"]);
+	    };
+	   
+	    
+	    function getInventoryElementAmt(name) {
+	    	return getPlayerInventory().contents["playerElements"].elementsHolder.getAmtByName(name);
+	    };
+	    
+	    function getInventoryElementPct(name){
+	    	return getPlayerInventory().contents["playerElements"].elementsHolder.getPctByName(name);
+	    };
 
         return {
             init : init,
             getPlayerInventory : getPlayerInventory,
-            update: update
+            getQuestScreen : getQuestScreen,
+            update: update,
+            getInventoryElementAmt: getInventoryElementAmt,
+            getInventoryElementPct: getInventoryElementPct,
         };
 
     })();

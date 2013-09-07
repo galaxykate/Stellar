@@ -4,7 +4,7 @@
 
 // Its the Universe!
 
-define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules/models/ui/uiManager', 'voronoi', 'chanceTable'], function(Vector, KColor, QuadTree, particleTypes, uiManager, Voronoi, ChanceTable) {
+define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules/models/ui/uiManager', 'voronoi', 'chanceTable', 'modules/models/quests/questManager'], function(Vector, KColor, QuadTree, particleTypes, uiManager, Voronoi, ChanceTable, QuestManager) {
     var backgroundLayers = 3;
     var initialUpdate = true;
     var backgroundStarDensity = 40;
@@ -15,6 +15,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             stellarGame.player.idColor = new KColor(Math.random(), 1, 1);
             this.spawnTable = new ChanceTable();
             this.spawnTable.addOption(particleTypes.Star, "star", 1);
+            this.spawnTable.addOption(particleTypes.Critter, "critter", 1);
 
             this.touchMarker = new particleTypes.UParticle();
             this.touchMarker.name = "Touch Marker";
@@ -70,6 +71,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             var t = stellarGame.time.universeTime;
             g.noStroke();
             for (var i = 0; i < backgroundLayers; i++) {
+
 
                 for (var j = 0; j < backgroundStars[i].length; j++) {
                     var camera = context.universeView.camera;
@@ -205,6 +207,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             });
 
             uiManager.update();
+            QuestManager.update();
 
             // Remove dead object, replace misplaced ones, etc
             this.quadTree.cleanup();

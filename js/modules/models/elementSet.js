@@ -4,35 +4,12 @@
 
 // Reusable Vector class
 
-define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
+define(["modules/models/elements", "modules/models/reactions", "jQueryUI"], function(Elements, Reactions, $) {
     var polarVertex = function(g, r, theta) {
         g.vertex(r * Math.cos(theta), r * Math.sin(theta));
     };
 
     return (function() {
-        // TUNING VALUES
-
-        // For elemental fusion, see: http://en.wikipedia.org/wiki/Alpha_process
-        var PPCHAINREACTIONTEMP = 1000;
-        // proto-proton chain reaction: 4 H to 1 HE
-
-        var TAPREACTIONTEMP = 2000;
-        // triple-alpha process : 3 HE to 1 C
-
-        var CHEREACTIONTEMP = 2500;
-        var OHEREACTIONTEMP = 3000;
-        var SIHEREACTIONTEMP = 3500;
-        var FEHEREACTIONTEMP = 5000;
-        var AUHEREACTIONTEMP = 10000;
-        // C + He = O
-        // O + He = Ne // Ignore
-        // Ne + He = Mg // ignore
-        // Mg + He = Si // FUDGE to O + He
-        // Si + He = S // FUDGE to Si + He = Fe
-        // Au and U should only be made via supernova of an iron-rich star
-        var MADEUPSTUFFTEMP = 3000;
-        // all other elements will convert on a 4-to-1 ratio
-        // until more research is done on this
 
         var CUTOFFAMOUNT = 50;
         var HEATSCALAR = 100;
@@ -49,6 +26,10 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
                 name : elementName,
                 number : elemData.atomic_number,
                 symbol : elemData.symbol,
+            };
+            // Find the index in activeElements using name of the Element
+            activeElements[elementName] = {
+                id : index
             };
         });
 
@@ -94,11 +75,24 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
                 }
 
             }
-
+			//if(this.parent !== undefined) console.log(this.parent.idNumber + " INITIALIZING ELEMENT SET");
             this.setTotalMass();
             //this.parent.updateElements(); // causes errors because this.parent.elements is not set yet!
 
         };
+        
+        //===============================================================
+        //===============================================================
+        //===============================================================
+        // Getters
+        ElementSet.prototype.getAmtByName = function(name) {
+        	return this.elementQuantity[activeElements[name].id];
+        }
+        
+        ElementSet.prototype.getPctByName = function(name) {
+        	return getAmtByName(name)/this.totalMass();
+        }
+        
 
         //===============================================================
         //===============================================================
@@ -230,152 +224,82 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         };
 
         // Only burns 1 element at a time
-        ElementSet.prototype.burnSomeFuel = function(temp, time) {
+        ElementSet.prototype.burnSomeFuel = function(temp, time, whoIsCallingMe) {
             var amountToRemove = 0;
+            var amountToAdd = 0;
+            var elemID = -1;
             this.heatGenerated = 0;
-            this.burntElementID = -1;
+            this.burntElementID = [];
             this.burning = false;
             var t = time.ellapsed + 1;
-            if (temp >= PPCHAINREACTIONTEMP) {
-                if (this.elementQuantity[0] > CUTOFFAMOUNT) {// should be > 4
-                    this.burning = true;
-                    this.burntElementID = 0;
-                    amountToRemove = this.elementQuantity[0] * settings.elementBurnAmtScaler * 5 * t;
-                    this.elementQuantity[0] -= amountToRemove;
-                    this.elementQuantity[1] += amountToRemove / 4;
-                    utilities.debugOutput("-H: " + amountToRemove);
-                    this.heatGenerated += HEATSCALAR;
-                }
+            var elemSet = this;
+            
+            for(var i = 0; i < Reactions.length; i++){
+            	//utilities.debugOutput("I'm a reaction! " + Reactions[i].input.minTemp);
+            	// If we are in the temperature threshold for this reaction
+            	var reactionSatisfied = false;
+            	if(temp >= Reactions[i].input.minTemp){
+	            	$.each(Reactions[i].input, function(key, value) {
+	            		if(key !== "minTemp"){
+	            			elemID = activeElements[key].id;
+	            			//utilities.debugOutput(elemSet.parent.idNumber + " burn: " + elemID);
+	            			amountToRemove = tuning.elementBurnAmt * value * t;
+	            			if(elemSet.elementQuantity[elemID] >= amountToRemove + tuning.elementBurnElementMin){
+		            			elemSet.elementQuantity[elemID] -= amountToRemove;
+		            			//utilities.debugOutput("burning... " + amountToRemove);
+		            			elemSet.burning = true;
+		            			elemSet.burntElementID.push(elemID);
+		            			
+		            			reactionSatisfied = true;
+	            			}
+	            		}
+			        });
+		        }
+		        
+		        if(reactionSatisfied === true){
+			        $.each(Reactions[i].output, function(key, value) {
+	            		if(key !== "heat"){
+	            			elemID = activeElements[key].id;
+	            			//utilities.debugOutput("generate: " + elemID);
+	            			amountToAdd = tuning.elementBurnAmt * value * t;
+	            			elemSet.elementQuantity[elemID] += amountToAdd;
+	            			//utilities.debugOutput("generating... " + amountToAdd);
+	            		} else {
+	            			elemSet.heatGenerated += value * tuning.elementBurnTempGenerationScalar;
+	            		}
+			        });
+		        }
             }
-            //utilities.debugOutput("Element Quantity: " + this.elementQuantity);
-
-            if (temp >= TAPREACTIONTEMP) {//&& burning === false) {
-                if (this.elementQuantity[1] > CUTOFFAMOUNT) {// Leave PLENTY for fusion later? Or just change it so all fusion happens at all times?
-                    this.burning = true;
-                    this.burntElementID = 1;
-                    amountToRemove = this.elementQuantity[1] * settings.elementBurnAmtScaler * 3 * t;
-                    this.elementQuantity[1] -= amountToRemove;
-                    this.elementQuantity[2] += amountToRemove / 4;
-                    utilities.debugOutput("-HE: " + amountToRemove);
-                    this.heatGenerated += HEATSCALAR * 2;
-                }
-            }
-
-            /*CHEREACTIONTEMP = 2500;
-            var OHEREACTIONTEMP = 3000;
-            var SIHEREACTIONTEMP = 3500;
-            var FEHEREACTIONTEMP = 5000;
-            var AUHEREACTIONTEMP*/
-
-            // C + HE = O
-            if (temp >= CHEREACTIONTEMP) {//&& burning === false) {
-                if (this.elementQuantity[2] > amountToRemove// Both elements to convert need to have at least that much in them
-                && this.elementQuantity[1] > amountToRemove) {
-                    this.burning = true;
-                    this.burntElementID = 2;
-                    amountToRemove = this.elementQuantity[2] * settings.elementBurnAmtScaler * t;
-                    this.elementQuantity[2] -= amountToRemove;
-                    // C
-                    this.elementQuantity[1] -= amountToRemove;
-                    // He
-                    this.elementQuantity[3] += amountToRemove;
-                    // O
-                    utilities.debugOutput("-C: " + amountToRemove);
-                    this.heatGenerated += HEATSCALAR * 3;
-                }
-            }
-
-            // O + HE = SI // TOTALLY NOT REAL
-            if (temp >= OHEREACTIONTEMP) {//&& burning === false) {
-                if (this.elementQuantity[3] > amountToRemove// Both elements to convert need to have at least that much in them
-                && this.elementQuantity[1] > amountToRemove) {
-                    this.burning = true;
-                    this.burntElementID = 3;
-                    amountToRemove = this.elementQuantity[3] * settings.elementBurnAmtScaler * t;
-                    this.elementQuantity[3] -= amountToRemove;
-                    // O
-                    this.elementQuantity[1] -= amountToRemove;
-                    // He
-                    this.elementQuantity[4] += amountToRemove;
-                    // SI
-                    utilities.debugOutput("-O: " + amountToRemove);
-                    this.heatGenerated += HEATSCALAR * 2;
-                }
-            }
-
-            // SI + HE = FE // TOTALLY NOT REAL
-            if (temp >= SIHEREACTIONTEMP) {//&& burning === false) {
-                if (this.elementQuantity[4] > amountToRemove// Both elements to convert need to have at least that much in them
-                && this.elementQuantity[1] > amountToRemove) {
-                    this.burning = true;
-                    this.burntElementID = 4;
-                    amountToRemove = this.elementQuantity[4] * settings.elementBurnAmtScaler * t;
-                    this.elementQuantity[4] -= amountToRemove;
-                    // SI
-                    this.elementQuantity[1] -= amountToRemove;
-                    // He
-                    this.elementQuantity[5] += amountToRemove;
-                    // FE
-                    utilities.debugOutput("-SI: " + amountToRemove);
-                    this.heatGenerated += HEATSCALAR * 1;
-                }
-            }
-
-            // FE + HE = AU // TOTALLY NOT REAL
-            if (temp >= FEHEREACTIONTEMP) {//&& burning === false) {
-                if (this.elementQuantity[5] > amountToRemove// Both elements to convert need to have at least that much in them
-                && this.elementQuantity[1] > amountToRemove) {
-                    this.burning = true;
-                    this.burntElementID = 5;
-                    amountToRemove = this.elementQuantity[5] * settings.elementBurnAmtScaler * t;
-                    this.elementQuantity[5] -= amountToRemove;
-                    // FE
-                    this.elementQuantity[1] -= amountToRemove;
-                    // He
-                    this.elementQuantity[6] += amountToRemove;
-                    // AU
-                    utilities.debugOutput("-FE: " + amountToRemove);
-                    this.heatGenerated -= HEATSCALAR;
-                }
-            }
-
-            // FE + HE = AU // TOTALLY NOT REAL
-            if (temp >= AUHEREACTIONTEMP) {//&& burning === false) {
-                if (this.elementQuantity[6] > amountToRemove// Both elements to convert need to have at least that much in them
-                && this.elementQuantity[1] > amountToRemove) {
-                    this.burning = true;
-                    this.burntElementID = 6;
-                    amountToRemove = this.elementQuantity[6] * settings.elementBurnAmtScaler * t;
-                    this.elementQuantity[6] -= amountToRemove;
-                    // AU
-                    this.elementQuantity[1] -= amountToRemove;
-                    // He
-                    this.elementQuantity[7] += amountToRemove;
-                    // U
-                    utilities.debugOutput("-AU: " + amountToRemove);
-                    this.heatGenerated -= HEATSCALAR * 2;
-                }
-            }
-
-            /*
-             for (var i = 2; i < activeElements.length - 1; i++) {
-             if (temp >= MADEUPSTUFFTEMP && burning === false) {
-             if (this.elementQuantity[i] > CUTOFFAMOUNT) {// should be > 4
-             burning = true;
-             this.burntElementID = i;
-             amountToRemove = this.elementQuantity[i] * settings.elementBurnAmtScaler;
-             this.elementQuantity[i] -= amountToRemove;
-             this.elementQuantity[i + 1] += amountToRemove / 4;
-             //utilities.debugOutput("REMOVING SOME OTHER ELEMENT " + i + ", " + amountToRemove);
-             this.heatGenerated += HEATSCALAR * 3;
-             // Iron burns MUCH dimmer and does not produce enough energy
-             }
-             }
-             }*/
 
             this.setTotalMass();
+        }
+        
+        ElementSet.prototype.canBurnFuel = function(temp, time) {
+        	var t = time.ellapsed + 1;
+        	var elemSet = this;
+        	
+        	for(var i = 0; i < Reactions.length; i++){
+            	var reactionSatisfied = false;
+            	if(temp >= Reactions[i].input.minTemp){
+            		var satisfiedNum = 0;
+            		var satisfiedTargetNum = 0;
+	            	$.each(Reactions[i].input, function(key, value) {
+	            		if(key !== "minTemp"){
+	            			satisfiedTargetNum ++;
+	            			elemID = activeElements[key].id;
+	            			amountToRemove = tuning.elementBurnAmt * value * t;
+	            			if(elemSet.elementQuantity[elemID] >= amountToRemove + tuning.elementBurnElementMin){
+		            			satisfiedNum ++;
+	            			} 
+	            		}
+			        });
+			        if(satisfiedNum === satisfiedTargetNum) return true;
+		        }
+            }
+            return false;
 
         }
+        
         /* triggers when a supernova occurs
          * densityPerc: The percent of elements, from least dense to most dense. 1 = 100%, sheds some of all elements the star contains
          * 				Provides a hard cut-off point of the other two functions.
@@ -470,24 +394,66 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
 
             }
         };
+        
+        ElementSet.prototype.drawAsSlice = function(g, radius, burning) {
+            var currentRadius = radius;
+            
+            for (var i = 0; i < activeElements.length; i++) {
+                var pctElement = this.elementQuantity[i]/this.totalMass;
+                var r = pctElement * radius;
+                var wiggleR;
+                var segments = 25;
+                var theta;
+                var layers = 2;
+				//utilities.debugOutput("Ugh " + $.inArray(i, this.burntElementID));
+				
+				g.fill(.1 * i, 1, 1);
+				/*
+                if(burning && $.inArray(i, this.burntElementID) >= 0){
+	                utilities.debugOutput("drawing squiggle for " + i);
+	                g.stroke(.1 * i, 1, 1);
+	                g.strokeWeight(2);
+	                g.beginShape();
+	                var t = stellarGame.time.universeTime;
+	
+	                for (var j = 0; j < layers; j++) {
+	                    for (var k = 0; k < segments; k++) {
+	                        theta = (k * 2 * Math.PI) / segments;
+	                        wiggleR = 2*(1+ utilities.pnoise(theta, t * 2 + j * 100)) + r;
+	                        g.vertex(wiggleR * Math.cos(theta), wiggleR * Math.sin(theta));
+	                    }
+	                }
+	                g.endShape(g.CLOSE);
+                } else {*/
+                	//utilities.debugOutput("drawing NO squiggle for " + i);
+                	g.noStroke();
+	                
+	                g.ellipse(0, 0, currentRadius, currentRadius);
+                //}
+                
+                currentRadius -= r;
+            
+            }
+        };
 
         // ===============================================================
         // ==================== View Stuff ========================
         // ===============================================================
 
-        ElementSet.prototype.addAllElementsToADiv = function(parentID) {
+        ElementSet.prototype.addAllElementsToADiv = function(parentID, contents) {
             var elementSet = this;
             this.parentIDFromUI = parentID;
+            this.contents = contents;
 
             var parent = $("#" + parentID);
             parent.mouseleave(function() {
 
                 elementSet.varMouseDown = false;
             });
-
+			elementSet.processings = [];
             for (var i = 0; i < activeElements.length; i++) {
                 //if(this.elementQuantity[i] > 0){
-                this.createSpanForElement(parentID, activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i]);
+                this.createSpanForElement(parentID, activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i], i);
                 //}
             }
         };
@@ -496,80 +462,96 @@ define(["modules/models/elements", "jQueryUI"], function(Elements, $) {
         ElementSet.prototype.updateAllElementsInDiv = function() {
 
             for (var i = 0; i < activeElements.length; i++) {
-                this.updateSpanForElement(activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i]);
+                this.updateSpanForElement(activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i], i);
             }
         };
 
-        ElementSet.prototype.createSpanForElement = function(parentID, elementID, elementName, elementAmount) {
+        ElementSet.prototype.createSpanForElement = function(parentID, elementID, elementName, elementAmount, i) {
             var elementSet = this;
+            
+            var newCanvas = 
+			    $('<canvas/>',{'id':this.parentIDFromUI + "_" + elementID + "_canvas"})
+			    .width(20)
+			    .height(20);
+			//console.log(newCanvas);
+			
 
             var options = {
-                html : elementName + ": " + elementAmount + "<br>",
-                "class" : "element",
+                //html : elementName + ": " + elementAmount + "<br>",
+                //"class" : "element",
+                "class" : "elementCanvasHolder",
                 "id" : this.parentIDFromUI + "_" + elementID,
 
                 // ========= controller stuff ===========
                 mousedown : function() {
-
-                    //console.log("mouse down on div " + this.id);
-                    //console.log("var mousedown: true, siphoning: true, " + elementName);
-                    elementSet.varMouseDown = true;
-                    elementSet.siphoning = true;
-                    elementSet.siphonElement = elementName;
                 },
                 mouseup : function() {
-                    //console.log("mouse up on div " + this.id);
-                    //console.log("var mousedown: false, siphoning: false");
-                    elementSet.varMouseDown = false;
-                    elementSet.siphoning = false;
+                	elementSet.contents.setNewSelectedDivID(elementSet.parentIDFromUI + "_" + elementID, elementSet);
+                	elementSet.siphonElement = elementName;
+                	console.log(elementSet.siphonElement);
                 },
                 mouseleave : function() {
-                    //console.log("mouse leave on div " + this.id);
-                    //console.log("var siphoning: false ");
-                    elementSet.siphoning = false;
                 },
                 mouseenter : function() {
-                    if (elementSet.varMouseDown) {
-                        console.log("var siphoning: true, " + elementName);
-                        elementSet.siphoning = true;
-                        elementSet.siphonElement = elementName;
-                    }
+                    
                 }
             };
 
             var span = $('<span/>', options);
-            if (elementAmount <= 0) {
-                //span.hide();
-                span.css({
-                    opacity : .2
-                });
-                //console.log("hiding span " + elementName);
-            }
+            span.append(newCanvas);
+            span.css({
+                opacity : .2
+            });
+         
 
             var parent = $("#" + parentID);
             parent.append(span);
+			
+			var processing = new Processing(this.parentIDFromUI + "_" + elementID + "_canvas", function(g) {
 
+                g.size(30, 30);
+                g.colorMode(g.HSB, 1);
+                
+                g.id = i;
+                g.elementAmount = 2;
+                
+                g.draw = function() {
+                	g.background(1, 0, .7, .3);
+	                //g.background(250, 250, 250, .3);
+	                g.noStroke();
+	                g.fill(.1*g.id, 1, 1);
+	                
+                	var element = g.elementAmount;
+                	if(elementAmount <= 2) {
+                		//console.log("*** " + g.id + ": " + elementAmount);
+                		element = 2;
+                	}
+                	var radius = 4 * Math.log(element);
+                	//console.log("rad: " + radius);
+                	//utilities.debugOutput("Rad " + elementID + ": " + radius);
+                	g.ellipse(15, 15, radius, radius);
+                };
+
+			});
+			elementSet.processings.push(processing);
+			 
         };
+        
+        ElementSet.prototype.placeInUniverseFromInventory = function() {
+        	// FIND A TARGET
+        	//console.log(this);
+        	utilities.debugOutput("SIPHONING...? " + this.siphonElement);
+			stellarGame.touch.activeTool.elements.siphonOneByName(this, this.siphonElement, .01);
+			
+        };
+        
 
-        ElementSet.prototype.updateSpanForElement = function(elementID, elementName, elementAmount) {
+        ElementSet.prototype.updateSpanForElement = function(elementID, elementName, elementAmount, i) {
             var span = $("#" + this.parentIDFromUI + "_" + elementID);
-            span.html(elementName + ": " + elementAmount + "<br>");
-
-            //utilities.debugOutput("elementSet update this.siphoning/siphonElements: " + this.siphoning + ", " + this.siphonElements);
-
-            if (elementAmount <= 0) {
-                //span.hide();
-                span.css({
-                    opacity : .2
-                });
-                //console.log("hiding span " + elementName);
-            } else {
-                //span.show();
-                span.css({
-                    opacity : 1
-                });
-                //console.log("showing span " + elementName);
-            }
+            //span.html(elementName + ": " + elementAmount + "<br>");
+			//utilities.debugOutput(i+ " eS: " + elementAmount);
+			this.processings[i].elementAmount = elementAmount;
+			
 
         };
 

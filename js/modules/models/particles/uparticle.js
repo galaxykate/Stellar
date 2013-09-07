@@ -199,6 +199,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
             // Give this object a bunch of elements
             initAsElementContainer : function() {
+            	//console.log(this.idNumber + " initAsElementContainer");
                 this.elements = new ElementSet(this);
             },
 
@@ -232,7 +233,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 var g = context.g;
                 //var h = (this.idNumber * .212 + .3) % 1;
                 if (this.touchHeld) {
-
                     this.idColor.stroke(g, .2, 1);
                     g.noFill();
                     g.strokeWeight(5);

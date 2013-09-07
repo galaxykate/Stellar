@@ -9,7 +9,7 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
 
         var Popup = Class.extend({
 
-            init : function(parentString) {
+            init : function(parentString, text) {
 				//console.log("Init a popup!!!");
 				this.states = [];
 				this.transitions = [];
@@ -18,17 +18,66 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
 				this.view = new PopupView(parentString);
 				this.controller = new PopupController();
 				this.activeState = null;
-				this.view.createPopupDiv(0, 0, 0, 0);
+				this.view.createPopupDiv(text, 0, 0, 0, 0);
 				this.hasCloseDiv = false;
             	
             },
             
             addContents : function(name, goodies) {
             	goodies.setParentDivID(this.view.divID);
+            	goodies.parentPopup = this;
             	//console.log("goodies! ");
             	//console.log(goodies);
             	this.contents[name] = goodies;
+            	//if(this.contentNames.length > 0) this.view.createSpacerSpan();
             	this.contentNames.push(name);
+            },
+            
+            addNullSelectionTool : function() {
+            	var popup=this;
+            	var nullID = this.view.divID + "_nullSelection";
+            	var newCanvas = 
+				    $('<canvas/>',{'id':nullID+ "_canvas"})
+				    .width(20)
+				    .height(20);
+				
+	            var options = {
+	                "class" : "elementCanvasHolder",
+	                "id" : nullID,
+	
+	                // ========= controller stuff ===========
+	                mouseup : function() {
+	                	popup.setNewSelectedDivID(nullID);
+	                },
+	            };
+	
+	            var span = $('<span/>', options);
+	            span.append(newCanvas);
+	            span.css({
+	                opacity : .2
+	            });
+	
+	            var parent = $("#" + this.view.divID);
+	            parent.append(span);
+				
+				var processing = new Processing(nullID + "_canvas", function(g) {
+	
+	                g.size(30, 30);
+	                g.colorMode(g.HSB, 1);
+	                
+	                
+	                g.draw = function() {
+	                	g.background(1, 0, .7, .3);
+		                g.stroke(1, .7, .5);
+		                g.strokeWeight(2);
+		                g.noFill();
+		                g.ellipse(15, 15, 25, 25);
+		                g.line(28, 2, 2, 28);
+	                };
+	
+				});
+				this.processing = processing;
+				popup.setNewSelectedDivID(nullID);
             },
             
             
@@ -112,7 +161,40 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
             			this.contents[this.contentNames[i]].update();
             		}
             	}
+            	
+            	if(stellarGame.touch.pressed && this.selectedDivID !== undefined && this.selectedObj !== undefined
+            		&& this.selectedObj.placeInUniverseFromInventory !== undefined){
+            		utilities.debugOutput("Selected Div " + this.selectedDivID);
+            		//console.log(this.selectedFunc);
+            		this.selectedObj.placeInUniverseFromInventory();
+            	}
+            	
             },
+            
+            flash : function() {
+            	//console.log("FLASHY FLASH");
+            	this.view.highlightDiv(this.view.divID, this.states[this.activeState].opacity);
+            },
+            
+            setNewSelectedDivID : function(id, obj){
+            	if(this.selectedDivID !== undefined){
+            		var oldDiv = $("#" + this.selectedDivID);
+            		oldDiv.css({
+	                    opacity : .2
+	                });
+            	}
+            	var newDiv = $("#" + id);
+            	newDiv.css({
+                    opacity : 1
+                });
+                this.selectedDivID = id;
+                this.selectedObj = obj;
+            },
+            
+            setNullDivID : function(){
+            	var nullID = this.view.divID + "_nullSelection";
+            	this.setNewSelectedDivID(nullID);
+            }
             
             
         });

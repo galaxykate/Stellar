@@ -23,9 +23,10 @@ define(["inheritance"], function(Inheritance) {
 
             recalculate : function() {
                 // Add up all the weights
-                this.totalWeight = 0;
+                var table = this;
+                table.totalWeight = 0;
                 $.each(this.options, function(index, option) {
-                    this.totalWeight += option.weight;
+                    table.totalWeight += option.weight;
                 });
             },
 

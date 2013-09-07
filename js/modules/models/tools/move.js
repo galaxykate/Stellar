@@ -32,10 +32,21 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
                 // find the first object that accepts dust
                 var target = undefined;
+                var dropTarget = undefined;
+                var pickUpTarget = undefined;
+                var playerInventory = uiManager.getPlayerInventory();
                 for (var i = 0; i < touch.overObjects.length; i++) {
+                	if(playerInventory.selectedObj !== undefined && playerInventory.selectedObj.type === "critter"
+                	  && touch.overObjects[i].acceptsCritters){
+                	  	dropTarget = touch.overObjects[i];
+                	  	break;
+                	}
                     if (touch.overObjects[i].acceptsDust) {
                         target = touch.overObjects[i];
                         break;
+                    }
+                    if (touch.overObjects[i].pickupable) {
+                        pickUpTarget = touch.overObjects[i];
                     }
 
                 }
@@ -45,18 +56,37 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                     console.log("Feeding dust to: ");
                     console.log(target);
                     target.feedDust(touch, tool);
+                } else if (dropTarget){
+                	// Drop target is put first, if there is one
+                	console.log("Found something to drop: ");
+                	console.log(dropTarget);
+                	playerInventory.selectedObj.putDownOnStar(playerInventory, dropTarget);
+                	
+                	
+                } else if (pickUpTarget){
+                	// All objects that go in the inventory must have a .pickUp() public function
+                	console.log("Found something to pick up: ");
+                	console.log(pickUpTarget);
+                	
+                	playerInventory.flash();
+                	pickUpTarget.pickUp(playerInventory.contents["playerCritters"]);
 
+                } else if (playerInventory.selectedObj !== undefined && playerInventory.selectedObj.type === "critter") {
+                	// If there is no drop target, but we have a critter selected, put it in the world
+                	playerInventory.selectedObj.putDownInUniverse(playerInventory, touch);
+                } else {
+                    console.log("No object touched: sending dust to inventory");
                     // If there's enought dust in here
-                    if (tool.elements.totalMass > minDustMass) {
+                    //if (tool.elements.totalMass > minDustMass) {
 
                         // Transfer 100% of the elements to the new popup Inventory!
                         var playerInventory = uiManager.getPlayerInventory();
-
+						if(tool.elements.totalMass > 0) playerInventory.flash();
                         tool.elements.transferTo(playerInventory.contents["playerElements"].elementsHolder, 1);
+                        
                         playerInventory.contents["playerElements"].elementsHolder.updateAllElementsInDiv();
-                    }
-                } else {
-                    console.log("No object touched: sending dust to inventory");
+                        
+                    //}
                 }
 
             },
@@ -68,15 +98,28 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
             onDrag : function(touch) {
                 var tool = this;
-                this.moveWithOffset(touch);
+                var target = undefined;
+                
 
                 $.each(touch.overObjects, function(index, obj) {
 
                     utilities.touchOutput("Siphon " + obj);
                     if (obj.siphonable)
                         tool.elements.siphon(obj.elements, 1);
-
+                        
+					if (touch.overObjects[index].acceptsDust ||
+						touch.overObjects[index].pickupable) {
+                        target = touch.overObjects[index];
+                    }
                 });
+                
+                //if(target === undefined && touch.overObjects.length > 0) target = touch.overObjects[0];
+                
+                if (target) {
+                	target.hover = true;
+                }
+                
+                this.moveWithOffset(touch);
 
             },
             drawCursor : function(g, p, scale) {

@@ -19,5 +19,4 @@ var settings = {
     // Setting very high will ensure stars reach full supernova state
     starTempCalcScaler : 10,
 
-
 };
