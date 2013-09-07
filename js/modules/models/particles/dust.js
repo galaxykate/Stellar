@@ -28,7 +28,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "up
                 this._super(context);
                 var g = context.g;
                 /* // Turning off dust background circles because it feels unnecessary
-                if (context.mode.index <= 2) {
+                if (context.LOD.index <= 2) {
                     if (stellarGame.drawDust) {
                         this.idColor.fill(g, -.8, .5);
                         g.noStroke();
@@ -42,7 +42,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "up
 
                 var g = context.g;
                 // Only draw for closest
-                if (context.mode.index <= 1) {
+                if (context.LOD.index <= 1) {
                     if (this.scale === undefined) {
                         this.scale = 1;
                     }

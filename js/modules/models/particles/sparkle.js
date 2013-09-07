@@ -17,7 +17,6 @@ define(["modules/models/vector", "uparticle", 'lifespan'], function(Vector, UPar
 			var lifespanUpdate = function(){
 				
 				sparkle.opacityOffset = sparkle.lifespan.figuredPctCompleted * (-sparkleMaxOpacity);
-				//utilities.debugOutput("updating opacity: " + sparkle.opacityOffset);
 			};
 			
 			var lifespanOnEnd = function(){
@@ -76,7 +75,6 @@ define(["modules/models/vector", "uparticle", 'lifespan'], function(Vector, UPar
                 var starLevels = 2;
                 for (var j = 0; j < starLevels; j++) {
                     var jPct = j * 1.0 / (starLevels - 1);
-                    //utilities.debugOutput(this.idNumber + " / " + j + ": " + (.2 + jPct));
                     //g.fill(.65, (.3 - .3 * jPct), 1, this.baseOpacity + this.opacityOffset + jPct);
                     this.color.fill(g, (.6 - .3 * jPct), this.baseOpacity + this.opacityOffset + jPct);
                     g.beginShape();

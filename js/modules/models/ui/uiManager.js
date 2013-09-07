@@ -21,7 +21,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
         function makeInventoryPopup() {
         	playerInventory = new Popup("#universe");
         	
-	        var universeHeight = gameView.universeView.dimensions.height;
+	        var universeHeight = screenResolution.height;
 	        
 	        playerInventory.addState("closed", 0, 0, 20, universeHeight, 0.1);
 	        playerInventory.addState("open", 0, 0, 150, universeHeight, 1);
@@ -40,8 +40,8 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    function makeMainMenu() {
 	    	infoScreen = new Popup("#universe");
 	    	
-	    	var universeWidth = gameView.universeView.dimensions.width;
-	    	var universeHeight = gameView.universeView.dimensions.height;
+	    	var universeWidth = screenResolution.width;
+	    	var universeHeight =screenResolution.height;
 	    	
 	    	infoScreen.addState("closed", universeWidth-40, 0, 20, 20, 0.5);
 	    	infoScreen.addState("open", 20, 20, universeWidth-50, universeHeight-50, 1);

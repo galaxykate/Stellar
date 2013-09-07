@@ -8,7 +8,6 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
     var maxHistory = 50;
     return (function() {
 
-      
         // Attach mouse events to the world window
         var universeView, universe;
 
@@ -54,12 +53,10 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
         //=====
 
         var updateTouchPositions = function(p) {
+
             if (p === undefined) {
                 p = touch.screenPosition;
             }
-
-            var w = universeView.dimensions.width;
-            var h = universeView.dimensions.height;
 
             // If the position is updated
             // set the last positions to the current position;
@@ -74,7 +71,8 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
             // where is the plane position?  Project that back so that the screen position has depth
 
             universeView.projectToPlanePosition(touch.screenPosition, touch.planePosition);
-            universeView.convertToScreenPosition(touch.planePosition, touch.screenPosition);
+            // Convert the plane position to the screen position DOESN'T WORK!
+            //  universeView.convertToScreenPosition(touch.planePosition, touch.screenPosition);
 
             // Set the offsets
             touch.screenOffset.setToAddMultiple(touch.screenPosition, 1, touch.screenLast, -1)
@@ -85,10 +83,9 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
             touch.planeCenterOffset.setToDifference(universeView.camera.position, touch.planePosition);
 
             touch.screenPct.setTo(touch.screenPosition);
-            touch.screenPct.x /= w;
-            touch.screenPct.y /= h;
+            touch.screenPct.x /= screenResolution.width * .5;
+            touch.screenPct.y /= screenResolution.height * .5;
             touch.screenPct.z = 0;
-            utilities.touchOutput("ScreenPct: " + touch.screenPct.toString(2) + " w: " + w + " h: " + h);
 
             // Add to the history
             touch.historyIndex = (touch.historyIndex + 1) % maxHistory;
@@ -97,16 +94,16 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
         };
 
         var toScreenPosition = function(p) {
-            var w = universeView.dimensions.width;
-            var h = universeView.dimensions.height;
-            return new Vector(p.x - w / 2, -p.y + h / 2);
+            var p2 = new Vector(p);
+            p2.sub(touch.center);
+            return p2;
         };
 
         var initTouchFunctions = function() {
 
             // Mousewheel zooming
-            $("body").mousewheel(function(event, delta) {
-             
+            $("#universe_canvas").mousewheel(function(event, delta) {
+
                 var zoomCurrent = universeView.camera.zoom;
                 universeView.camera.setZoom(zoomCurrent + delta * .003);
                 event.preventDefault();
@@ -115,24 +112,30 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
 
             // Clear the touch output and get the objects/regions that it's over
             var updateTouchContext = function() {
-                utilities.clearTouchOutput();
-
-                utilities.touchOutput("Last action: " + touch.lastAction);
-                utilities.touchOutput("Current Tool: " + touch.activeTool);
-                utilities.touchOutput("Last : " + touch.lastActionOutput);
 
                 // Get the objects that the cursor is over
                 touch.overObjects = universeView.getTouchableAt(touch.planePosition);
 
                 // Get the regions that the cursor is over
                 touch.region = universe.getRegion(touch.planePosition);
-                utilities.touchOutput(touch.overObjects);
+            };
+
+            var outputTouch = function() {
+                debugTouch.output("Last action: " + touch.lastAction);
+                debugTouch.output("Current Tool: " + touch.activeTool);
+                debugTouch.output("Last : " + touch.lastActionOutput);
+
+                debugTouch.outputArray(touch.overObjects);
+                debugTouch.output("Touch pos: " + touch.screenPosition);
+                debugTouch.output("Touch pct: " + touch.screenPct.toString(2));
+                
+                debugTouch.output("Plane pos: " + touch.planePosition);
             };
 
             var dragCount = 0;
             // Move the primary touch/mouse to this positon
             var touchDrag = function(p) {
-                utilities.touchOutput("drag count : " + dragCount);
+                debugTouch.clear();
 
                 if (touch.pressed) {
 
@@ -141,7 +144,6 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
                         dragCount++;
                         if (dragCount > 3) {
                             touch.dragging = true;
-                            console.log("Dragging set to " + touch.dragging);
                         }
                     }
 
@@ -152,14 +154,15 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
 
                         updateTouchContext();
 
-
                         if (touch.activeTool)
                             touch.activeTool.touchDrag(touch);
                     }
                 }
+                outputTouch();
             };
 
             var touchDoubletap = function(p) {
+                debugTouch.clear();
                 if (p !== undefined) {
                     updateTouchPositions(p);
                 }
@@ -172,10 +175,13 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
                     universeView.camera.focusOn(touch.overObjects[0]);
                 } else
                     console.log("CLICKED NOTHING");
+
+                outputTouch();
             };
 
             var touchUp = function(p) {
-                console.log("TOUCH UP");
+                debugTouch.clear();
+
                 updateTouchContext();
 
                 touch.dragging = false;
@@ -188,9 +194,12 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
                     touch.activeTool.touchUp(touch);
                 }
                 dragCount = 0;
+
+                outputTouch();
             };
 
             var touchDown = function(p) {
+                debugTouch.clear();
                 updateTouchContext();
                 touch.pressed = true;
                 touch.lastPressed.setTo(p)
@@ -200,6 +209,8 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
                 }
                 dragCount = 0;
 
+                outputTouch();
+
             };
 
             // Bind these events to hammer actions
@@ -207,7 +218,9 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
             var eventToScreenPos = function(ev) {
                 var p = new Vector(ev.gesture.center.pageX, ev.gesture.center.pageY);
                 var relPos = pagePositionToRelativePosition(universeDiv, p);
-                return toScreenPosition(relPos);
+                var screenPos = toScreenPosition(relPos);
+
+                return screenPos;
             };
 
             var hammertime = universeDiv.hammer();
@@ -223,6 +236,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
                 var p = eventToScreenPos(ev);
                 touch.lastAction = "doubleclick";
                 touch.lastActionOutput = p;
+
                 touchDoubletap(p);
 
             });
@@ -231,6 +245,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
                 var p = eventToScreenPos(ev);
                 touch.lastAction = "drag";
                 touch.lastActionOutput = p;
+
                 touchDrag(p);
 
             });
@@ -253,13 +268,14 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
 
         var setUniverseView = function(view) {
             universeView = view;
-            touch.center.setTo(view.dimensions.width / 2, view.dimensions.height / 2);
+            touch.center.setTo(screenResolution.width / 2, screenResolution.height / 2);
 
             touch.setoUniversePosition = universeView.setoUniversePosition;
 
         };
 
         var setUniverse = function(u) {
+            console.log("SET UNIVERSE");
             universe = u;
             // set the universe touch marker to follow the plane position
             universe.touchMarker.position = touch.planePosition;
@@ -294,7 +310,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
                     universeView.camera.setZoom(ui.value);
                 }
             });
-            
+
             universeView.camera.setZoom(zoomDefault);
 
             var rotationDefault = .2;

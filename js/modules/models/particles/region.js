@@ -67,18 +67,23 @@ define(["inheritance", "modules/models/vector", "kcolor", "uparticle"], function
             generate : function(universe) {
                 this.generated = true;
 
-                var count = Math.random() * 4;
+                var count = 80;
                 for (var i = 0; i < count; i++) {
-                    var r = 10 + 60 * Math.pow(i, .7);
+                    var r = 10 + 60 * Math.pow(i, .6);
                     var theta = 1.6 * Math.pow(i, .7);
 
                     var objType = universe.spawnTable.selectOne();
                     var obj = new objType();
 
-                    obj.position.setTo(this.center);
-                    obj.position.addPolar(r, theta);
+                    var p = new Vector(this.center);
+                    p.addPolar(r, theta);
 
-                    universe.spawn(obj);
+                    if (this.contains(p)) {
+
+                        obj.position.setTo(p);
+obj.idColor = this.idColor;
+                        universe.spawn(obj);
+                    }
                 }
 
             },
@@ -128,7 +133,7 @@ define(["inheritance", "modules/models/vector", "kcolor", "uparticle"], function
                     //   region.points.push(new Vector(vb.x, vb.y));
                 });
             },
-            
+
             drawBackground : function(context) {
                 this._super(context);
             },

@@ -1,52 +1,41 @@
 body {
-	scroll:hidden;
+	scroll: hidden;
+	background-color:rgba(55, 100, 155, 1);
+	background-image:url('img/ipad-template-horiz.png');
+	background-position: left -140px top -220px;
+	background-repeat:no-repeat;
+}
+.screen_size {
+	width: 1024px;
+	height: 768px;
+
 }
 
 #app {
 	z-index: 0;
+	left: 45px;
+		top: 30px;
 	position: relative;
-}
-
-
-#giant_overlay {
-	z-index: 100;
-	position: relative;
-}
-
-#controls {
-	z-index: 50;
-	position: relative;
-	width: 600px;
-	height: 50px;
-	float: left;
-	background-color: rgba(230, 255, 250, 1);
 }
 
 #universe {
 	z-index: 20;
 	position: relative;
 	float: left;
-	width: 620px;
-	height: 420px;
 	overflow-y: scroll;
 	overflow-x: hidden;
-	
 	background-color: rgba(50, 255, 90, 1);
 }
 
 #universe_canvas {
 	z-index: 21;
 	position: absolute;
-	width: 600px;
-	height: 400px;
 	background-color: rgba(50, 255, 90, 1);
 }
 
 #star_overlay_holder {
 	z-index: 22;
 	position: absolute;
-	width: 600px;
-	height: 400px;
 	overflow: hidden;
 	pointer-events: none;
 }
@@ -58,41 +47,50 @@ body {
 	height: 40px;
 	border-radius: 90px;
 	border: 2px solid rgba(255, 255, 255, 1);
-	background-color: rgba(150, 190, 250, .4);
 }
 
-#debug_controls {
+#overlay_panels {
+	overflow: hidden;
+	z-index: 35;
+	position: absolute;
+	pointer-events: none;
+}
+
+.slideout_panel {
+	transition: .2s ease-in-out;
 	z-index: 40;
-	position: relative;
-	background-color: rgba(155, 155, 155, 1);
-	width: 300px;
-	height: 400px;
+	position: absolute;
+	background-color: rgba(215, 235, 255, .4);
 	float: left;
-	margin: 2px;
+	padding: 8px;
+	border: 2px solid rgba(255, 255, 255, .6);
+	box-shadow: 2px 2px 5px #000000;
+	border-radius: 15px;
+	pointer-events: auto;
 }
 
-#debug_output {
+.dev_panel {
+	background-color: rgba(125, 185, 255, .5);
+}
+
+.output_pane {
+	height: 45%;
+	font-size: 75%;
+}
+
+.slideout_pane {
 	z-index: 42;
 	position: relative;
-	background-color: rgba(155, 255, 155, 1);
-	width: 98%;
-	height: 250px;
+	background-color: rgba(255, 255, 255, .3);
+	box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
 	float: left;
+	width: 90%;
 	padding: 10px;
 	margin: 2px;
 	overflow: auto;
 }
 
-#touch_output {
-	z-index: 42;
-	position: relative;
-	background-color: rgba(155, 255, 155, 1);
-	width: 98%;
-	height: 200px;
-	float: left;
-	padding: 10px;
-	margin: 2px;
-	overflow: auto;
+.slideout_pane {
 }
 
 .ui_box {
@@ -108,36 +106,6 @@ body {
 	font-family: "Trebuchet MS", Helvetica, sans-serif;
 }
 
-.palette {
-	z-index: 56;
-	position: static;
-	padding: 5px;
-	width: 200px;
-	height: 25px;
-	transition: all 0.22s;
-	overflow: hidden;
-}
-.palette:hover {
-
-	height: 300px;
-}
-
-.palette_button {
-	float: left;
-	width: 80px;
-	margin: 2px;
-	height: 20px;
-	background-color: rgba(100, 105, 110, .6);
-	border-radius: 10px;
-	border: 2px solid rgba(255,255, 255, 1);
-	box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
-}
-
-.palette_button:hover {
-	background-color: rgba(160, 170, 190, 1);
-	box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
-}
-
 .nav_slider {
 	display: inline-block;
 	width: 8px;
@@ -149,7 +117,7 @@ body {
 	top: 10px;
 	width: 30px;
 	height: 140px;
-	right: 5px;
+	left: 170px;
 	position: absolute;
 	z-index: 25;
 }

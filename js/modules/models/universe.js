@@ -19,24 +19,26 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             this.touchMarker = new particleTypes.UParticle();
             this.touchMarker.name = "Touch Marker";
             this.touchMarker.drawMain = function(context) {
-                var g = context.g;
-                g.fill(.55, 1, 1);
-                g.noStroke();
-                g.ellipse(0, 0, 20, 20);
-                g.stroke(.55, 1, 1);
-                g.strokeWeight(1);
-                g.noFill();
-                g.ellipse(0, 0, 50, 50);
+                if (stellarGame.options.drawTouchMarker) {
+                    var g = context.g;
+                    g.fill(.55, 1, 1);
+                    g.noStroke();
+                    g.ellipse(0, 0, 120, 120);
+                    g.stroke(.55, 1, 1);
+                    g.strokeWeight(1);
+                    g.noFill();
+                    g.ellipse(0, 0, 150, 150);
+                }
             };
 
             this.makeBackgroundStars();
             this.makeUniverseTree();
-            this.generateStartRegion();
+            this.generateStartRegions();
 
             this.camera = new particleTypes.Camera();
             this.spawn(this.camera);
 
-            //      this.spawn(this.touchMarker);
+            this.spawn(this.touchMarker);
         },
 
         // Make a quad tree for the universe
@@ -68,7 +70,6 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             var t = stellarGame.time.universeTime;
             g.noStroke();
             for (var i = 0; i < backgroundLayers; i++) {
-                utilities.debugOutput("BG Stars: " + backgroundStars[i].length);
 
                 for (var j = 0; j < backgroundStars[i].length; j++) {
                     var camera = context.universeView.camera;
@@ -174,7 +175,6 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
             // Does the activeObjects list contain the camera?
             var cameraActive = $.inArray(this.camera, activeObjects);
-            utilities.debugOutput("Camera active " + cameraActive);
             if (cameraActive < 0)
                 activeObjects.push(this.camera);
 
@@ -216,13 +216,13 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
         //=======================================================
         //=======================================================
         // Generating regions
-        generateStartRegion : function() {
+        generateStartRegions : function() {
             // Make lots of region centers
             var universe = this;
             universe.regions = [];
             universe.regionCenters = [];
             var count = 10;
-            var spacing = 400;
+            var spacing = 800;
             for (var i = 0; i < count; i++) {
                 for (var j = 0; j < count; j++) {
                     var wiggleX = spacing * 1 * Math.sin(i + j + Math.random(30));
@@ -255,58 +255,6 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
                 region.createFromCell(cell);
             });
-
-        },
-
-        // Is this region on screen for the first time?
-        generateRegion : function(region) {
-
-            // Pick some random locations in the region
-            var density = .006;
-            var count = Math.ceil(region.w * region.h * density * density);
-            var w2 = region.w / 2;
-            var h2 = region.h / 2;
-            var p = new Vector();
-
-            var particles = [];
-            for (var i = 0; i < count; i++) {
-
-                p.setTo(utilities.random(-w2, w2) + region.center.x, utilities.random(-h2, h2) + region.center.y);
-
-                //obj = new particleTypes.UParticle();
-                if (settings.user == "") {
-
-                } else {
-                    var obj;
-                    if (Math.random() > .8) {
-                        obj = new particleTypes.Trailhead();
-                    } else if (Math.random() > .2) {
-                        obj = new particleTypes.Star();
-                    }
-                    //else {
-                    //  obj = new particleTypes.Critter();
-                    //}
-
-                    obj.position.setTo(p);
-                    this.spawn(obj);
-                }
-            }
-
-            //Spawn springs
-            /*
-             for (var i = 0; i < count; i++) {
-             var offset = Math.ceil(Math.random() * (count - 1));
-             var offset2 = Math.ceil(Math.random() * (count - 1));
-             var p0 = particles[i];
-             var p1 = particles[(i + offset) % particles.length];
-             var p2 = particles[(i + offset2) % particles.length];
-             var spring = new particleTypes.Spring(p0, p1);
-             var spring2 = new particleTypes.Spring(p0, p2);
-
-             spawn(spring);
-             spawn(spring2);
-             }
-             */
 
         },
 

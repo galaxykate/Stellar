@@ -44,7 +44,6 @@ define(["inheritance", "modules/models/vector", "kcolor"], function(Inheritance,
             	var g = context.g;
             	var rad = this.baseRadius;
 				for(var i = this.depth -1; i >= 0; i--){
-					//utilities.debugOutput("Glow: " + rad);
 					rad = this.baseRadius + ((i/this.depth) * this.glowScale);
 					g.noStroke();
 					// i/this.depth gets an inner-fading effect that looks cool

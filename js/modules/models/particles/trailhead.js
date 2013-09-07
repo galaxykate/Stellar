@@ -43,7 +43,6 @@ define(["modules/models/vector", "uparticle", particleTypePath + "dust", particl
 
             drawMain : function(g, options) {
 
-            	//utilities.debugOutput(this.exploding);
             	if(this.exploding === false){
 	                this.idColor.fill(g, .9, 1);
 	                var t = stellarGame.time.universeTime;

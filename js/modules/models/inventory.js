@@ -34,6 +34,29 @@ define(["modules/models/elementSet", "kcolor", "modules/models/vector", "particl
                 inventory.addTool(addElementTool);
             });
 
+            var reactions = [{
+                input : {
+                    "hydrogen" : 2,
+                    "helium" : 1,
+                    "minTemp" : 1000,
+                },
+                output : {
+                    "gold" : 1,
+                    "adamantium" : 20,
+                    "heat" : 100,
+                }
+            }, {
+                input : {
+                    "carbon" : 2,
+                    "oxygen" : 1,
+                    "minTemp" : 5000,
+                },
+                output : {
+                    "iron" : 1,
+                    "heat" : -10000,
+                }
+            }];
+
             // Add heat and cold tools
             var heatTool = new toolTypes.Add(inventory, {
                 type : 'temperature',

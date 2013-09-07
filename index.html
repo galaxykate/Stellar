@@ -18,16 +18,10 @@
 	</head>
 	<body>
 		<div id="app">
-			<div id="controls">
-				<div id="options_panel" class="ui_box">
 
-				</div>
-			</div>
-
-			<div id="inventory"></div>
-			<div id="universe">
-				<canvas id="universe_canvas"></canvas>
-				<div id="star_overlay_holder"></div>
+			<div id="universe" class="screen_size">
+				<canvas id="universe_canvas" class="screen_size"></canvas>
+				<div id="star_overlay_holder" class="screen_size"></div>
 
 				<div id="nav_controls">
 					<div id="zoom_slider" class="nav_slider"></div>
@@ -38,16 +32,13 @@
 				</div>
 
 			</div>
-			<div id="debug_controls">
-				<div id="three_window"></div>
-				<div id="debug_output"></div>
-				<div id="touch_output"></div>
-				<div id="debug_objectcreationpalette">
+			<div id="overlay_panels" class="screen_size">
+				<div id="tuning_panel">
 
 				</div>
+				<div id="options_panel"></div>
 
 			</div>
-		</div>
 
 	</body>
 </html>

@@ -77,8 +77,7 @@ define(["modules/models/vector", "uparticle"], function(Vector, UParticle) {
                     g.ellipse(p.x + r * Math.cos(theta), p.y + r * Math.sin(theta), 2, 2);
                 }
 
-                utilities.debugArrayOutput(stellarGame.touch.overObjects);
-            },
+               },
             toString : function() {
                 return this.name;
             },

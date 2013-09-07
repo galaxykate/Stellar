@@ -17,16 +17,20 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
                 this.drawUntransformed = true;
 
                 // set some camera attributes
-                var width = settings.universeViewWidth;
-                var height = settings.universeViewHeight;
-                var VIEW_ANGLE = 45, ASPECT = width / height, NEAR = 0.1, FAR = 10000;
+                this.width = screenResolution.width;
+                this.height = screenResolution.height;
+                var VIEW_ANGLE = 45, ASPECT = this.width / this.height, NEAR = 0.001, FAR = 100000;
                 this.threeCamera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 
             },
 
+            setView : function(universeView) {
+                this.universeView = universeView;
+            },
+
             setZoom : function(value) {
                 value = utilities.constrain(value, tuning.minZoom, tuning.maxZoom);
-                this.distance = Math.pow(value, 3);
+                this.distance = Math.pow(value, 3) + .1;
                 this.zoom = value;
             },
 
@@ -81,9 +85,8 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
                 threeCamera.position.set(center.x + r * Math.cos(theta) * Math.cos(phi), center.y + r * Math.sin(theta) * Math.cos(phi), center.z + r * Math.sin(phi));
                 threeCamera.up = new THREE.Vector3(0, 0, 1);
                 threeCamera.lookAt(center);
-                
-                            utilities.debugOutput("ThreeCam pos " + threeCamera.position.x.toFixed(1)  + " " +  threeCamera.position.y.toFixed(1)  + " " +  threeCamera.position.z.toFixed(1) );
-    
+
+                utilities.debugOutput("ThreeCam pos " + threeCamera.position.x.toFixed(1) + " " + threeCamera.position.y.toFixed(1) + " " + threeCamera.position.z.toFixed(1));
 
                 threeCamera.updateMatrix();
                 // make sure camera's local matrix is updated
@@ -106,8 +109,8 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
 
                 // Calculate the quad points
                 var screenBorder = 20;
-                var width = settings.universeViewWidth;
-                var height = settings.universeViewHeight;
+                var quadWidth = this.width - screenBorder * 2;
+                var quadHeight = this.height - screenBorder * 2;
 
                 for (var i = 0; i < 2; i++) {
                     var xSide = i * 2 - 1;
@@ -115,15 +118,17 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
                         var ySide = j * 2 - 1;
 
                         // Calculate the intersection with the ground plane
-                        var x = (i - .5) * (width - screenBorder * 2);
-                        var y = (j - .5) * (height - screenBorder * 2);
-                        //  view.projectToPlanePosition(new Vector(x, y), camera.screenQuadCorners[i * 2 + j]);
+                        var x = (i - .5) * quadWidth;
+                        var y = (j - .5) * quadHeight;
+                        this.universeView.projectToPlanePosition(new Vector(x, y), camera.screenQuadCorners[i * 2 + j]);
                     }
                 }
                 // Swap 2 and 3
                 var temp = new Vector(camera.screenQuadCorners[2]);
                 camera.screenQuadCorners[2].setTo(camera.screenQuadCorners[3]);
                 camera.screenQuadCorners[3].setTo(temp);
+                debug.outputArray(camera.screenQuadCorners);
+                debug.outputArray(camera.width + "x" + camera.height);
 
             },
             zoomIn : function() {

@@ -7,8 +7,17 @@
 define(['inheritance', "processing", "modules/models/vector", "edge", "three"], function(Inheritance, PROCESSING, Vector, Edge, THREE) {
     console.log("Init universe view");
 
-    var getModeFromDistance = function(d) {
-        var divisions = [300, 350, 500, 1000];
+    var P_WIDTH = screenResolution.width;
+    var P_HEIGHT = screenResolution.height;
+    var SCREEN_BORDER = 20;
+
+    var threePosToString = function(threeScreen) {
+        return threeScreen.x.toFixed(2) + " " + threeScreen.y.toFixed(2) + " " + threeScreen.z.toFixed(2);
+
+    };
+
+    var getLODFromDistance = function(d) {
+        var divisions = [300, 350, 500, 900, 1200, 2000];
         for (var i = 0; i < divisions.length - 1; i++) {
             var start = divisions[i];
             var end = divisions[i + 1];
@@ -35,7 +44,6 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
 
     };
 
-    stellarGame.addOption("drawCameraQuad", false);
     var processing;
 
     var universe;
@@ -51,12 +59,6 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             console.log("Init View");
             this.universe = u;
 
-            this.dimensions = {
-                width : 600,
-                height : 400
-            };
-            this.screenBorder = 80;
-
             this.activeQuadrants = [];
             this.activeObjects = [];
 
@@ -69,7 +71,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
 
             // Initialize the universe view to use processing
             initProcessing = function(g) {
-                g.size(universeView.dimensions.width, universeView.dimensions.height);
+                g.size(P_WIDTH, P_HEIGHT);
 
                 g.colorMode(g.HSB, 1);
                 g.background(.45, 1, 1);
@@ -94,7 +96,6 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 var div = $('<div/>', {
                     'class' : 'star_overlay',
                 });
-                console.log(div);
 
                 div.css({
                     top : Math.round(Math.random() * 300) + "px",
@@ -107,14 +108,14 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
         },
 
         isOnScreen : function(p) {
-            var w = this.dimensions.width - (this.screenBorder * 2);
-            var h = this.dimensions.height - (this.screenBorder * 2);
+            var w = P_WIDTH - (SCREEN_BORDER * 2);
+            var h = P_HEIGHT - (SCREEN_BORDER * 2);
             return p.z > 0 && utilities.within(p.x, -w / 2, w / 2) && utilities.within(p.y, -h / 2, h / 2);
         },
 
         // Update according to the current time
         update : function(currentTime) {
-            utilities.clearDebugOutput();
+            debug.clear();
 
             // make sure that the ellapsed time is neither to high nor too low
             var time = this.time;
@@ -126,7 +127,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             stellarGame.time.universeTime = time.total;
 
             time.total = currentTime;
-            utilities.debugOutput("Update " + time.total.toFixed(2) + " fps: " + (1 / time.ellapsed).toFixed(2));
+            debug.output("Update " + time.total.toFixed(2) + " fps: " + (1 / time.ellapsed).toFixed(2));
 
             this.activeQuadrants = [];
 
@@ -136,7 +137,9 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             // Compile all the active objects
             this.activeObjects = [];
             var contentsArrays = [];
-            utilities.debugArrayOutput(this.activeQuadrants);
+            if (stellarGame.options.outputActiveQuads) {
+                utilities.debugArrayOutput(this.activeQuadrants);
+            }
 
             $.each(this.activeQuadrants, function(index, quad) {
                 contentsArrays[index] = quad.contents;
@@ -144,8 +147,16 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
 
             // Compile all the arrays of contents into a single array
             this.activeObjects = this.activeObjects.concat.apply(this.activeObjects, contentsArrays);
-            utilities.debugOutput("Simulating/drawing: " + this.activeObjects.length + " objects");
 
+            if (stellarGame.options.outputDisplayObjects) {
+                utilities.debugOutput("======================================");
+                utilities.debugOutput("updating " + this.activeObjects.length);
+                for (var i = 0; i < this.activeObjects.length; i++) {
+                    utilities.debugOutput(i + ": " + this.activeObjects[i]);
+
+                }
+                utilities.debugOutput("======================================");
+            }
             // Update the universe
             this.universe.update(time, this.activeObjects);
 
@@ -177,13 +188,12 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             var context = {
                 g : g,
                 universeView : this,
-                mode : getModeFromDistance(this.camera.orbitDistance),
+                LOD : getLODFromDistance(this.camera.orbitDistance),
                 angle : this.camera.orbitPhi,
             };
 
-            utilities.debugOutput(context.mode.index + ": " + context.mode.pct);
-
             // Draw eaach layer in order
+
             context.layer = "bg";
             this.drawLayer(context);
 
@@ -192,6 +202,13 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
 
             context.layer = "overlay";
             this.drawLayer(context);
+
+            if (stellarGame.options.drawActiveQuads) {
+                // Draw all the active quads
+                $.each(this.activeQuadrants, function(index, leaf) {
+                    leaf.drawLeaf(context);
+                });
+            }
 
             // draw the quad
             if (stellarGame.options.drawCameraQuad) {
@@ -261,22 +278,25 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
 
             $.each(this.activeObjects, function(index, obj) {
 
-                // figure out where this object is, and translate appropriately
-                g.pushMatrix();
+                // If this object should draw at all at this distance
+                    if (obj.minLOD === undefined || obj.minLOD >= context.LOD.index) {
+                    // figure out where this object is, and translate appropriately
+                    g.pushMatrix();
 
-                // convert into the screen positon
+                    // convert into the screen positon
 
-                view.convertToScreenPosition(obj.position, context.screenPos);
-                context.distanceScale = Math.pow(500 / screenPos.z, 1);
-                if (!obj.drawUntransformed && obj.position !== undefined) {
+                    view.convertToScreenPosition(obj.position, context.screenPos);
+                    context.distanceScale = Math.pow(500 / screenPos.z, 1);
+                    if (!obj.drawUntransformed && obj.position !== undefined) {
 
-                    g.translate(screenPos.x, screenPos.y);
-                    g.scale(context.distanceScale, context.distanceScale);
+                        g.translate(screenPos.x, screenPos.y);
+                        g.scale(context.distanceScale, context.distanceScale);
 
+                    }
+
+                    obj.draw(context);
+                    g.popMatrix();
                 }
-
-                obj.draw(context);
-                g.popMatrix();
             });
 
         },
@@ -287,7 +307,6 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
 
             var minDist = 40;
             // go through all the objects and find the closest (inefficient, but fine for now)
-            // utilities.debugArrayOutput(activeObjects);
 
             var length = this.activeObjects.length;
             $.each(this.activeObjects, function(index, obj) {
@@ -326,6 +345,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             // create a WebGL renderer, camera
             // and a scene
             var camera = this.camera;
+            camera.setView(this);
             camera.screenQuadCorners = [new Vector(0, 0), new Vector(0, 0), new Vector(0, 0), new Vector(0, 0)];
             camera.screenQuadEdges = [];
             for (var i = 0; i < 4; i++) {
@@ -335,16 +355,8 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             var threeCamera = this.camera.threeCamera;
             this.projector = new THREE.Projector();
 
-            camera.isInScreenQuad = function(p) {
-                // Go through all the segments
-                var setSide = 0;
-                for (var i = 0; i < 4; i++) {
-                    var angle = camera.screenQuadEdges[i].getAngleTo(p);
-                    utilties.debugOutput(angle);
-                }
-            };
-
         },
+
         createTestScene : function() {
             var scene, renderer, threeCamera;
 
@@ -364,7 +376,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             // start the renderer
 
             renderer = new THREE.WebGLRenderer();
-            renderer.setSize(WIDTH, HEIGHT);
+            renderer.setSize(P_WIDTH, P_HEIGHT);
 
             // attach the render-supplied DOM element
             $("#three_window").append(renderer.domElement);
@@ -442,14 +454,22 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
         drawShape : function(g, points) {
             var screenPos = new Vector();
             g.beginShape();
+
+            var screenPositions = "";
+            var s = "";
+
+            // Convert all the points to screen pos
             for (var i = 0; i < points.length; i++) {
-                this.convertToScreenPosition(points[i], screenPos);
-                screenPos.vertex(g);
-                var r = 300;
-                var theta = 2 * i * Math.PI / points.length;
-                // g.vertex(r * Math.cos(theta), r * Math.sin(theta));
+                var inFrontOfCamera = this.convertToScreenPosition(points[i], screenPos);
+                if (stellarGame.options.outputShapeDrawing) {
+                    screenPositions += screenPos;
+                    s += points[i];
+                }
+                if (inFrontOfCamera)
+                    screenPos.vertex(g);
             }
             g.endShape(g.CLOSE);
+
         },
         drawText : function(g, text, center, xOffset, yOffset) {
             var screenPos = new Vector();
@@ -469,20 +489,30 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             var threeVector = new THREE.Vector3();
             var d = p.getDistanceTo(this.camera.threeCamera.position);
 
+            var ray = Vector.sub(p, this.camera.threeCamera.position);
+            if (!this.camera.forward)
+                return false;
+
+            var angle = Vector.angleBetween(this.camera.forward, ray);
+
             p.cloneInto(threeVector)
             var threeScreen = this.projector.projectVector(threeVector, this.camera.threeCamera);
             var scale = .5;
-            screenPos.setTo(threeScreen.x * this.dimensions.width * scale, -threeScreen.y * this.dimensions.height * scale, d);
+            screenPos.setTo(threeScreen.x * P_WIDTH * scale, -threeScreen.y * P_HEIGHT * scale, d);
+
+            if (angle < 0)
+                return false;
+            return true;
         },
 
         projectToPlanePosition : function(screenPos, planePos) {
             // Calculate the intersection with the ground plane
             var camera = this.camera;
-            var sweep = .0415;
+            var sweep = .0215;
             var p = new Vector(camera.orbitPosition);
             var v = new Vector(0, 0, 0);
             var x = (screenPos.x);
-            var y = (screenPos.y);
+            var y = (-screenPos.y);
             v.addMultiple(camera.forward, 20);
             v.addMultiple(camera.up, sweep * y);
             v.addMultiple(camera.right, sweep * x);

@@ -6,7 +6,7 @@
 
 define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
     var quadrantCount = 0;
-    var maxLevels = 6;
+    var maxLevels = 7;
     var quadrantOffsets = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
     var quadrantIndices = [[0, 1], [3, 2]];
 
@@ -148,8 +148,10 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
             // Convert all these corners to screen position, and if any are on screen, return true
             var screenPos = new Vector();
             for (var i = 0; i < 4; i++) {
-                universeView.convertToScreenPosition(this.corners[i], screenPos);
-                if (universeView.isOnScreen(screenPos))
+                var inFrontOfCamera = universeView.convertToScreenPosition(this.corners[i], screenPos);
+                var onScreen = universeView.isOnScreen(screenPos);
+             
+                if (inFrontOfCamera && onScreen)
                     return true;
             }
 
@@ -178,29 +180,22 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
             g.strokeWeight(1);
             g.stroke(h, 1, 1, .3);
             g.noFill();
-            if (this.isOnScreen(context.universeView)) {
-                g.strokeWeight(2);
-                g.stroke(h, 1, 1);
-                if (this.level === maxLevels)
-                    g.fill(h, 1, 1);
-
-            }
 
             var r = this.radius - this.level * .2;
             context.universeView.drawShape(g, this.corners);
 
-            if (this.isOnScreen(context.universeView)) {
-                g.fill(1);
-                if (this.level === maxLevels) {
-                    
-                    context.universeView.drawText(g, this.toString(), this.center, 0, 0);
+        },
 
-                }
-            }
+        drawLeaf : function(context) {
+            var g = context.g;
+            g.fill(.5, 1, 1, .3);
+            context.universeView.drawShape(g, this.corners);
 
-            //
+            g.fill(.5, .1, 1);
+            context.universeView.drawText(g, this.toString(), this.center, 0, 0);
 
         },
+
         drawTree : function(g, options) {
             var h = (this.level * .231 + .1) % 1;
             var r = this.radius - this.level * 2;
@@ -264,7 +259,7 @@ define(["modules/models/vector", "inheritance"], function(Vector, Inheritance) {
 
         },
         toString : function() {
-            return "q" + this.idNumber + " " + this.quadrant + " " + this.center + " (lvl " + this.level + ")";
+            return "q" + this.idNumber;
         },
     });
 

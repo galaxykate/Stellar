@@ -199,8 +199,6 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             var lifespanUpdate = function() {
                 star.radius = startStarRadius - (lifespan.figuredPctCompleted * sizeToRemove);
-                //utilities.debugOutput("star radius: " + star.radius);
-                //utilities.debugOutput("% figured completed: " + lifespan.figuredPctCompleted);
                 //SNS.generateSomeSparkles(star, 3);
                 if (star.state !== star.states[4])
                     lifespan.abort();
@@ -216,8 +214,6 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             };
 
             var lifespanOnStart = function() {
-                //console.log("radius at start: " + startStarRadius);
-                //console.log("sizeToAdd: " + sizeToRemove);
 
             };
 
@@ -248,7 +244,9 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
         var Star = UParticle.extend({
 
             init : function(universe) {
+               
                 this._super(universe);
+                this.minLOD = 3;
                 this.name = UParticle.generateName();
 
                 this.initAsElementContainer();
@@ -286,7 +284,9 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 var g = context.g;
                 // Do all the other drawing
 
-                this.state.draw(g, this, context);
+                  if (context.LOD.index < 3) {
+              this.state.draw(g, this, context);
+}
 
                 g.noStroke();
                 if (this.deleted) {
@@ -297,28 +297,25 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.idColor.fill(g);
                 g.ellipse(0, 0, this.radius, this.radius);
 
-                if (stellarGame.drawFaces) {
-
+                if (stellarGame.options.drawFaces) {
                     this.face.draw(g);
-
                 }
 
-                // Not sure why you deleted this, Kate!!
-                //if (stellarGame.drawElements && this.elements) {
-                //	this.elements.draw(g, this.radius);
-                //}
+                if (stellarGame.options.drawElements && this.elements) {
+                    this.elements.draw(g, this.radius);
+                }
 
             },
 
             drawOverlay : function(context) {
                 this._super(context);
                 var g = context.g;
-                if (stellarGame.options.showStarNames) {
+                if (context.LOD.index < 3 && stellarGame.options.showStarNames) {
                     g.fill(1);
                     g.text(this.name, 0, context.distanceScale * this.radius + 10);
                 }
 
-                if (context.mode.index < 2) {
+                if (context.LOD.index < 2) {
                     if (this.elements) {
                         this.elements.draw(context.g, this.radius);
                     }
@@ -336,11 +333,6 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.temperature = this.density * this.elements.totalMass * settings.starTempCalcScaler;
                 //utilities.debugOutput("star " + this.idNumber + " temp " + this.temperature);
                 this.glow.update(this.radius);
-                this.debugOutput(this.state.name);
-                this.debugOutput(this.temperature);
-                this.debugOutput(this.elements.burning);
-                this.debugOutput(this.elements.heatGenerated);
-                this.debugOutput(this.elements.burntElementID);
 
                 //utilities.debugOutput("radius: " + this.radius);
 

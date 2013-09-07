@@ -106,13 +106,10 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
             
             update : function() {
             	// If a pop up's contents has an update function, update it!
-            	//utilities.debugOutput("(popup): " + this.contentNames.length);
             	
             	for(var i = 0; i < this.contentNames.length; i++) {
-            		//utilities.debugOutput("(popup): contents[" + i + "].update: " + this.contents[this.contentNames[i]].update);
             		if(this.contents[this.contentNames[i]].update !== undefined){
             			this.contents[this.contentNames[i]].update();
-            			//utilities.debugOutput("updating in popup");
             		}
             	}
             },

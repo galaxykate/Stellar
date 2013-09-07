@@ -88,22 +88,16 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
                 //this._super(time);
                 this.frontAngle = utilities.pnoise(0.1*time.total + (100*this.idNumber))*Math.PI*2;
                 
-                //console.log("num segments: " + this.numSegments);
                 this.backAngle = this.frontAngle - Math.PI;
                 this.tailSegments[0].setToPolar(this.radius, this.backAngle); 
                 
                 
                 for(var i = 1; i < this.numSegments; i++) {
-                	//console.log(i + ": " + this.tailSegments[i]);
-	            	//this.tailSegments[i].setTo(this.tailSegments[i-1].x, this.tailSegments[i-1].y);
+                	//this.tailSegments[i].setTo(this.tailSegments[i-1].x, this.tailSegments[i-1].y);
 	            	var connectSpot = new Vector(this.tailSegments[i-1].x, this.tailSegments[i-1].y);
 	            	connectSpot.addPolar(this.radius/(i+1)*2, this.backAngle);
 	            	this.tailSegments[i] = this.tailSegments[i].lerp(connectSpot, .1);
-	            	/*
-	            	if(this.idNumber == 22){
-	            		utilities.debugOutput(i + ": " + this.tailSegments[i]);
-	                	utilities.debugOutput(this.tailSegments[i-1]);
-	                }*/
+	            
 	            }
 	            
 	            

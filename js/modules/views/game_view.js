@@ -2,23 +2,56 @@
  * @author Kate Compton
  */
 
-// It's using a singleton pattern
+var debug, debugTouch;
+
+var screenResolution = {
+    width : 1024,
+    height : 768
+}
 
 define(["modules/views/universe_view"], function(universeView) {
-    return (function() {
 
-        console.log("Init game view");
-        // Private functions
+    var createOutput = function(divName) {
+        var div = $("#" + divName);
+        var outputLines = [];
+        var output = {
+            clear : function() {
+                div = $("#" + divName);
+                outputLines = [];
+                this.updateOutput();
+            },
 
-        function initializeUI() {
-        
+            add : function(line) {
+                outputLines.push(line);
+                div.append(line + "<br>");
+            },
+
+            output : function(line) {
+                outputLines.push(line);
+                div.append(line + "<br>");
+            },
+
+            outputArray : function(lines) {
+                outputLines = outputLines.concat(lines);
+                div.append(lines);
+            },
+
+            updateOutput : function() {
+                var htmlLines = "";
+                $.each(outputLines, function(index, line) {
+                    htmlLines += line + "<br>";
+                });
+                div.html(htmlLines);
+            }
         };
-        initializeUI();
+        return output;
 
-        return {
-        
-        };
-    })();
+    };
 
+    debug = createOutput("debug_output_pane");
+    debugTouch = createOutput("touch_output_pane");
+    return {
+        universeView : universeView
+    }
 });
 

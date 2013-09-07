@@ -21,14 +21,41 @@ var stellarGame = {
     },
 
     player : {
-       
+
     },
 
     options : {},
+    tunings : {},
 
     addOption : function(key, defaultValue) {
 
         this.options[key] = defaultValue;
+
+        // add a div for the checkbox
+        var div = $('<div/>', {
+            id : key + '_checkbox',
+            "class" : "option_checkbox_holder",
+            text : key
+        });
+
+        var checkbox = $('<input/>', {
+            type : "checkbox",
+            name : key,
+        });
+        checkbox.appendTo(div);
+        checkbox.prop('checked', defaultValue);
+
+        checkbox.change(function() {
+            stellarGame.options[key] = this.checked;
+        });
+
+        div.appendTo("#options_panel");
+
+    },
+
+    addTuning : function(key, defaultValue, min, max) {
+
+        this.tunings[key] = defaultValue;
 
         // add a div for the checkbox
         var div = $('<div/>', {
@@ -129,7 +156,6 @@ var utilities = {
     // Refines the simplex noise to be 0-1 rather than -1 to 1
     pnoise : function(x, y, z, w) {
         var result;
-        //utilities.debugOutput("x, y, z, w: " + x + ", " + y + ", " + z + ", " + w);
         // May want to add an extra parameter for the random seed
         if (w !== undefined) {
             result = utilities.noiseInstance.noise4D(x, y, z, w);

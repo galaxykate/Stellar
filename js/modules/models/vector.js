@@ -241,7 +241,15 @@ define(["three"], function(THREE) {
 
         Vector.dot = function(a, b) {
             return a.x * b.x + a.y * b.y + a.z * b.z;
-        }
+        };
+
+        Vector.polar = function(r, theta) {
+            return new Vector(r * Math.cos(theta), r * Math.sin(theta));
+        };
+
+        Vector.angleBetween = function(a, b) {
+            return Vector.dot(a, b) / (a.magnitude() * b.magnitude());
+        };
 
         return Vector;
     })();
