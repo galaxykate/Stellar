@@ -68,6 +68,10 @@ define(["inheritance", "modules/models/vector", "kcolor", "uparticle"], function
                 this.generated = true;
 
                 var count = Math.random() * 20 + 10;
+
+                if (this.isStartRegion)
+                    count = 0;
+
                 // used to be 4, made it more sparse
                 for (var i = 0; i < count; i++) {
                     var r = 10 + 60 * Math.pow(i, .6);
@@ -140,7 +144,8 @@ define(["inheritance", "modules/models/vector", "kcolor", "uparticle"], function
             },
 
             drawMain : function(context) {
-                if (stellarGame.options.drawRegions) {
+                if (context.LOD.index > 2) {
+
                     this._super(context);
                     var g = context.g;
 
@@ -159,8 +164,8 @@ define(["inheritance", "modules/models/vector", "kcolor", "uparticle"], function
 
                     context.universeView.drawShape(g, this.points);
                 }
-
             },
+
             drawOverlay : function(context) {
                 this._super(context);
             },

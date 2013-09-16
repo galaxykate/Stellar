@@ -16,7 +16,9 @@ var stellarGame = {
     },
 
     player : {
+        inventory : {
 
+        }
     },
 
     options : {},
@@ -150,6 +152,8 @@ var utilities = {
     // Takes up to 4 arguments and picks the correct 1D - 4D noise if those variables are defined
     // Refines the simplex noise to be 0-1 rather than -1 to 1
     pnoise : function(x, y, z, w) {
+        if (utilities.noiseInstance === undefined)
+            return 0;
         var result;
         // May want to add an extra parameter for the random seed
         if (w !== undefined) {
@@ -189,6 +193,7 @@ var utilities = {
 require.config({
     paths : {
         'three' : 'libs/three',
+        'raphael' : 'libs/raphael-min',
         'jQuery' : 'libs/jquery-1.10.1',
         'jQueryUI' : 'libs/jquery-ui',
         'jQueryUITouchPunch' : 'libs/jquery.ui.touch-punch',

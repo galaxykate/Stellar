@@ -2,17 +2,19 @@
  * @author Kate Compton
  */
 
-var debug, debugTouch;
+var debug, debugTouch, inspectionOutput;
 
 var screenResolution = {
     width : 1024,
     height : 768
 }
 
-define(["modules/views/universe_view", "modules/views/elements_widget"], function(universeView, ElementsWidget) {
+define(["modules/views/universe_view", "modules/views/elements_widget", "inheritance"], function(UniverseView, ElementsWidget, Inheritance) {
 
     var createOutput = function(divName) {
         var div = $("#" + divName);
+     
+        div.html("test");
         var outputLines = [];
         var output = {
             clear : function() {
@@ -32,8 +34,11 @@ define(["modules/views/universe_view", "modules/views/elements_widget"], functio
             },
 
             outputArray : function(lines) {
-                outputLines = outputLines.concat(lines);
-                div.append(lines);
+                var htmlLines = "";
+                $.each(lines, function(index, line) {
+                    htmlLines += line + "<br>";
+                });
+                div.append(htmlLines);
             },
 
             updateOutput : function() {
@@ -47,13 +52,20 @@ define(["modules/views/universe_view", "modules/views/elements_widget"], functio
         return output;
 
     };
-
-    var elementsWidget = new ElementsWidget($("#elements_pane"));
-
     debug = createOutput("debug_output_pane");
     debugTouch = createOutput("touch_output_pane");
-    return {
-        universeView : universeView
-    }
+    inspectionOutput = createOutput("inspection_output_pane");
+ 
+    var GameView = Class.extend({
+        init : function(universe) {
+            var elementsWidget = new ElementsWidget($("#elements_pane"));
+
+            elementsWidget.setActiveElement(undefined);
+
+            this.universeView = new UniverseView(stellarGame.universe);
+        }
+    });
+
+    return GameView;
 });
 

@@ -33,6 +33,7 @@ define(["modules/models/vector", "uparticle", 'lifespan'], function(Vector, UPar
 
             init : function(universe, parent, color) {
                 this._super(universe);
+                this.name = "sparkle" + this.idNumber;
 				this.scale = .4;
 				this.baseOpacity = .2;
 				this.maxOpacity = 1 + this.baseOpacity;

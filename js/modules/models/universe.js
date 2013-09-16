@@ -12,10 +12,11 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
         init : function() {
             backgroundStars = [];
 
-            stellarGame.player.idColor = new KColor(Math.random(), 1, 1);
+            stellarGame.universe = this;
+
             this.spawnTable = new ChanceTable();
-            this.spawnTable.addOption(particleTypes.Star, "star", 1);
-            this.spawnTable.addOption(particleTypes.Critter, "critter", 1);
+            this.spawnTable.addOption(particleTypes.Star2, "star2", 1);
+            //  this.spawnTable.addOption(particleTypes.Critter, "critter", 1);
 
             this.touchMarker = new particleTypes.UParticle();
             this.touchMarker.name = "Touch Marker";
@@ -35,6 +36,11 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             this.makeBackgroundStars();
             this.makeUniverseTree();
             this.generateStartRegions();
+
+            this.startStar = new particleTypes.Star2();
+            this.startStar.name = "Sol";
+            this.startStar.position.setTo(0, 0);
+            this.spawn(this.startStar);
 
             this.camera = new particleTypes.Camera();
             this.spawn(this.camera);
@@ -146,10 +152,13 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
         update : function(time, activeObjects) {
 
             var universe = this;
+            this.activeObjects = activeObjects;
             // Use the current tool
 
             stellarGame.time.universeTime = time.total;
             stellarGame.time.updateCount++;
+            debug.output("Touched: ");
+            debug.outputArray(stellarGame.touch.overObjects);
 
             // Get all the active objects that are regions
             this.activeRegions = _.filter(activeObjects, function(obj) {
@@ -177,39 +186,45 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             // Does the activeObjects list contain the camera?
             var cameraActive = $.inArray(this.camera, activeObjects);
             if (cameraActive < 0)
-                activeObjects.push(this.camera);
+                this.activeObjects.push(this.camera);
 
-            // Update the stars' evolutions at the current speed
-            // Need beginUpdate to happen first so that a star's temperature is calculated
-            if (stellarGame.options.simStarEvolution) {
-                $.each(activeObjects, function(index, obj) {
-                    if (obj.updateStarEvolution)
-                        obj.updateStarEvolution(time);
-                });
-            }
-
-            // Update all the particle physics
-            $.each(activeObjects, function(index, obj) {
-                obj.beginUpdate(time);
-            });
-
-            $.each(activeObjects, function(index, obj) {
-                obj.addForces(time);
-            });
-
-            $.each(activeObjects, function(index, obj) {
-                obj.updatePosition(time);
-            });
-
-            $.each(activeObjects, function(index, obj) {
-                obj.finishUpdate(time);
-            });
+            this.updatePhysics(time);
+            this.updateSimulation(time);
 
             uiManager.update();
             QuestManager.update();
 
+            this.cleanup();
+        },
+
+        // Activate some function for all the active objects
+        applyToActiveObjects : function(fxn, arg) {
+            $.each(this.activeObjects, function(index, obj) {
+                if (obj[fxn] !== undefined)
+                    obj[fxn](arg);
+            })
+        },
+
+        updatePhysics : function(time) {
+
+            // Update all the particle physics
+
+            this.applyToActiveObjects("beginUpdate", time);
+            this.applyToActiveObjects("addForces", time);
+            this.applyToActiveObjects("updatePosition", time);
+            this.applyToActiveObjects("finishUpdate", time);
+
+        },
+
+        updateSimulation : function(time) {
+            this.applyToActiveObjects("updateSimulation", time);
+
+        },
+
+        cleanup : function(time) {
             // Remove dead object, replace misplaced ones, etc
             this.quadTree.cleanup();
+            this.applyToActiveObjects("cleanup", time);
 
             initialUpdate = false;
         },
@@ -219,24 +234,35 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
         //=======================================================
         // Generating regions
         generateStartRegions : function() {
+            var startRegionDistance = 10000;
             // Make lots of region centers
             var universe = this;
             universe.regions = [];
             universe.regionCenters = [];
             var count = 10;
-            var spacing = 800;
+            var spacing = 700;
             for (var i = 0; i < count; i++) {
                 for (var j = 0; j < count; j++) {
                     var wiggleX = spacing * 1 * Math.sin(i + j + Math.random(30));
                     var wiggleY = spacing * 1 * Math.sin(i + j + 10 + Math.random(30));
+
                     var center = new Vector((i - count / 2) * spacing + wiggleX, (j - count / 2) * spacing + wiggleY);
+
                     var region = new particleTypes.Region(center);
                     universe.spawn(region);
                     universe.regions.push(region);
+                    if (center.magnitude() < startRegionDistance) {
+                        this.startRegion = region;
+                        region.isStartRegion = true;
+                        startRegionDistance = center.magnitude();
+                    }
                 }
             }
+
+            // Set the region center
             $.each(universe.regions, function(index, region) {
                 universe.regionCenters[index] = region.center;
+
             });
 
             var r = 80000;
@@ -256,6 +282,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
                 var cell = diagram.cells[voronoiId];
 
                 region.createFromCell(cell);
+
             });
 
         },

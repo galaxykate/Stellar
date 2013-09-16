@@ -16,6 +16,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "up
                 this._super(universe);
                 this.initAsElementContainer();
                 this.siphonable = true;
+                this.name = "dust" + this.idNumber;
 
                 if (parent !== undefined) {
                     this.parent = parent;

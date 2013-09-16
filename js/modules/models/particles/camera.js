@@ -21,7 +21,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
                 this.height = screenResolution.height;
                 var VIEW_ANGLE = 45, ASPECT = this.width / this.height, NEAR = 0.001, FAR = 100000;
                 this.threeCamera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
-
+                this.setZoom(1);
             },
 
             setView : function(universeView) {
@@ -30,27 +30,51 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
 
             setZoom : function(value) {
                 value = utilities.constrain(value, tuning.minZoom, tuning.maxZoom);
-                this.distance = Math.pow(value, 3) + .1;
+
+                this.distance = Math.pow(value, 3) + .01;
                 this.zoom = value;
+                debug.output("Zoom " + this.zoom);
             },
 
-            setZoomTarget : function(value) {
-                this.zoomTarget = value;
-                this.zoomTargetDistance = value - this.zoom;
+            setZoomTarget : function(zoomTarget) {
+                if (zoomTarget === undefined) {
+                    this.zoomTarget = undefined;
+
+                } else {
+                    this.zoomTarget = zoomTarget;
+                    this.zoomTarget.distanceDifference = zoomTarget.distance - this.zoom;
+
+                }
 
             },
 
-            focusOn : function(object) {
+            unfocus : function() {
+
                 var camera = this;
-                camera.focusObject = object;
-                camera.setTarget({
-                    position : object.position,
-                    onHit : function() {
+                camera.focusObject = undefined;
+                camera.setTarget(undefined);
 
-                    }
-                });
+                camera.setZoomTarget(undefined);
 
-                camera.setZoomTarget(.4);
+            },
+
+            focusOn : function(zoomTarget) {
+
+                var camera = this;
+                camera.focusObject = zoomTarget.target;
+
+                if (zoomTarget.target === undefined) {
+                    camera.setTarget(undefined);
+                } else {
+                    camera.setTarget({
+                        position : zoomTarget.target.position,
+                        onHit : function() {
+
+                        }
+                    });
+
+                    camera.setZoomTarget(zoomTarget);
+                }
 
             },
 
@@ -58,19 +82,22 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
                 //utilities.debugOutput("Camera pos: " + this.position);
                 this._super(time);
                 if (this.zoomTarget) {
-                    if (Math.abs(this.zoomTarget - this.zoom) < .02) {
+                    // close enough?
+                    var d = this.zoomTarget - this.zoom;
+                    if (Math.abs(d) < .5) {
                         this.setZoom(this.zoomTarget);
                         this.zoomTarget = undefined;
-                    } else
-                        this.setZoom(this.zoom + this.zoomTargetDistance * .02);
-
+                    } else {
+                        var z = this.zoom + this.zoomTarget.distanceDifference * .03;
+                        this.setZoom(z);
+                    }
                 }
 
                 // Set to the current orbit
                 var angle = -Math.PI / 2 - .1 - this.zoom;
-                this.setOrbit(300 + this.distance * 1000, this.rotation, Math.PI + angle);
+                this.setOrbit(100 + this.distance * 1000, this.rotation, Math.PI + angle);
 
-                //utilities.debugOutput("Focus on " + this.focusObject);
+                debug.output("Zoom " + this.zoom + " / " + this.zoomTarget);
             },
 
             setOrbit : function(r, theta, phi) {
@@ -85,7 +112,6 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
                 threeCamera.position.set(center.x + r * Math.cos(theta) * Math.cos(phi), center.y + r * Math.sin(theta) * Math.cos(phi), center.z + r * Math.sin(phi));
                 threeCamera.up = new THREE.Vector3(0, 0, 1);
                 threeCamera.lookAt(center);
-
 
                 threeCamera.updateMatrix();
                 // make sure camera's local matrix is updated
@@ -127,7 +153,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
                 camera.screenQuadCorners[2].setTo(camera.screenQuadCorners[3]);
                 camera.screenQuadCorners[3].setTo(temp);
                 debug.outputArray(camera.screenQuadCorners);
-                debug.outputArray(camera.width + "x" + camera.height);
+                debug.output(camera.width + "x" + camera.height);
 
             },
             zoomIn : function() {

@@ -5,7 +5,7 @@
 // Quests (also can be used as achievements)
 // To be imported and used by the questManager
 
-define(['modules/models/ui/uiManager', particleTypePath + "star"], function(uiManager, Star) {
+define(['modules/models/ui/uiManager', "modules/models/particles/star"], function(uiManager, Star) {
     return (function() {
         return [
         

@@ -275,7 +275,9 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.minLOD = 3;
                 this.name = UParticle.generateName();
 
+                this.initAsTouchable();
                 this.initAsElementContainer();
+                this.elements.fillElements(10, 200, .8);
 
                 this.state = states[2];
 
@@ -299,11 +301,23 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 this.glow = new Glow(this, 1, 20);
                 this.selection = new Glow(this, 1, 20, true, true);
                 this.selection.inverted = true;
+
+                this.excitement = {
+                    power : 0,
+                    dieoff : .3,
+                    animationTime : 0,
+                };
             },
 
             initFace : function() {
                 this.face = new Face.Face(this.idColor, this.idNumber);
             },
+
+            //==========================================================================
+            //==========================================================================
+            //==========================================================================
+            //==========================================================================
+            // Drawing
 
             drawBackground : function(context) {
                 if (stellarGame.options.drawStars) {
@@ -319,6 +333,11 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
                 this._super(context);
                 var g = context.g;
+
+                var p = Math.pow(this.excitement.power, 2);
+                var t = this.excitement.animationTime;
+                var excitementRadius = this.radius * (1 + .2*p * (1 + Math.cos(t*30)));
+
                 // Do all the other drawing
 
                 if (context.LOD.index < 3) {
@@ -332,7 +351,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
                 }
 
                 this.idColor.fill(g);
-                g.ellipse(0, 0, this.radius, this.radius);
+                g.ellipse(0, 0, excitementRadius, excitementRadius);
 
                 if (stellarGame.options.drawFaces) {
                     this.face.draw(g);
@@ -364,8 +383,31 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
 
             },
 
-            updateStarEvolution : function(time) {
-                updateDustBurning(this, time);
+            //==========================================================================
+            //==========================================================================
+            //==========================================================================
+            //==========================================================================
+            // Interactions
+
+            excite : function(maxPower) {
+                this.excitement.power = Math.max(maxPower, this.excitement.power);
+            },
+
+            //==========================================================================
+            //==========================================================================
+            //==========================================================================
+            //==========================================================================
+            // Updating
+
+            updateSimulation : function(time) {
+                if (stellarGame.options.simStarEvolution) {
+                    updateDustBurning(this, time);
+                }
+
+                var last = this.excitement.power;
+                this.excitement.power *= Math.pow(this.excitement.dieoff, time.ellapsed);
+                this.excitement.animationTime += this.excitement.power*time.ellapsed;
+
             },
 
             beginUpdate : function(time) {

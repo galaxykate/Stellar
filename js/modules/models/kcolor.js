@@ -27,9 +27,9 @@ define([], function() {
             return "hsb: " + this.h.toFixed(2) + " " + this.s.toFixed(2) + " " + this.b.toFixed(2) + " " + this.a.toFixed(2);
 
         };
-        
+
         KColor.prototype.clone = function() {
-        	return new KColor(this.h, this.s, this.b, this.a);
+            return new KColor(this.h, this.s, this.b, this.a);
         }
 
         KColor.prototype.constrainToUnit = function(v) {
@@ -37,9 +37,13 @@ define([], function() {
         };
 
         KColor.prototype.cloneShade = function(shade, fade) {
-            return this.use(function(h, s, b, a) {
-                return new KColor(this.h, this.s, this.b, this.a)
+            var clone;
+
+            this.use(function(h, s, b, a) {
+                clone = new KColor(h, s, b, a);
             }, shade, fade);
+
+            return clone;
         };
 
         // shade goes from -1 to 1, as does fade.
@@ -89,6 +93,16 @@ define([], function() {
         //=================================================================
         //=================================================================
         //=================================================================
+
+        KColor.prototype.toCSS = function() {
+            var rgb = this.toRGB();
+            var vals = "";
+            $.each(rgb, function(index, val) {
+                vals += Math.round(val) + ", ";
+            });
+            vals += "1";
+            return "rgba(" + vals + ")";
+        };
 
         // From the internet
         KColor.prototype.toRGB = function() {

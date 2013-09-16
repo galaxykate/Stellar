@@ -5,36 +5,31 @@
 // Organize the game
 // Singleton pattern from here: http://stackoverflow.com/questions/1479319/simplest-cleanest-way-to-implement-singleton-in-javascript
 
-
-define(['modules/views/game_view', 'modules/controllers/game_controller', 'modules/models/universe',  'modules/views/universe_view', 'modules/models/inventory', 'modules/models/ui/uiManager', 'modules/models/quests/questManager'], function(gameView, gameController, Universe, UniverseView, Inventory, uiManager, QuestManager) {
-
-    var game = {};
+define(['modules/views/game_view', 'modules/controllers/game_controller', 'modules/models/universe', 'modules/models/ui/uiManager', 'modules/models/quests/questManager', "modules/models/player"], function(GameView, GameController, Universe, uiManager, QuestManager, Player) {
 
     var startGame = function() {
         // Make this into a global object
-        
-        var universe = new Universe();
-        stellarGame.universe = universe;
+        console.log("Start game");
+        //============================================================
+        //============================================================
+        //============================================================
+        //============================================================
+        stellarGame.player = new Player();
 
-        game.view = gameView;
-        console.log("START GAME");
+        var universe = new Universe();
 
         // Hook the universe view to the universe, so it knows what to draw
-        var universeView = new UniverseView(universe);
-        gameView.universeView = universeView;
+        var gameView = new GameView();
 
         // Give the game controller access to the universe view so that it
         //  can find objects by screen position
-        gameController.universeController.setUniverseView(universeView);
-        gameController.universeController.setUniverse(universe);
-        gameController.universeController.init();
+        var gameController = new GameController();
+        
+       
 
-        game.inventory = new Inventory(universe);
-        game.inventory.createPaletteDiv($("#controls"));
-		
-		uiManager.init();
-		QuestManager.init();
-		
+        uiManager.init();
+        QuestManager.init();
+
         stellarGame.ready = true;
 
     };

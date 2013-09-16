@@ -27,12 +27,12 @@ define(["modules/models/vector", "uparticle", "kcolor"], function(Vector, UParti
 
             activate : function() {
                 console.log("activate " + this);
-                this.inventory.setActiveTool(this);
+                stellarGame.setActiveTool(this);
             },
 
             deactivate : function() {
                 console.log("deactivate " + this);
-                this.inventory.activateDefaultTool();
+                stellarGame.activateDefaultTool();
 
             },
 

@@ -68,7 +68,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 // this.velocity.addPolar(Math.random() * .3, Math.random() * 100);
 
-                this.initAsTouchable();
                 this.debugOutputLines = [];
 
                 // For ranges of surface temperatuers, visit https://en.wikipedia.org/wiki/Stellar_classification
@@ -79,6 +78,11 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 // Kelvin
 
                 this.lifespans = [];
+                this.excitement = {
+                    power : 0,
+                    dieoff : .9,
+                };
+
             },
 
             setRadius : function(r) {
@@ -116,6 +120,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             },
 
             setTarget : function(target) {
+               
                 this.target = target;
             },
 
@@ -164,15 +169,15 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 var t = time.ellapsed;
                 this.velocity.addMultiple(this.totalForce, t);
                 this.position.addMultiple(this.velocity, t);
-            },
-
-            finishUpdate : function(time) {
                 this.velocity.mult(this.drag);
-
                 if (this.pinnedTo) {
                     this.position.setTo(this.pinnedTo);
                 }
-                this.cleanup();
+
+            },
+
+            finishUpdate : function(time) {
+
             },
 
             cleanup : function(time) {
@@ -199,7 +204,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
             // Give this object a bunch of elements
             initAsElementContainer : function() {
-            	//console.log(this.idNumber + " initAsElementContainer");
+                //console.log(this.idNumber + " initAsElementContainer");
                 this.elements = new ElementSet(this);
             },
 

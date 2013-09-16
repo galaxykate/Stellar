@@ -4,8 +4,7 @@
 
 // Display the Universe
 // It's using a singleton pattern
-define(['inheritance', "processing", "modules/models/vector", "edge", "three"], function(Inheritance, PROCESSING, Vector, Edge, THREE) {
-    console.log("Init universe view");
+define(['inheritance', "processing", "modules/models/vector", "modules/models/edge", "three", "modules/views/inspection_hud"], function(Inheritance, PROCESSING, Vector, Edge, THREE, InspectionHUD) {
 
     var P_WIDTH = screenResolution.width;
     var P_HEIGHT = screenResolution.height;
@@ -44,30 +43,29 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
 
     };
 
-    var processing;
-
-    var universe;
-    // attaching the sketchProc function to the canvas
-    console.log("START UNIVERSE VIEW");
-
     var UniverseView = Class.extend({
 
         // Initialize this universeView to look at this universe
-        init : function(u) {
+        init : function(universe) {
+            this.universe = universe;
+            this.camera = universe.camera;
+
+            stellarGame.universeView = this;
             var universeView = this;
 
-            console.log("Init View");
-            this.universe = u;
+            console.log("Init Universe View");
 
+            this.inspectionHUD = new InspectionHUD();
             this.activeQuadrants = [];
             this.activeObjects = [];
 
             this.time = {
                 total : 0,
                 ellapsed : 0.1,
+                frame : 0,
             };
 
-            this.camera = this.universe.camera;
+            this.focus = undefined;
 
             // Initialize the universe view to use processing
             initProcessing = function(g) {
@@ -78,7 +76,9 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
 
                 // Set the drawing function of processing (used for both drawing and updating)
                 g.draw = function() {
+
                     if (stellarGame.ready) {
+                        universeView.time.frame++;
                         universeView.update(g.millis() * .001);
                         universeView.draw(g);
                     }
@@ -87,6 +87,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
 
             canvas = document.getElementById("universe_canvas");
             this.processing = new Processing(canvas, initProcessing);
+
             this.createThreeCamera();
 
             // Create a pool of divs
@@ -105,6 +106,27 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 starUIHolder.append(div);
             }
 
+            // Start by focusing on the center star
+            this.focusOn(universe.startStar);
+
+        },
+
+        unfocus : function() {
+            this.camera.unfocus();
+            this.focus = undefined;
+            this.inspectionHUD.unfocus();
+        },
+
+        focusOn : function(obj) {
+            console.log("Focus on");
+            console.log(obj);
+            this.inspectionHUD.focusOn(obj);
+            this.focus = obj;
+            // Lock the camera
+            this.camera.focusOn({
+                target : obj,
+                distance : .2
+            });
         },
 
         isOnScreen : function(p) {
@@ -116,6 +138,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
         // Update according to the current time
         update : function(currentTime) {
             debug.clear();
+            inspectionOutput.clear();
 
             // make sure that the ellapsed time is neither to high nor too low
             var time = this.time;
@@ -153,12 +176,15 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 debug.output("updating " + this.activeObjects.length);
                 for (var i = 0; i < this.activeObjects.length; i++) {
                     debug.output(i + ": " + this.activeObjects[i]);
-
                 }
                 debug.output("======================================");
             }
+
             // Update the universe
             this.universe.update(time, this.activeObjects);
+
+            // Output to the inspection pane
+            this.inspectionHUD.update();
 
         },
         //=================================================================================
@@ -190,6 +216,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 universeView : this,
                 LOD : getLODFromDistance(this.camera.orbitDistance),
                 angle : this.camera.orbitPhi,
+                time : this.time,
             };
 
             // Draw eaach layer in order
@@ -275,16 +302,26 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             context.screenPos = screenPos;
 
             this.universe.draw(context);
-
+            var drawAll = true;
             $.each(this.activeObjects, function(index, obj) {
 
                 var centerDistance = view.camera.position.getDistanceTo(obj.position);
-              
+
                 // Figure out the actual lod of this object
                 context.LOD = getLODFromDistance(view.camera.orbitDistance + centerDistance);
 
+                /*
+                if (view.focus !== undefined) {
+                console.log(view.focus);
+                if (view.focus === obj)
+                context.LOD = 1;
+                else
+                context.LOD = 12;
+                }
+                */
+
                 // If this object should draw at all at this distance
-                if (obj.minLOD === undefined || obj.minLOD >= context.LOD.index) {
+                if (drawAll || obj.minLOD === undefined || obj.minLOD >= context.LOD.index) {
                     // figure out where this object is, and translate appropriately
                     g.pushMatrix();
 
@@ -305,9 +342,8 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             });
 
         },
-
         getTouchableAt : function(target) {
-            utilities.touchOutput("Get touchable at " + target);
+            debugTouch.output("Get touchable at " + target);
             var touchables = [];
 
             var minDist = 40;
@@ -316,7 +352,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             var length = this.activeObjects.length;
             $.each(this.activeObjects, function(index, obj) {
 
-                if (obj !== undefined) {
+                if (obj !== undefined && obj.touchable) {
 
                     var d = obj.position.getDistanceTo(target);
 
@@ -361,8 +397,8 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             this.projector = new THREE.Projector();
 
         },
-
         createTestScene : function() {
+            var view = this;
             var scene, renderer, threeCamera;
 
             threeCamera = camera.threeCamera;
@@ -414,7 +450,7 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
 
             // draw!
 
-            var frame = 0;
+            view.frame = 0;
 
             // shim layer with setTimeout fallback
             window.requestAnimFrame = (function() {
@@ -425,13 +461,12 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
             })();
 
             (function animloop() {
-                frame++;
+                view.frame++;
                 requestAnimFrame(animloop);
                 camera.testRender();
             })();
 
         },
-
         drawThreeTest : function(g) {
 
             var detail = 4;
@@ -492,6 +527,8 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
         convertToScreenPosition : function(p, screenPos) {
 
             var threeVector = new THREE.Vector3();
+            p.cloneInto(threeVector)
+
             var d = p.getDistanceTo(this.camera.threeCamera.position);
 
             var ray = Vector.sub(p, this.camera.threeCamera.position);
@@ -500,7 +537,6 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
 
             var angle = Vector.angleBetween(this.camera.forward, ray);
 
-            p.cloneInto(threeVector)
             var threeScreen = this.projector.projectVector(threeVector, this.camera.threeCamera);
             var scale = .5;
             screenPos.setTo(threeScreen.x * P_WIDTH * scale, -threeScreen.y * P_HEIGHT * scale, d);
@@ -509,7 +545,6 @@ define(['inheritance', "processing", "modules/models/vector", "edge", "three"], 
                 return false;
             return true;
         },
-
         projectToPlanePosition : function(screenPos, planePos) {
             // Calculate the intersection with the ground plane
             var camera = this.camera;

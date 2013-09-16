@@ -13,6 +13,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/fac
 
             init : function(universe) {
                 this._super(universe);
+                this.name = "Critter" + this.idNumber;
 				this.frontAngle = 0;
 				this.backAngle = this.frontAngle - Math.PI;
 				this.tailVector = new Vector(0, 0);
