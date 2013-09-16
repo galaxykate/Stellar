@@ -284,7 +284,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
             var zoomCurrent = universeView.camera.zoom;
 
             var z = zoomCurrent + delta * .003;
-            var unfocusLimit = 10;
+            var unfocusLimit = 1;
             if (z > unfocusLimit)
                 universeView.unfocus();
             universeView.camera.setZoom(z);
