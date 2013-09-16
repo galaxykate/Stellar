@@ -31,13 +31,15 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
             addTo : function(obj) {
                 var tool = this;
 
-                if (obj.elements !== undefined) {
+                if (obj.feed !== undefined) {
                     // if (obj.siphonable)
                     var amt = tool.rate;
                     console.log("feed " + amt + " " + tool.element.name + " to " + obj.name);
 
                     // Remove it from the source
-                    this.source.transfer(obj.elements, this.element, amt);
+                    var actualAmt = this.source.remove(tool.element, amt);
+                    console.log("   amt: " + actualAmt);
+                    obj.feed(tool.element, actualAmt);
 
                     obj.excite(1);
 
@@ -51,6 +53,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 var tool = this;
                 var count = 0;
                 $.each(objects, function(index, obj) {
+                    console.log(index + ": Add " + tool.element.name + " to " + obj);
                     if (count < tool.maxTargets) {
                         var successful = tool.addTo(obj);
                         if (successful)

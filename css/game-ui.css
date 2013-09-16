@@ -265,7 +265,7 @@ body {
 }
 
 #inspection_hud {
-	background-color: rgba(10, 90, 250, .6);
+	background-color: rgba(10, 90, 250, 0);
 }
 .hud_pane {
 	background-color: rgba(100, 105, 110, .6);

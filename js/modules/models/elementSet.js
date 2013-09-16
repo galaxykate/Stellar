@@ -72,7 +72,7 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
             this.elementQuantity = [];
             this.elementExcitements = [];
             var max = Math.random() * Math.random() * Math.random() * 5 + 1;
-         
+
             for (var i = 0; i < activeElements.length; i++) {
                 if (i < max) {
 
@@ -143,12 +143,19 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
         transfer : function(target, element, amt) {
             var index = element.index;
             amt = Math.min(this.elementQuantity[index], amt);
-            console.log(amt);
             this.elementQuantity[index] -= amt;
             target.elementQuantity[index] += amt;
             this.setTotalMass();
             target.setTotalMass();
 
+        },
+
+        remove : function(element, amt) {
+            var index = element.index;
+            amt = Math.min(this.elementQuantity[index], amt);
+            this.elementQuantity[index] -= amt;
+            this.setTotalMass();
+            return amt;
         },
 
         // Siphon off 1 element by name and percentage
@@ -427,7 +434,6 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
 
             }
         },
-
         drawAsSlice : function(g, radius, burning) {
             var currentRadius = radius;
 
