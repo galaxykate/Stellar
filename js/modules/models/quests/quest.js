@@ -22,8 +22,8 @@ define(["inheritance", "modules/models/quests/condition"], function(Inheritance,
                 this.divID = questScreenDivID + "_quest" + this.idNumber;
             },
             
-			addCondition : function (func, desc){
-				this.conditions.push(new Condition(func, desc));
+			addCondition : function (desc){
+				this.conditions.push(new Condition(desc));
 			},
 			
             onEnd : function(func){
@@ -32,6 +32,18 @@ define(["inheritance", "modules/models/quests/condition"], function(Inheritance,
             
             setQuestName : function(qname){
             	this.name = qname;
+            },
+            
+            satisfy : function(conditionID){
+            	// if a specific condition is not specified, satisfy it all
+            	if(conditionID === undefined){
+            		console.log("No conditionID specified for quest '" + this.name + "' -- Satisfying it all");
+            		for(var i = 0; i < this.conditions.length; i++){
+            			this.conditions[i].satisfy();
+            		}
+            	} else {
+            		this.conditions[conditionID].satisfy();
+            	}
             },
             
             
@@ -53,14 +65,9 @@ define(["inheritance", "modules/models/quests/condition"], function(Inheritance,
             update: function(){
             	// Quests must be started before they will be updated
             	if(this.started === true && this.finished === false){
-            	
 	            	this.satisfiedCount = 0;
 	            	for(var i = 0; i < this.conditions.length; i++){
-	            		//console.log(this.conditions[i].truthCheck);
-	            		if(this.conditions[i].truthCheck() === true){
-	            			this.conditions[i].satisfied = true;
-	            			//console.log("satisfied: " + this.conditions[i].satisfied);
-	            			console.log("satisfied conditon: " + this.conditions[i].description);
+	            		if(this.conditions[i].satisfied === true){
 	            			this.satisfiedCount++;
 	            		}
 	            	}

@@ -8,7 +8,7 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
 
     return (function() {
     	var questLibrary = [];
-    	var activeQuests = [];
+    	var questIDByName = [];
     	var currentLevel = 0;
     	var questScreenDivID = "";
 
@@ -18,6 +18,7 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
             //var div = $("#" + questScreenDivID);
 	    	//div.html("Quest Log");
             //console.log("Quest div: " + questScreenDivID);
+            console.log(Quests);
             
 			for(var i = 0; i < Quests.length; i++){
 				var q = new Quest(i, questScreenDivID);
@@ -26,12 +27,14 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
 				q.giverType = Quests[i].giver;
 				
 				for(var j = 0; j < Quests[i].conditions.length; j++){
-					q.addCondition(Quests[i].conditions[j].func, Quests[i].conditions[j].desc);
+					q.addCondition(Quests[i].conditions[j].desc);
 				}
 				questLibrary.push(q);
+				questIDByName[q.name] = i;
 			}
 			
 			startAllViableQuests();
+			setVisibility();
         };
         
         function startAllViableQuests(){
@@ -43,48 +46,37 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
         	}
         };
         
-        function update(){
+        function setVisibility() {
         	var div = $("#" + questScreenDivID);
         	if(stellarGame.options.showUpdateQuests){
         		if(div.is(":visible") === false) div.show();
-	        	updateQuestUI();
-	        	for(var i = 0; i < questLibrary.length; i++){
-	        		questLibrary[i].update(); // started/finished is checked in the quest itself
-	        		if(questLibrary[i].started === true){
-	        			questLibrary[i].updateHTMLText();
-	        			if(questLibrary[i].finished === true && questLibrary[i].fanfair === false){
-	        				uiManager.getQuestScreen().flash();
-	        				questLibrary[i].fanfair = true;
-	        			}
-	        		}
-        		}
         	} else {
         		//hide it?
         		if(div.is(":visible")) div.hide();
         	}
+        }
+        
+        function update(){
+        	// Update logic happens on satisfy: when a quest condition is updated
         };
-		/*
-		function addQuestToActive(quest){
-			activeQuests.push(quest.idNumber);
-		}
-		
-		function removeQuestFromActive(quest){
-			activeQuests.splice(activeQuests.indexOf(quest.idNumber), 1);
-		}*/
-		
-		function updateQuestUI(){
-			
-		};
-		
-		function makeQuestDiv(quest){
-			
-		};
+        
+        function satisfy(questName, conditionID){
+        	if(questLibrary[questIDByName[questName]].finished === false){
+        		questLibrary[questIDByName[questName]].satisfy(conditionID);
+        		questLibrary[questIDByName[questName]].update(); // figures % completed
+	        	questLibrary[questIDByName[questName]].updateHTMLText();
+	        	if(questLibrary[questIDByName[questName]].finished === true && questLibrary[questIDByName[questName]].fanfair === false){
+    				//uiManager.getQuestScreen().flash(); // replace flash with a new pop-up of awesome
+    				questLibrary[questIDByName[questName]].fanfair = true;
+    			}
+        	}
+        };
 
         return {
             init : init,
             startAllViableQuests : startAllViableQuests,
             update : update,
-            updateQuestUI : updateQuestUI,
+            satisfy : satisfy,
         };
 
     })();
