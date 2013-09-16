@@ -21,6 +21,8 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
             stellarGame.addOption("drawTouchMarker", false);
             stellarGame.addOption("outputActiveObjects", false);
             stellarGame.addOption("outputActiveQuads", false);
+            
+            stellarGame.addOption("showUpdateQuests", true);
 
             stellarGame.addTuning("moveSpeed", .05, 0, 1);
 

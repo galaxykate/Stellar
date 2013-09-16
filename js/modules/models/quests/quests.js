@@ -5,7 +5,7 @@
 // Quests (also can be used as achievements)
 // To be imported and used by the questManager
 
-define(['modules/models/ui/uiManager', "modules/models/particles/star"], function(uiManager, Star) {
+define([], function() {
     return (function() {
         return [
         
@@ -24,10 +24,10 @@ define(['modules/models/ui/uiManager', "modules/models/particles/star"], functio
         	
         	conditions : [
         		{
-		        	func : function(){
+		        	/*func : function(){
 		        		if(uiManager.getInventoryElementAmt("Helium") > 0) return true;
 		        		else return false;
-		        	},
+		        	},*/
 		        	desc : "Get some helium in your inventory",
 	        	},
         	],
@@ -36,18 +36,27 @@ define(['modules/models/ui/uiManager', "modules/models/particles/star"], functio
         	name : "Inventory Use: Oxygen",
         	level : 0,
         	giver : "global",
-        	
-        	conditions : [
-        		{
-		        	func : function(){
-		        		if(uiManager.getInventoryElementAmt("Oxygen") > 0) return true;
-		        		else return false;
-		        	},
-		        	desc : "Get some oxygen in your inventory",
-	        	},
-        	],
+        	conditions : [ { desc : "Get some oxygen in your inventory", }, ],
         }, {
-        	
+        	// Tutorial Business - feeding the star, a basic action
+        	name : "Feed a Star",
+        	level : 0,
+        	giver : "global",
+        	conditions : [ { desc : "Drop space dust on top of a star", }, ],
+        }, {
+        	// Tutorial Business - introduces the bar of elements 
+        	name : "Completely Empty Your Elemental Reserves",
+        	level : 0,
+        	giver : "global",
+        	conditions : [ { desc : "Spend all your elements on feeding stars", }, ],
+        }, {
+        	// Tutorial Business - required to move on to other stars
+        	name : "Experience a Supernova",
+        	level : 0,
+        	giver : "global",
+        	conditions : [ { desc : "Watch a star go supernova", },
+        				   { desc : "Gather up the elements from a supernova", }, ],
+        }, {
         	// Requires navigation away from the home star
         	name : "Discover a New Star",
         	level : 1,
@@ -55,9 +64,6 @@ define(['modules/models/ui/uiManager', "modules/models/particles/star"], functio
         	
         	conditions : [
         		{
-		        	func : function(){
-						return false;
-		        	},
 		        	desc : "Go out into the wilderness and find a new star!",
 	        	},
         	],
@@ -70,29 +76,23 @@ define(['modules/models/ui/uiManager', "modules/models/particles/star"], functio
         	
         	conditions : [
         		{
-		        	func : function(){
-						return false;
-		        	},
 		        	desc : "Gather all dust nodes from a trail of dust.",
 	        	},
         	],
-        }, {
+        /*}, {
         	// ----------------------------------
         	// ------- giver: critter -----------
         	// ----------------------------------
         	
         	// Critters need these conditions of their home planets to STAY viable
         	// They will reject/leave a star if the conditions are no longer satisfied
-        	
+
         	name : "Hydrogen Home",
         	level : 1,
         	giver : "critter",
         	
         	conditions : [
         		{
-		        	func : function(star){
-						return (star.elements.getPctByName(Hydrogen) === 1);
-		        	},
 		        	desc : "I require a star that is nothing but Hydrogen.",
 	        	},
         	],
@@ -103,9 +103,6 @@ define(['modules/models/ui/uiManager', "modules/models/particles/star"], functio
         	
         	conditions : [
         		{
-		        	func : function(star){
-						return (star.temperature === 0);
-		        	},
 		        	desc : "I need a star that is cold as ice.",
 	        	},
         	],
@@ -116,12 +113,9 @@ define(['modules/models/ui/uiManager', "modules/models/particles/star"], functio
         	
         	conditions : [
         		{
-		        	func : function(star){
-						return (star.state === Star.states[2]);
-		        	},
 		        	desc : "I can only live by a star if it is alive and actively burning elements.",
 	        	},
-        	],
+        	],*/
         }];
     })();
 

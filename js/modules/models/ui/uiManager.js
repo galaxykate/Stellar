@@ -13,8 +13,8 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
         function init() {
             console.log("INIT UI");
 
-            makeInventoryPopup();
-            makeMainMenu();
+            //makeInventoryPopup();
+            makeQuestWindow();
         };
         
         function makeInventoryPopup() {
@@ -43,13 +43,13 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	        
 	    };
 	    
-	    function makeMainMenu() {
+	    function makeQuestWindow() {
 	    	questScreen = new Popup("#universe", "Quest Log");
 	    	
 	    	var universeWidth = screenResolution.width;
 	    	var universeHeight =screenResolution.height;
 	    	
-	    	questScreen.addState("closed", universeWidth-50, 140, 40, 20, 0.3);
+	    	questScreen.addState("closed", 0, 360, 40, 20, 0.3);
 	    	questScreen.addState("open", 20, 20, universeWidth-50, universeHeight-50, 1);
 	    	questScreen.addTransition("open", "closed", "click");
 	    	questScreen.addTransition("closed", "open", "click", false);
@@ -78,7 +78,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    
 	    function update() {
 	    	// For element holder stuff :)
-	    	playerInventory.update();
+	    	//playerInventory.update();
 	    	//utilities.debugOutput("updating in uiManager");
 	    	//QuestManager.updateQuestUI(questScreen.contents["quests"]);
 	    };
