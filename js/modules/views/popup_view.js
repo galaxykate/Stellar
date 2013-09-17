@@ -151,9 +151,21 @@ define(["inheritance"], function(Inheritance) {
             setZIndex : function(z) {
             	//console.log("updating div " + this.divID);
             	var div = $("#" + this.divID);
-            	
             	div.css('z-index', z);
-            	
+            },
+            
+            addClass : function(c){
+            	var div = $("#" + this.divID);
+            	if(div.hasClass(c) === false){
+            		div.addClass(c);
+            	}
+            },
+            
+            removeClass : function(c){
+            	var div = $("#" + this.divID);
+            	if(div.hasClass(c) === true){
+	            	div.removeClass(c);
+            	}
             },
             //$.fn.animateHighlight = function(highlightColor, duration) {
             animateHighlight : function(highlightColor, duration) {

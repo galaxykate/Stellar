@@ -51,7 +51,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    	var universeWidth = screenResolution.width;
 	    	var universeHeight =screenResolution.height;
 	    	
-	    	questScreen.addState("closed", 0, 360, 140, 30, 0.3);
+	    	questScreen.addState("closed", 0, 360, 140, 30, 0.6);
 	    	questScreen.addState("open", 20, 20, universeWidth-50, universeHeight-50, 1);
 	    	questScreen.addTransition("open", "closed", "click");
 	    	questScreen.addTransition("closed", "open", "click", false);
@@ -101,7 +101,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    	
 	    	qScreen.addState("closed", -1, -1, 0, 0, 0);
 	    	qScreen.addState("open", 200, 100, universeWidth-400, universeHeight-200, 1);
-	    	qScreen.addTransition("open", "closed", "click");
+	    	//qScreen.addTransition("open", "closed", "click");
 	    	//qScreen.addTransition("closed", "open", "click", false);
 	    	qScreen.addCloseDiv();
 	    	qScreen.setState("open");
