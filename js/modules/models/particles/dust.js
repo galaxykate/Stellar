@@ -16,6 +16,8 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "up
                 this._super(universe);
                 this.initAsElementContainer();
                 this.siphonable = true;
+                this.initAsTouchable();
+
                 this.name = "dust" + this.idNumber;
 
                 if (parent !== undefined) {
@@ -29,13 +31,13 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "up
                 this._super(context);
                 var g = context.g;
                 /* // Turning off dust background circles because it feels unnecessary
-                if (context.LOD.index <= 2) {
-                    if (stellarGame.drawDust) {
-                        this.idColor.fill(g, -.8, .5);
-                        g.noStroke();
-                        g.ellipse(0, 0, this.radius, this.radius);
-                    }
-                }*/
+                 if (context.LOD.index <= 2) {
+                 if (stellarGame.drawDust) {
+                 this.idColor.fill(g, -.8, .5);
+                 g.noStroke();
+                 g.ellipse(0, 0, this.radius, this.radius);
+                 }
+                 }*/
             },
 
             drawMain : function(context) {
@@ -43,7 +45,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "up
 
                 var g = context.g;
                 // Only draw for closest
-                if (context.LOD.index <= 1) {
+                if (context.LOD.index <= 3) {
                     if (this.scale === undefined) {
                         this.scale = 1;
                     }

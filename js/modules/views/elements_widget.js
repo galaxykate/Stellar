@@ -22,6 +22,7 @@ define(["modules/models/elementSet", "inheritance", "modules/models/vector", "mo
     var ElementsWidget = Class.extend({
         init : function(div) {
             var widget = this;
+            stellarGame.player.setWidget(this);
             div.html("HELLO WIDGET");
 
             this.activeElement = undefined;

@@ -370,6 +370,7 @@ define(['inheritance', "processing", "modules/models/vector", "modules/models/ed
             });
 
         },
+        
         getTouchableAt : function(target) {
             debugTouch.output("Get touchable at " + target);
             var touchables = [];
