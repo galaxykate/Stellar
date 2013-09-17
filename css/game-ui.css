@@ -268,9 +268,8 @@ body {
 	background-color: rgba(10, 90, 250, 0);
 }
 .hud_pane {
-	background-color: rgba(100, 105, 110, .6);
-	border-radius: 10px;
-	border: 2px solid rgba(255,255, 255, 1);
+	margin: 2px;
+		color:white;
 }
 
 #inspection_details {
