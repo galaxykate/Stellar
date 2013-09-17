@@ -30,16 +30,26 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
             // Feed
             addTo : function(obj) {
                 var tool = this;
+                // if (obj.siphonable)
+                var amt = tool.rate;
+                console.log("feed " + amt + " " + tool.element.name + " to " + obj.name);
 
                 if (obj.feed !== undefined) {
-                    // if (obj.siphonable)
-                    var amt = tool.rate;
-                    console.log("feed " + amt + " " + tool.element.name + " to " + obj.name);
 
                     // Remove it from the source
                     var actualAmt = this.source.remove(tool.element, amt);
-                    console.log("   amt: " + actualAmt);
                     obj.feed(tool.element, actualAmt);
+
+                    obj.excite(1);
+
+                    this.onFeed(amt);
+                    return true;
+                }
+                if (obj.elements !== undefined) {
+
+                    // Remove it from the source
+                    var actualAmt = this.source.remove(tool.element, amt);
+                    obj.elements.add(tool.element, amt);
 
                     obj.excite(1);
 
