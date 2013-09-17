@@ -13,16 +13,25 @@ define(["modules/models/elementSet", "kcolor", "inheritance"], function(ElementS
         init : function() {
             var player = this;
             this.elementBelt = {
-                capacity : ElementSet.createElementCapacities(1000),
+                capacity : ElementSet.createElementCapacities(100),
                 quantity : new ElementSet(this),
             };
 
             this.idColor = new KColor(.55, 1, 1);
 
             $.each(ElementSet.activeElements, function(index, element) {
-                player.elementBelt.quantity.setQuantity(index, player.elementBelt.capacity[index]);
+                //player.elementBelt.quantity.setQuantity(index, player.elementBelt.capacity[index]);
+                player.elementBelt.quantity.setQuantity(index, player.elementBelt.capacity[index] * .3);
             });
 
+        },
+
+        setWidget : function(widget) {
+            this.widget = widget;
+        },
+
+        updateElements : function() {
+            this.widget.resetPositions();
         },
     });
 

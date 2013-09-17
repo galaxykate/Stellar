@@ -21,7 +21,7 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
             stellarGame.addOption("drawTouchMarker", false);
             stellarGame.addOption("outputActiveObjects", false);
             stellarGame.addOption("outputActiveQuads", false);
-            
+
             stellarGame.addOption("showUpdateQuests", true);
 
             stellarGame.addTuning("moveSpeed", .05, 0, 1);
@@ -33,16 +33,21 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
             stellarGame.activeTool = undefined;
 
             var moveTool = new MoveTool(this, "Move", "move");
-            stellarGame.defaultTool = moveTool;
             stellarGame.setActiveTool = function(tool) {
+                if (stellarGame.touch.activeTool)
+                    stellarGame.touch.activeTool.deactivate();
                 stellarGame.touch.activeTool = tool;
             };
 
-            stellarGame.activateDefaultTool = function() {
-                stellarGame.defaultTool.activate();
+            stellarGame.activateMove = function() {
+                if (stellarGame.touch.activeTool)
+                    stellarGame.touch.activeTool.deactivate();
+                moveTool.activate();
+
             };
 
-            stellarGame.activateDefaultTool();
+            stellarGame.activateMove();
+
             //================================================================
             //================================================================
             //================================================================
@@ -244,7 +249,6 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
             $.each(allPanels, function(index, panel) {
                 setToActive(panel, true);
             });
-            toggleDevPanels();
             toggleDevPanels();
 
             universeController.init();

@@ -34,11 +34,11 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
             value : zoomDefault,
             step : .01,
             slide : function(event, ui) {
-                stellarGame.universeView.camera.setZoom(ui.value);
+                stellarGame.universeView.setZoom(ui.value);
             }
         });
 
-        stellarGame.universeView.camera.setZoom(zoomDefault);
+        stellarGame.universeView.setZoom(zoomDefault);
 
         var rotationDefault = .2;
         $("#rotation_slider").slider({
@@ -155,6 +155,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
 
             // Clear the touch output and get the objects/regions that it's over
             updateTouchContext : function() {
+                debugTouch.output("update context");
 
                 // Get the objects that the cursor is over
                 touch.overObjects = universeView.getTouchableAt(touch.planePosition);
@@ -186,6 +187,8 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
             // Touch functions
             touchDrag : function(p) {
                 debugTouch.clear();
+                debugTouch.output("Up");
+
                 touch.updateTouchPositions(p);
                 touch.updateTouchContext();
 
@@ -200,8 +203,6 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
                     }
 
                     if (touch.dragging) {
-                        touch.updateTouchPositions(p);
-                        touch.updateTouchContext();
 
                         if (touch.activeTool)
                             touch.activeTool.touchDrag(touch);
@@ -213,9 +214,9 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
             },
 
             touchDoubletap : function(p) {
-                console.log("DOUBLE TAP");
-                console.log(touch.overObjects);
+
                 debugTouch.clear();
+                debugTouch.output("Double-tap");
                 touch.updateTouchPositions(p);
                 touch.updateTouchContext();
 
@@ -233,6 +234,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
 
             touchUp : function(p) {
                 debugTouch.clear();
+                debugTouch.output("Up");
                 touch.updateTouchPositions(p);
                 touch.updateTouchContext();
 
@@ -262,6 +264,21 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
                     touch.activeTool.touchDown(touch);
                 }
                 dragCount = 0;
+
+                // touch the objects
+                if (touch.overObjects.length > 0) {
+
+                    console.log("PRESS " + touch.overObjects[0].name);
+                    if (touch.overObjects[0]) {
+                        if (touch.selectedObject) {
+                            touch.selectedObject.deselect();
+                        }
+
+                        touch.selectedObject = touch.overObjects[0];
+                        touch.selectedObject.select();
+                    }
+                } else
+                    console.log("PRESS NOTHING");
 
                 touch.output();
 

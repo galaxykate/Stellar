@@ -70,13 +70,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
                 this.debugOutputLines = [];
 
-                // For ranges of surface temperatuers, visit https://en.wikipedia.org/wiki/Stellar_classification
-
-                this.temperature = 0;
-                // Kelvin
-                this.tempGenerated = 100;
-                // Kelvin
-
                 this.lifespans = [];
                 this.excitement = {
                     power : 0,
@@ -106,6 +99,14 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 }
             },
 
+            select : function() {
+                this.selected = true;
+            },
+
+            deselect : function() {
+                this.selected = false;
+            },
+
             debugOutput : function(d) {
 
                 this.debugOutputLines.push(d);
@@ -120,7 +121,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             },
 
             setTarget : function(target) {
-               
+
                 this.target = target;
             },
 
@@ -157,11 +158,22 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 }
 
                 if (this.target) {
-                    this.velocity.mult(.92);
+                    debug.output("Move " + this.name + " to " + this.target);
                     var targetOffset = Vector.sub(this.position, this.target.position);
-                    if (targetOffset.magnitude() < 10)
+                    var d = targetOffset.magnitude();
+                    if (d < 15) {
+                        // this.position.setTo(this.target.position);
                         this.target.onHit();
-                    this.totalForce.addMultiple(targetOffset, -10);
+                        this.velocity.mult(.20);
+                        this.target = undefined;
+                    } else {
+                        var d2 = Math.min(d, 200 * time.ellapsed);
+                        this.totalForce.addMultiple(targetOffset, -50);
+                        this.velocity.mult(.80);
+
+                        targetOffset.normalize();
+                        this.position.addMultiple(targetOffset, -d2);
+                    }
                 }
             },
 
@@ -227,6 +239,10 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             touchEnd : function(touch) {
                 this.touchHeld = false;
             },
+
+            //===============================================================
+            // Update this particle according to physics
+
             drawBackground : function(context) {
 
             },
@@ -238,6 +254,13 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 var g = context.g;
                 //var h = (this.idNumber * .212 + .3) % 1;
                 if (this.touchHeld) {
+                    this.idColor.stroke(g, .2, 1);
+                    g.noFill();
+                    g.strokeWeight(5);
+                    g.ellipse(0, 0, this.radius + 10, this.radius + 10);
+                }
+
+                if (this.selected) {
                     this.idColor.stroke(g, .2, 1);
                     g.noFill();
                     g.strokeWeight(5);

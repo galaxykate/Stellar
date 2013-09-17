@@ -118,7 +118,6 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
             	//console.log(this.states[name]);
             	// set top, left, width, height in view
             	this.view.updatePopupDiv(this.states[name].top, this.states[name].left, this.states[name].width, this.states[name].height, this.states[name].opacity);
-            	
             	this.controller.clearActions(this.view.divID);
             	
             	// loop through transitions and put them in controller
@@ -142,6 +141,14 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
 		        		this.view.showCloseButton();
 		        		this.controller.setActionDimensionChange(this.view.divID + "_close", this, "closed", "click", false);
 		        	}
+		        }
+		        if(this.activeState === "closed"){
+		        	this.view.removeClass("popup_open");
+		        	this.view.addClass("popup_closed");
+		        }
+		        if(this.activeState === "open"){
+		        	this.view.removeClass("popup_closed");
+		        	this.view.addClass("popup_open");
 		        }
             },
             
