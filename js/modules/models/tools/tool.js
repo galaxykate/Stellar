@@ -163,7 +163,7 @@ define(["modules/models/vector", "uparticle", "kcolor"], function(Vector, UParti
                 if (this.onUp)
                     this.onUp(touch);
 
-                this.deactivate();
+              //  this.deactivate();
             },
         });
 

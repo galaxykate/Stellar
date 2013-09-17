@@ -205,7 +205,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
 
                         if (touch.activeTool)
                             touch.activeTool.touchDrag(touch);
-                            else 
+                        else
                             console.log("Drag with no tool");
                     }
                 }
@@ -223,7 +223,8 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
                 if (touch.overObjects.length > 0) {
 
                     console.log("CLICK " + touch.overObjects[0]);
-                    universeView.focusOn(touch.overObjects[0], .2);
+                    if (touch.overObjects[0] && !touch.overObjects[0].inFocus)
+                        universeView.focusOn(touch.overObjects[0], .2);
                 } else
                     console.log("CLICKED NOTHING");
 
@@ -281,11 +282,13 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
         $("#universe_canvas").mousewheel(function(event, delta) {
             console.log("Scroll universe");
             var zoomCurrent = universeView.camera.zoom;
-            universeView.unfocus();
-            universeView.camera.setZoom(zoomCurrent + delta * .003);
+
+            var z = zoomCurrent + delta * .003;
+            var unfocusLimit = 1;
+            if (z > unfocusLimit)
+                universeView.unfocus();
+            universeView.camera.setZoom(z);
             event.preventDefault();
-            
-         
 
         });
 

@@ -113,6 +113,9 @@ define(['inheritance', "processing", "modules/models/vector", "modules/models/ed
 
         unfocus : function() {
             this.camera.unfocus();
+            if (this.focus)
+                this.focus.inFocus = false;
+
             this.focus = undefined;
             this.inspectionHUD.unfocus();
         },
@@ -121,11 +124,17 @@ define(['inheritance', "processing", "modules/models/vector", "modules/models/ed
             console.log("Focus on");
             console.log(obj);
             this.inspectionHUD.focusOn(obj);
+
+            // Remove focus from previous
+            if (this.focus)
+                this.focus.inFocus = false;
+
             this.focus = obj;
+            obj.inFocus = true;
             // Lock the camera
             this.camera.focusOn({
                 target : obj,
-                distance : .2
+                distance : .8
             });
         },
 
