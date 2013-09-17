@@ -82,6 +82,7 @@ define(["inheritance", "modules/models/quests/condition"], function(Inheritance,
             
             end : function(){
             	this.finished = true;
+            	this.questCompleteTint(true);
             	
             	if(this.onEndFunction !== undefined){
             		this.onEndFunction();
@@ -113,6 +114,15 @@ define(["inheritance", "modules/models/quests/condition"], function(Inheritance,
             updateHTMLText : function(){
             	var div = $("#" + this.divID);
 	    		div.html(this.toString(true));
+            },
+            
+            questCompleteTint : function(add){
+            	var div = $("#" + this.divID);
+            	if(add === true && div.hasClass("questCompleteTint") === false){
+            		div.addClass("questCompleteTint");
+            	} else if (add === false && div.hasClass("questCompleteTint") === true){
+            		div.removeClass("questCompleteTint");
+            	}
             },
             /********************/
             

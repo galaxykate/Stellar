@@ -44,12 +44,13 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    };
 	    
 	    function makeQuestWindow() {
-	    	questScreen = new Popup("#universe", "Quest Log");
+	    	questScreen = new Popup("#popup_overlay", "Quest Log");
+	    	questScreen.view.setZIndex(45);
 	    	
 	    	var universeWidth = screenResolution.width;
 	    	var universeHeight =screenResolution.height;
 	    	
-	    	questScreen.addState("closed", 0, 360, 40, 20, 0.3);
+	    	questScreen.addState("closed", 0, 360, 40, 20, 0.7);
 	    	questScreen.addState("open", 20, 20, universeWidth-50, universeHeight-50, 1);
 	    	questScreen.addTransition("open", "closed", "click");
 	    	questScreen.addTransition("closed", "open", "click", false);

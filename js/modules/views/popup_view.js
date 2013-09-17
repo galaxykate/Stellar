@@ -147,6 +147,11 @@ define(["inheritance"], function(Inheritance) {
             	div.css({ opacity: opa });
             	
             },
+            
+            setZIndex : function(z){
+            	var div = $("#" + this.divID);
+            	div.css('z-index', z);
+            },
             //$.fn.animateHighlight = function(highlightColor, duration) {
             animateHighlight : function(highlightColor, duration) {
 			    var highlightBg = highlightColor || "#FFFF9C";

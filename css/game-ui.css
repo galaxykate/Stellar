@@ -39,6 +39,7 @@ body {
 	pointer-events: none;
 }
 
+
 .star_overlay {
 	z-index: 23;
 	position: relative;
@@ -156,6 +157,10 @@ body {
 	border: 2px solid rgba(255,255, 255, 1);
 }
 
+.popup_open{
+	overflow: auto;
+}
+
 .popup_button {
 	float: left;
 	width: 80px;
@@ -189,6 +194,10 @@ body {
 	border-radius: 10px;
 	border: 2px solid rgba(255,255, 255, 1);
 	box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+}
+
+.questCompleteTint {
+	background-color: rgba(129, 254, 188, .3);
 }
 
 .closeButton {

@@ -62,7 +62,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 					*/
                     //}
                     
-                    //qManager.satisfy("Inventory Use: Helium");
+                    qManager.satisfy("Inventory Use: Helium");
                     
                     
                 }
