@@ -34,15 +34,20 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
 
             var moveTool = new MoveTool(this, "Move", "move");
             stellarGame.setActiveTool = function(tool) {
+                if (stellarGame.touch.activeTool)
+                    stellarGame.touch.activeTool.deactivate();
                 stellarGame.touch.activeTool = tool;
             };
 
             stellarGame.activateMove = function() {
+                if (stellarGame.touch.activeTool)
+                    stellarGame.touch.activeTool.deactivate();
                 moveTool.activate();
+
             };
 
             stellarGame.activateMove();
-            
+
             //================================================================
             //================================================================
             //================================================================

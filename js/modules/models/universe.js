@@ -16,6 +16,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
             this.spawnTable = new ChanceTable();
             this.spawnTable.addOption(particleTypes.Star, "star", 1);
+            this.spawnTable.addOption(particleTypes.Dust, "dust", 1);
             //  this.spawnTable.addOption(particleTypes.Critter, "critter", 1);
 
             this.touchMarker = new particleTypes.UParticle();

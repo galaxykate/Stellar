@@ -155,6 +155,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
 
             // Clear the touch output and get the objects/regions that it's over
             updateTouchContext : function() {
+                debugTouch.output("update context");
 
                 // Get the objects that the cursor is over
                 touch.overObjects = universeView.getTouchableAt(touch.planePosition);
@@ -186,6 +187,8 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
             // Touch functions
             touchDrag : function(p) {
                 debugTouch.clear();
+                debugTouch.output("Up");
+
                 touch.updateTouchPositions(p);
                 touch.updateTouchContext();
 
@@ -200,8 +203,6 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
                     }
 
                     if (touch.dragging) {
-                        touch.updateTouchPositions(p);
-                        touch.updateTouchContext();
 
                         if (touch.activeTool)
                             touch.activeTool.touchDrag(touch);
@@ -213,9 +214,9 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
             },
 
             touchDoubletap : function(p) {
-                console.log("DOUBLE TAP");
-                console.log(touch.overObjects);
+
                 debugTouch.clear();
+                debugTouch.output("Double-tap");
                 touch.updateTouchPositions(p);
                 touch.updateTouchContext();
 
@@ -233,6 +234,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
 
             touchUp : function(p) {
                 debugTouch.clear();
+                debugTouch.output("Up");
                 touch.updateTouchPositions(p);
                 touch.updateTouchContext();
 
