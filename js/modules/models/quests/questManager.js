@@ -67,6 +67,7 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
 	        	questLibrary[questIDByName[questName]].updateHTMLText();
 	        	if(questLibrary[questIDByName[questName]].finished === true && questLibrary[questIDByName[questName]].fanfair === false){
     				//uiManager.getQuestScreen().flash(); // replace flash with a new pop-up of awesome
+    				uiManager.spawnQuestCompletionScreen(questLibrary[questIDByName[questName]]);
     				questLibrary[questIDByName[questName]].fanfair = true;
     			}
         	}

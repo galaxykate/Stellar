@@ -63,7 +63,7 @@ define(["inheritance"], function(Inheritance) {
 				//this.removePopupDiv();
 				
                 this.options = {
-                    html : text + "<br>",
+                    html : "<popupHeading>" + text + "</popupHeading>" + "<br><br>",
                     "class" : "popup",
                     "id" : this.divID,
                     top: y,
@@ -145,6 +145,14 @@ define(["inheritance"], function(Inheritance) {
             	div.css('width', wid + 'px');
             	div.css('height', hei + 'px');
             	div.css({ opacity: opa });
+            	
+            },
+            
+            setZIndex : function(z) {
+            	//console.log("updating div " + this.divID);
+            	var div = $("#" + this.divID);
+            	
+            	div.css('z-index', z);
             	
             },
             //$.fn.animateHighlight = function(highlightColor, duration) {
