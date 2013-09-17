@@ -106,9 +106,6 @@ define(['inheritance', "processing", "modules/models/vector", "modules/models/ed
                 starUIHolder.append(div);
             }
 
-            // Start by focusing on the center star
-            this.focusOn(universe.startStar);
-
         },
 
         unfocus : function() {
@@ -118,12 +115,15 @@ define(['inheritance', "processing", "modules/models/vector", "modules/models/ed
 
             this.focus = undefined;
             this.inspectionHUD.unfocus();
+            stellarGame.activateMove();
+
         },
 
         focusOn : function(obj) {
             console.log("Focus on");
             console.log(obj);
             this.inspectionHUD.focusOn(obj);
+            stellarGame.setActiveTool(undefined);
 
             // Remove focus from previous
             if (this.focus)
@@ -136,6 +136,8 @@ define(['inheritance', "processing", "modules/models/vector", "modules/models/ed
                 target : obj,
                 distance : .8
             });
+            
+            this.setZoom(.1);
         },
 
         isOnScreen : function(p) {
@@ -144,10 +146,21 @@ define(['inheritance', "processing", "modules/models/vector", "modules/models/ed
             return p.z > 0 && utilities.within(p.x, -w / 2, w / 2) && utilities.within(p.y, -h / 2, h / 2);
         },
 
+        onFirstFrame : function() {
+            if (time.frame == 0) {
+                // Start by focusing on the center star
+                this.focusOn(this.universe.startStar);
+            }
+
+        },
+
         // Update according to the current time
         update : function(currentTime) {
+
             debug.clear();
             inspectionOutput.clear();
+            
+            debug.output("Focus on " + this.focus);
 
             // make sure that the ellapsed time is neither to high nor too low
             var time = this.time;
@@ -199,7 +212,13 @@ define(['inheritance', "processing", "modules/models/vector", "modules/models/ed
         //=================================================================================
         //=================================================================================
         //=================================================================================
-        //
+        // Camera Control
+
+        setZoom : function(zoom) {
+            this.zoom = zoom;
+            debug.output("ZOOM: " + zoom);
+            this.camera.setZoom(zoom);
+        },
 
         //=================================================================================
         //=================================================================================

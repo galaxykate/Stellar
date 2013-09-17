@@ -73,7 +73,6 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
                         }
                     });
 
-                    camera.setZoomTarget(zoomTarget);
                 }
 
             },
@@ -81,23 +80,12 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
             finishUpdate : function(time) {
                 //utilities.debugOutput("Camera pos: " + this.position);
                 this._super(time);
-                if (this.zoomTarget) {
-                    // close enough?
-                    var d = this.zoomTarget - this.zoom;
-                    if (Math.abs(d) < .5) {
-                        this.setZoom(this.zoomTarget);
-                        this.zoomTarget = undefined;
-                    } else {
-                        var z = this.zoom + this.zoomTarget.distanceDifference * .03;
-                        this.setZoom(z);
-                    }
-                }
+               
 
                 // Set to the current orbit
                 var angle = -Math.PI / 2 - .1 - this.zoom;
                 this.setOrbit(100 + this.distance * 1000, this.rotation, Math.PI + angle);
 
-                debug.output("Zoom " + this.zoom + " / " + this.zoomTarget);
             },
 
             setOrbit : function(r, theta, phi) {
@@ -152,8 +140,6 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
                 var temp = new Vector(camera.screenQuadCorners[2]);
                 camera.screenQuadCorners[2].setTo(camera.screenQuadCorners[3]);
                 camera.screenQuadCorners[3].setTo(temp);
-                debug.outputArray(camera.screenQuadCorners);
-                debug.output(camera.width + "x" + camera.height);
 
             },
             zoomIn : function() {

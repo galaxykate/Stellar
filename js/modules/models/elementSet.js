@@ -158,6 +158,13 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
             return amt;
         },
 
+        add : function(element, amt) {
+            var index = element.index;
+            this.elementQuantity[index] += amt;
+            this.setTotalMass();
+            return amt;
+        },
+
         // Siphon off 1 element by name and percentage
         siphonOneByName : function(target, elementName, pct) {
             var index;
