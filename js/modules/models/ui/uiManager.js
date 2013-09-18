@@ -106,6 +106,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    	//qScreen.addTransition("closed", "open", "click", false);
 	    	qScreen.addCloseDiv();
 	    	qScreen.setState("open");
+	    	qScreen.addOnCloseFunc(quest.onComplete);
 	    	
 	    };
 

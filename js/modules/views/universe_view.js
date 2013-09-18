@@ -149,7 +149,6 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
             this.animateZoomTo(minZoom, 1.2);
             this.animateCameraTo(this.focus, 1);
 
-            stellarGame.qManager.satisfy("Navigating Space", 2);
 
         },
 

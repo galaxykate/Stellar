@@ -274,6 +274,9 @@ define(["modules/models/elementSet", "inheritance", "modules/models/vector", "mo
                 if (stellarGame.focused) {
                     widget.setActiveElement(element);
                     elementHolder.tool.activate();
+                    if(element.name === "Hydrogen"){
+                    	stellarGame.qManager.satisfy("Feed a Star " + element.name, 0);
+                    }
                 }
 
             });

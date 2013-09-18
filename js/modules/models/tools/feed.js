@@ -38,7 +38,8 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 // if (obj.siphonable)
                 var amt = tool.rate;
                 console.log("feed " + amt + " " + tool.element.name + " to " + obj.name);
-
+				// Kate: Why are these two different if's? What are the two cases for?
+				// 			~April
                 if (obj.feed !== undefined) {
 
                     // Remove it from the source
@@ -48,6 +49,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                     obj.excite(1);
 
                     this.onFeed(amt);
+                    if(tool.element.name === "Hydrogen") stellarGame.qManager.satisfy("Feed a Star " + tool.element.name, 1);
                     return true;
                 }
                 if (obj.elements !== undefined) {
