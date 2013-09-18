@@ -29,58 +29,15 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
             },
 
             setZoom : function(value) {
-                value = utilities.constrain(value, tuning.minZoom, tuning.maxZoom);
 
                 this.distance = Math.pow(value, 3) + .01;
                 this.zoom = value;
-                debug.output("Zoom " + this.zoom);
             },
 
-            setZoomTarget : function(zoomTarget) {
-                if (zoomTarget === undefined) {
-                    this.zoomTarget = undefined;
-
-                } else {
-                    this.zoomTarget = zoomTarget;
-                    this.zoomTarget.distanceDifference = zoomTarget.distance - this.zoom;
-
-                }
-
-            },
-
-            unfocus : function() {
-
-                var camera = this;
-                camera.focusObject = undefined;
-                camera.setTarget(undefined);
-
-                camera.setZoomTarget(undefined);
-
-            },
-
-            focusOn : function(zoomTarget) {
-
-                var camera = this;
-                camera.focusObject = zoomTarget.target;
-
-                if (zoomTarget.target === undefined) {
-                    camera.setTarget(undefined);
-                } else {
-                    camera.setTarget({
-                        position : zoomTarget.target.position,
-                        onHit : function() {
-
-                        }
-                    });
-
-                }
-
-            },
 
             finishUpdate : function(time) {
                 //utilities.debugOutput("Camera pos: " + this.position);
                 this._super(time);
-               
 
                 // Set to the current orbit
                 var angle = -Math.PI / 2 - .1 - this.zoom;

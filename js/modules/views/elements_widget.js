@@ -115,10 +115,9 @@ define(["modules/models/elementSet", "inheritance", "modules/models/vector", "mo
 
             var pct = amt / capacity;
             var element = ElementSet.activeElements[index];
-            
-       
+
             var bgPath = makeWedgeLinepath(20, holder.ringRadius, holder.startTheta, holder.endTheta, widget.ringCenter);
-            var barPath = makeWedgeLinepath(holder.ringRadius, holder.ringRadius * (1 - pct*.7), holder.startTheta, holder.endTheta, widget.ringCenter);
+            var barPath = makeWedgeLinepath(holder.ringRadius, holder.ringRadius * (1 - pct * .7), holder.startTheta, holder.endTheta, widget.ringCenter);
 
             holder.svgBG.attr("path", bgPath);
             holder.svgBar.attr("path", barPath);
@@ -133,9 +132,17 @@ define(["modules/models/elementSet", "inheritance", "modules/models/vector", "mo
 
             holder.svgBG.attr({
                 fill : "#" + holder.bgColor.toHex(),
-                 stroke : 'none',
+                stroke : 'none',
                 'stroke-width' : 5
             });
+        },
+
+        deactivate : function(element) {
+            if (this.activeElement === element) {
+                this.activeElement = undefined;
+                this.resetAngles();
+                this.resetPositions();
+            }
         },
 
         setActiveElement : function(element) {
@@ -256,8 +263,11 @@ define(["modules/models/elementSet", "inheritance", "modules/models/vector", "mo
 
             // Activate this, deactivate all others
             div.click(function() {
-                widget.setActiveElement(element);
-                elementHolder.tool.activate();
+                if (stellarGame.focused) {
+                    widget.setActiveElement(element);
+                    elementHolder.tool.activate();
+                }
+
             });
 
             return elementHolder;

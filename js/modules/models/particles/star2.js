@@ -5,7 +5,7 @@
 // Its the Universe!
 
 define(["inheritance", "modules/models/vector", "uparticle", "modules/models/elementSet", "modules/models/face/face", "kcolor"], function(Inheritance, Vector, UParticle, ElementSet, Face, KColor) {
-    var bubbleRadius = 2;
+    var bubbleRadius = 1;
     var densityLayers = 30;
 
     var bubbleCount = 0;
@@ -22,9 +22,9 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             this.radius = bubbleRadius * (1 + Math.pow(element.number, .3));
             this.mass = element.number;
             this.idNumber = bubbleCount;
-            this.upPress = 0;
-            this.downPress = 0;
+            this.maxVelocity = 200;
             this.layers = layers;
+            this.temperature = 0;
             bubbleCount++;
         },
 
@@ -49,23 +49,29 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
 
             // Draw pressure differential
             // Draw density samples
-            var sampleRange = 10;
-            var y0 = this.position.y + sampleRange;
-            var sample0 = this.layers.heat.sampleAt(y0);
-            this.drawSample(g, new KColor(.5, 1, 1), this.layers.heat.xMult*sample0, sampleRange);
-            this.densityDifferential = 20 * utilities.pnoise(y0 * 0.01) - 10;
-            this.drawArrow(g, new KColor(.5, 1, 1), 30, this.densityDifferential);
+            /*
+             var sampleRange = 10;
+             var y0 = this.position.y + sampleRange;
+             var sample0 = this.layers.heat.sampleAt(y0);
+             this.drawSample(g, new KColor(.5, 1, 1), this.layers.heat.xMult * sample0, sampleRange);
+             this.densityDifferential = 20 * utilities.pnoise(y0 * 0.01) - 10;
+             this.drawArrow(g, new KColor(.5, 1, 1), 30, this.densityDifferential);
+             */
 
-            // g.text("down:" + this.downPress, 20, 12);
-            // g.text("up: " + this.upPress, 20, -12);
+            if (this.bubbleForce) {
+
+                g.stroke(0);
+                g.strokeWeight(2);
+                //  g.line(0, 0, this.bubbleForce.x, this.bubbleForce.y);
+            }
 
         },
 
         drawSample : function(g, color, width, y) {
             color.fill(g);
             var height = 3;
-        
-            g.rect(0, y - height/2, width, 1);
+
+            g.rect(0, y - height / 2, width, 1);
         },
 
         drawArrow : function(g, color, offset, d) {
@@ -98,11 +104,26 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             var weight = speed * Math.pow(this.element.number, .3);
             var wander = 30 * (utilities.pnoise(time.total + this.idNumber + 100) - .5);
 
-            this.electronDegeneracyPressure = speed * 12 * Math.pow(y, -.5);
+            this.electronDegeneracyPressure = speed * 2 * Math.pow(y, -.5);
 
             this.totalForce.y += -this.electronDegeneracyPressure + weight + wander;
-            this.totalForce.x = 170 * (utilities.pnoise(time.total + this.idNumber) - .5) + -this.position.x;
 
+            var xPull = Math.abs(this.position.x);
+            var xForce = -3 * Math.pow(xPull, 4) / this.position.x;
+
+            this.totalForce.x = 170 * (utilities.pnoise(time.total + this.idNumber) - .5);
+
+            if (xPull !== 0)
+                this.totalForce.x += xForce;
+
+            this.bubbleForce = this.layers.getForceOn(this);
+            this.totalForce.add(this.bubbleForce);
+            if (isNaN(this.totalForce.x) || isNaN(this.totalForce.y)) {
+
+                //   debug.output("totalforce: " + this.totalForce);
+                this.totalForce.setTo(0, 0);
+
+            }
         }
     })
 
@@ -117,7 +138,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             for (var i = 0; i < this.segmentCount; i++) {
                 this.values[i] = Math.random() * 30;
             }
-            this.filterLength = 3;
+            this.filterLength = 4;
             var sigma = 2;
 
             this.blurFilter = [];
@@ -211,18 +232,19 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
                 g.endShape();
             }
         }
-    })
+    });
+
     var StarLayers = Class.extend({
 
         init : function(star) {
             this.star = star;
             this.bubbles = [];
-            this.radius = 150;
+            this.radius = 90;
 
-            this.heat = new LayerGraph(this, "heat", 80);
+            this.heat = new LayerGraph(this, "heat", 50);
 
             // Make a bunch of layer bubbles
-            for (var i = 0; i < 5; i++) {
+            for (var i = 0; i < 1; i++) {
                 var index = Math.round(Math.random() * Math.random() * 6);
                 var element = ElementSet.activeElements[index];
                 var bubble = this.addBubble(element);
@@ -243,27 +265,35 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
                 bubble[fxn](arg);
             });
         },
+
+        getForceOn : function(target) {
+            var pressureForce = new Vector();
+            for (var i = 0; i < bubbleCount; i++) {
+                var bubble = this.bubbles[i];
+                if (bubble !== target) {
+                    var offset = target.position.getOffsetTo(bubble.position);
+
+                    var d = offset.magnitude();
+                    if (d === 0) {
+                        offset.x = 1;
+                        d = 1;
+                    }
+
+                    var power = 100 * Math.pow(d, -1.2);
+                    power *= Math.pow(bubble.element.number, .2);
+                    power = utilities.constrain(power, 0, 10000);
+                    pressureForce.addMultiple(offset, -power / d);
+                }
+            }
+
+            return pressureForce;
+        },
+
         updateSimulation : function(time) {
             var layers = this;
 
             // Set the pressure on all the bubbles
             var bubbleCount = this.bubbles.length;
-            for (var i = 0; i < bubbleCount; i++) {
-
-                var b = this.bubbles[i];
-                b.downPress = 0;
-                b.upPress = 0;
-
-                if (i > 0) {
-                    var top = this.bubbles[i - 1];
-                    b.downPress = getPressureFromDistance(top.position.y - b.position.y);
-                }
-
-                if (i < bubbleCount - 1) {
-                    var bottom = this.bubbles[i + 1];
-                    b.upPress = getPressureFromDistance(bottom.position.y - b.position.y);
-                }
-            }
 
             // add all the bubbles to the density
 
@@ -277,11 +307,16 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             this.applyToBubbles("updatePosition", time);
             this.applyToBubbles("finishUpdate", time);
 
+            $.each(this.bubbles, function(index, bubble) {
+                var min = -5 * (1 + Math.sin(bubble.idNumber + time.total));
+                bubble.position.y = Math.min(bubble.position.y, min);
+            });
+
             layers.heat.clear();
             $.each(this.bubbles, function(index, bubble) {
-                bubble.position.y = Math.min(bubble.position.y, 0);
                 layers.heat.addValue(bubble.position.y, 40 * bubble.mass);
             });
+            layers.heat.blur();
             layers.heat.blur();
 
             // sort the bubbles

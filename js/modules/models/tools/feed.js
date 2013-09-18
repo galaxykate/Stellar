@@ -22,6 +22,11 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 this.onFeed = onFeed;
 
             },
+            
+            deactivate : function() {
+                stellarGame.elementsWidget.deactivate(this.element);
+
+            },
 
             onUp : function(touch) {
 

@@ -27,7 +27,6 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
             // Release any dust
             onUp : function(touch) {
                 var tool = this;
-             
 
             },
 
@@ -45,7 +44,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                     debugTouch.output("Siphon " + obj);
                     if (obj.siphonable) {
                         tool.elements.siphon(obj.elements, 1);
-                    stellarGame.player.updateElements();
+                        stellarGame.player.updateElements();
                     }
 
                     if (touch.overObjects[index].acceptsDust || touch.overObjects[index].pickupable) {
@@ -87,7 +86,6 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                     // Removing touch pressed for now for UI interaction
                     //
 
-                  
                     if (stellarGame.touch.pressed) {
                         // Draw a spiral
                         g.stroke(1, 0, 1, .8);

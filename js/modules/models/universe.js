@@ -16,7 +16,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
             this.spawnTable = new ChanceTable();
             this.spawnTable.addOption(particleTypes.Star, "star", 1);
-            this.spawnTable.addOption(particleTypes.Dust, "dust", 1);
+            //   this.spawnTable.addOption(particleTypes.Trailhead, "dusttrail", 1);
             //  this.spawnTable.addOption(particleTypes.Critter, "critter", 1);
 
             this.touchMarker = new particleTypes.UParticle();
@@ -47,6 +47,14 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             this.spawn(this.camera);
 
             this.spawn(this.touchMarker);
+
+            this.timespans = [];
+
+        },
+
+        addTimeSpan : function(timespan) {
+            console.log("Add time span " + timespan);
+            this.timespans.push(timespan);
         },
 
         // Make a quad tree for the universe
@@ -161,6 +169,12 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             debug.output("Touched: ");
             debug.outputArray(stellarGame.touch.overObjects);
 
+            // Update all the timespans
+            $.each(this.timespans, function(index, timespan) {
+                timespan.increment(time.ellapsed);
+                debug.output(index + ": " + timespan);
+            });
+
             // Get all the active objects that are regions
             this.activeRegions = _.filter(activeObjects, function(obj) {
                 return obj.isRegion;
@@ -205,7 +219,6 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
                     obj[fxn](arg);
             })
         },
-
         updatePhysics : function(time) {
 
             // Update all the particle physics
@@ -216,7 +229,6 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             this.applyToActiveObjects("finishUpdate", time);
 
         },
-
         updateSimulation : function(time) {
             this.applyToActiveObjects("updateSimulation", time);
 
@@ -226,6 +238,9 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             // Remove dead object, replace misplaced ones, etc
             this.quadTree.cleanup();
             this.applyToActiveObjects("cleanup", time);
+            this.timespans = _.filter(this.timespans, function(timespan) {
+                return !timespan.completed;
+            });
 
             initialUpdate = false;
         },
@@ -287,7 +302,6 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             });
 
         },
-
         getRegion : function(p) {
             var universe = this;
             var region = _.find(this.activeRegions, function(region) {
@@ -295,11 +309,9 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             });
             return region;
         },
-
         spawn : function(object) {
             this.quadTree.insert(object);
         },
-
         initStatistics : function() {
             stellarGame.statistics.numberOfTrails = 0;
             stellarGame.statistics.numberOfStars = 0;
@@ -308,11 +320,9 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             stellarGame.statistics.bgStarCount = 0;
             stellarGame.statistics.numberofSparkles = 0;
         },
-
         getQuadrantsInRegion : function(region, quads, g) {
             return quadTree.getQuadrantsInRegion(region, quads, g);
         },
-
         addScrollingMovement : function(v) {
             this.camera.velocity.addMultiple(v, 1);
         },

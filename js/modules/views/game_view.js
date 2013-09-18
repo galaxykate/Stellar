@@ -13,7 +13,7 @@ define(["modules/views/universe_view", "modules/views/elements_widget", "inherit
 
     var createOutput = function(divName) {
         var div = $("#" + divName);
-     
+
         div.html("test");
         var outputLines = [];
         var output = {
@@ -52,14 +52,15 @@ define(["modules/views/universe_view", "modules/views/elements_widget", "inherit
         return output;
 
     };
+    
     debug = createOutput("debug_output_pane");
     debugTouch = createOutput("touch_output_pane");
     inspectionOutput = createOutput("inspection_output_pane");
- 
+
     var GameView = Class.extend({
         init : function(universe) {
             var elementsWidget = new ElementsWidget($("#elements_pane"));
-
+            stellarGame.elementsWidget = elementsWidget;
             elementsWidget.setActiveElement(undefined);
 
             this.universeView = new UniverseView(stellarGame.universe);

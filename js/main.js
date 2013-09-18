@@ -81,6 +81,8 @@ var utilities = {
     // put noise in here too?
 
     sCurve : function(v, iterations) {
+        if (iterations === undefined)
+            iterations = 1;
         for (var i = 0; i < iterations; i++) {
             var v2 = .5 - .5 * Math.cos(v * Math.PI);
             v = v2;
@@ -214,6 +216,7 @@ require.config({
         'spring' : 'modules/models/particles/spring',
         'kcolor' : 'modules/models/kcolor',
         'edge' : 'modules/models/edge',
+        'common' : 'modules/common/common',
 
         'lifespan' : 'modules/models/lifespan',
 

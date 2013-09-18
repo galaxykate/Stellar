@@ -42,6 +42,7 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
             stellarGame.activateMove = function() {
                 if (stellarGame.touch.activeTool)
                     stellarGame.touch.activeTool.deactivate();
+
                 moveTool.activate();
 
             };

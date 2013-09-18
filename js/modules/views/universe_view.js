@@ -4,11 +4,15 @@
 
 // Display the Universe
 // It's using a singleton pattern
-define(['inheritance', "processing", "modules/models/vector", "modules/models/edge", "three", "modules/views/inspection_hud"], function(Inheritance, PROCESSING, Vector, Edge, THREE, InspectionHUD) {
+define(["processing", "modules/models/edge", "three", "modules/views/inspection_hud", "common"], function(PROCESSING, Edge, THREE, InspectionHUD, common) {
 
     var P_WIDTH = screenResolution.width;
     var P_HEIGHT = screenResolution.height;
     var SCREEN_BORDER = 20;
+
+    var midZoom = .47;
+    var minZoom = .1;
+    var maxZoom = 1;
 
     var threePosToString = function(threeScreen) {
         return threeScreen.x.toFixed(2) + " " + threeScreen.y.toFixed(2) + " " + threeScreen.z.toFixed(2);
@@ -76,11 +80,14 @@ define(['inheritance', "processing", "modules/models/vector", "modules/models/ed
 
                 // Set the drawing function of processing (used for both drawing and updating)
                 g.draw = function() {
+                    universeView.time.frame++;
 
                     if (stellarGame.ready) {
-                        universeView.time.frame++;
                         universeView.update(g.millis() * .001);
-                        universeView.draw(g);
+                        if (universeView.isUpdating) {
+                            debug.output("Drawing");
+                            universeView.draw(g);
+                        }
                     }
                 };
             };
@@ -109,17 +116,24 @@ define(['inheritance', "processing", "modules/models/vector", "modules/models/ed
         },
 
         unfocus : function() {
-            this.camera.unfocus();
+            stellarGame.focused = false;
+            console.log("--------------");
+            console.log("Unfocus");
+
             if (this.focus)
                 this.focus.inFocus = false;
 
             this.focus = undefined;
             this.inspectionHUD.unfocus();
             stellarGame.activateMove();
+            this.animateZoomTo(midZoom, .7);
 
         },
 
         focusOn : function(obj) {
+            stellarGame.focused = true;
+            var view = this;
+            console.log("--------------");
             console.log("Focus on");
             console.log(obj);
             this.inspectionHUD.focusOn(obj);
@@ -131,13 +145,50 @@ define(['inheritance', "processing", "modules/models/vector", "modules/models/ed
 
             this.focus = obj;
             obj.inFocus = true;
-            // Lock the camera
-            this.camera.focusOn({
-                target : obj,
-                distance : .8
+
+            this.animateZoomTo(minZoom, 1.2);
+            this.animateCameraTo(this.focus, 1);
+
+        },
+
+        animateZoomTo : function(endZoom, time) {
+            console.log("Animate zoom to " + endZoom);
+            var view = this;
+            // stop the previous zoom
+            if (this.zoomAnimation)
+                this.zoomAnimation.complete = true;
+
+            var startZoom = this.zoom;
+            this.zoomAnimation = new TimeSpan({
+                lifespan : time,
+                onChange : function(ellapsed, pct) {
+                    console.log("update zoom " + pct);
+                    var pct2 = utilities.sCurve(pct);
+                    view.setZoom(utilities.lerp(startZoom, endZoom, pct2), false);
+                }
             });
-            
-            this.setZoom(.1);
+            this.universe.addTimeSpan(this.zoomAnimation);
+
+        },
+
+        animateCameraTo : function(obj, time) {
+            var view = this;
+            // stop the previous zoom
+            if (this.cameraAnimation)
+                this.cameraAnimation.complete = true;
+
+            var startPos = new Vector(this.camera.position);
+            this.cameraAnimation = new TimeSpan({
+                lifespan : time,
+                onChange : function(ellapsed, pct) {
+                    var pct2 = utilities.sCurve(pct);
+
+                    var p = startPos.lerp(obj.position, pct2);
+                    view.camera.position.setTo(p);
+                }
+            });
+            this.universe.addTimeSpan(this.cameraAnimation);
+
         },
 
         isOnScreen : function(p) {
@@ -145,68 +196,76 @@ define(['inheritance', "processing", "modules/models/vector", "modules/models/ed
             var h = P_HEIGHT - (SCREEN_BORDER * 2);
             return p.z > 0 && utilities.within(p.x, -w / 2, w / 2) && utilities.within(p.y, -h / 2, h / 2);
         },
-
-        onFirstFrame : function() {
-            if (time.frame == 0) {
-                // Start by focusing on the center star
-                this.focusOn(this.universe.startStar);
-            }
+        startUpdating : function() {
+            console.log("First frame");
+            // Start by focusing on the center star
+            this.focusOn(this.universe.startStar);
+            this.isUpdating = true;
 
         },
 
         // Update according to the current time
         update : function(currentTime) {
-
             debug.clear();
             inspectionOutput.clear();
-            
-            debug.output("Focus on " + this.focus);
 
-            // make sure that the ellapsed time is neither to high nor too low
             var time = this.time;
             time.ellapsed = currentTime - time.total;
+            time.total = currentTime;
+
+            debug.output(time.frame + ": isUpdating " + this.isUpdating);
+
+            // make sure that the ellapsed time is neither to high nor too low
             if (time.ellapsed === undefined)
                 time.ellapsed = .03;
             utilities.constrain(time.ellapsed, .01, .1);
 
             stellarGame.time.universeTime = time.total;
 
-            time.total = currentTime;
-            debug.output("Update " + time.total.toFixed(2) + " fps: " + (1 / time.ellapsed).toFixed(2));
-
-            this.activeQuadrants = [];
-
-            // Compile all of the quadrants that are on screen
-            this.universe.quadTree.compileOnscreenQuadrants(this.activeQuadrants, this);
-
-            // Compile all the active objects
-            this.activeObjects = [];
-            var contentsArrays = [];
-            if (stellarGame.options.outputActiveQuads) {
-                debug.output(this.activeQuadrants);
+            if (!this.isUpdating) {
+                this.startUpdating();
             }
 
-            $.each(this.activeQuadrants, function(index, quad) {
-                contentsArrays[index] = quad.contents;
-            });
+            if (this.isUpdating) {
 
-            // Compile all the arrays of contents into a single array
-            this.activeObjects = this.activeObjects.concat.apply(this.activeObjects, contentsArrays);
+                debug.output("Focus on " + this.focus);
 
-            if (stellarGame.options.outputActiveObjects) {
-                debug.output("======================================");
-                debug.output("updating " + this.activeObjects.length);
-                for (var i = 0; i < this.activeObjects.length; i++) {
-                    debug.output(i + ": " + this.activeObjects[i]);
+                debug.output("Update " + time.total.toFixed(2) + " fps: " + (1 / time.ellapsed).toFixed(2));
+
+                this.activeQuadrants = [];
+
+                // Compile all of the quadrants that are on screen
+                this.universe.quadTree.compileOnscreenQuadrants(this.activeQuadrants, this);
+
+                // Compile all the active objects
+                this.activeObjects = [];
+                var contentsArrays = [];
+                if (stellarGame.options.outputActiveQuads) {
+                    debug.output(this.activeQuadrants);
                 }
-                debug.output("======================================");
+
+                $.each(this.activeQuadrants, function(index, quad) {
+                    contentsArrays[index] = quad.contents;
+                });
+
+                // Compile all the arrays of contents into a single array
+                this.activeObjects = this.activeObjects.concat.apply(this.activeObjects, contentsArrays);
+
+                if (stellarGame.options.outputActiveObjects) {
+                    debug.output("======================================");
+                    debug.output("updating " + this.activeObjects.length);
+                    for (var i = 0; i < this.activeObjects.length; i++) {
+                        debug.output(i + ": " + this.activeObjects[i]);
+                    }
+                    debug.output("======================================");
+                }
+
+                // Update the universe
+                this.universe.update(time, this.activeObjects);
+
+                // Output to the inspection pane
+                this.inspectionHUD.update();
             }
-
-            // Update the universe
-            this.universe.update(time, this.activeObjects);
-
-            // Output to the inspection pane
-            this.inspectionHUD.update();
 
         },
         //=================================================================================
@@ -214,10 +273,25 @@ define(['inheritance', "processing", "modules/models/vector", "modules/models/ed
         //=================================================================================
         // Camera Control
 
-        setZoom : function(zoom) {
+        setZoom : function(zoom, manualControl) {
             this.zoom = zoom;
-            debug.output("ZOOM: " + zoom);
-            this.camera.setZoom(zoom);
+
+            this.camera.setZoom(this.zoom);
+
+        },
+
+        modifyZoom : function(delta, manualControl) {
+
+            var newZoom = this.zoom + .003 * delta;
+            if (this.focus) {
+                if (delta > 0)
+                    this.unfocus();
+            } else {
+
+                newZoom = utilities.constrain(newZoom, midZoom, maxZoom);
+                this.setZoom(newZoom, manualControl);
+            }
+
         },
 
         //=================================================================================
@@ -323,7 +397,6 @@ define(['inheritance', "processing", "modules/models/vector", "modules/models/ed
         drawInsideTest : function(g, corners) {
 
         },
-
         drawLayer : function(context) {
             var view = this;
             var screenPos = new Vector(0, 0);
@@ -370,7 +443,6 @@ define(['inheritance', "processing", "modules/models/vector", "modules/models/ed
             });
 
         },
-        
         getTouchableAt : function(target) {
             debugTouch.output("Get touchable at " + target);
             var touchables = [];

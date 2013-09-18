@@ -179,7 +179,17 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
             updatePosition : function(time) {
                 var t = time.ellapsed;
+
                 this.velocity.addMultiple(this.totalForce, t);
+                if (this.maxVelocity) {
+                    var speed = this.velocity.magnitude();
+                    var speed2 = Math.min(speed, this.maxVelocity);
+                    if (speed !== speed2 && speed !== 0) {
+                        this.velocity.mult(speed2 / speed);
+                     
+                    }
+                }
+
                 this.position.addMultiple(this.velocity, t);
                 this.velocity.mult(this.drag);
                 if (this.pinnedTo) {

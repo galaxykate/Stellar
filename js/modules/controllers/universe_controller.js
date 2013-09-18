@@ -34,11 +34,11 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
             value : zoomDefault,
             step : .01,
             slide : function(event, ui) {
-                stellarGame.universeView.setZoom(ui.value);
+                stellarGame.universeView.setZoom(ui.value, true);
             }
         });
 
-        stellarGame.universeView.setZoom(zoomDefault);
+        stellarGame.universeView.setZoom(zoomDefault, true);
 
         var rotationDefault = .2;
         $("#rotation_slider").slider({
@@ -297,14 +297,8 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
         console.log("Bind touch events");
         // Mousewheel zooming
         $("#universe_canvas").mousewheel(function(event, delta) {
-            console.log("Scroll universe");
-            var zoomCurrent = universeView.camera.zoom;
+            universeView.modifyZoom(delta, true);
 
-            var z = zoomCurrent + delta * .003;
-            var unfocusLimit = 1;
-            if (z > unfocusLimit)
-                universeView.unfocus();
-            universeView.camera.setZoom(z);
             event.preventDefault();
 
         });
