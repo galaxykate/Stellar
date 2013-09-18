@@ -3,20 +3,37 @@
  */
 
 var settings = {
+	
+	unlockAll: function(){
+		settings.hydrogenUnlocked = true;
+	    settings.heliumUnlocked= true;
+	    settings.carbonUnlocked= true;
+	    settings.oxygenUnlocked= true;
+	    settings.siliconUnlocked= true;
+	    settings.ironUnlocked= true;
+	    settings.goldUnlocked= true;
+	    settings.uraniumUnlocked= true;
+	    settings.playerElementCapacity= 100;
+	    settings.moveToolUnlocked= true;
+	    settings.tempToolUnlocked= true;
+	    settings.densityToolUnlocked= true;
+	},
 
-    ///////////////////////////////////////////////////////////////////
-    ///////////// Star Element Burning and Supernova Scales ///////////
-    ///////////////////////////////////////////////////////////////////
-
-    // Sets the rate that the star burns through its fuel if it past its temp threshold
-    // Debug default has been 0.01, but we probably will scale it way slower than that
-    elementBurnAmtScaler : 0.005,
-
-    // Star temperature is based on density and mass of the star
-    // density * totalMass * starTempCalcScalar
-    // Default: 10
-    // Setting very low will turn off supernova.
-    // Setting very high will ensure stars reach full supernova state
-    starTempCalcScaler : 10,
-
+	// unlocks via quests
+    hydrogenUnlocked: true,
+    heliumUnlocked: false,
+    carbonUnlocked: false,
+    oxygenUnlocked: false,
+    siliconUnlocked: false,
+    ironUnlocked: false,
+    goldUnlocked: false,
+    uraniumUnlocked: false,
+    
+    // increases via quests
+    playerElementCapacity: 10,
+    
+    // unlocks via quests
+    moveToolUnlocked: true,
+    tempToolUnlocked: false,
+    densityToolUnlocked: false,
 };

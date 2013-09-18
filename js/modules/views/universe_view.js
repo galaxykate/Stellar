@@ -138,6 +138,9 @@ define(['inheritance', "processing", "modules/models/vector", "modules/models/ed
             });
             
             this.setZoom(.1);
+            
+            // May need to check that this is not the star we start with
+            stellarGame.qManager.satisfy("Navigating Space", 2);
         },
 
         isOnScreen : function(p) {
@@ -215,6 +218,7 @@ define(['inheritance', "processing", "modules/models/vector", "modules/models/ed
         // Camera Control
 
         setZoom : function(zoom) {
+        	
             this.zoom = zoom;
             debug.output("ZOOM: " + zoom);
             this.camera.setZoom(zoom);

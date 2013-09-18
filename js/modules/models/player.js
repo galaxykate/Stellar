@@ -13,9 +13,10 @@ define(["modules/models/elementSet", "kcolor", "inheritance"], function(ElementS
         init : function() {
             var player = this;
             this.elementBelt = {
-                capacity : ElementSet.createElementCapacities(100),
+                capacity : ElementSet.createElementCapacities(10),
                 quantity : new ElementSet(this),
             };
+            this.elementBelt.quantity.playerBelt = true; // For quest completion tracking
 
             this.idColor = new KColor(.55, 1, 1);
 

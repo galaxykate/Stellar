@@ -30,10 +30,12 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
 
             setZoom : function(value) {
                 value = utilities.constrain(value, tuning.minZoom, tuning.maxZoom);
+                if(value > 0.5 && this.zoom < value) stellarGame.qManager.satisfy("Navigating Space", 0);
 
                 this.distance = Math.pow(value, 3) + .01;
                 this.zoom = value;
                 debug.output("Zoom " + this.zoom);
+                
             },
 
             setZoomTarget : function(zoomTarget) {

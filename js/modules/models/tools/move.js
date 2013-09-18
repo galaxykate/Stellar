@@ -28,7 +28,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
             onUp : function(touch) {
                 var tool = this;
 
-                    qManager.satisfy("Inventory Use: Helium");
+                //qManager.satisfy("Gather Helium");
 
             },
 
@@ -46,7 +46,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                     debugTouch.output("Siphon " + obj);
                     if (obj.siphonable) {
                         tool.elements.siphon(obj.elements, 1);
-                    stellarGame.player.updateElements();
+                    	stellarGame.player.updateElements();
                     }
 
                     if (touch.overObjects[index].acceptsDust || touch.overObjects[index].pickupable) {
@@ -64,6 +64,8 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 }
 
                 this.moveWithOffset(touch);
+                
+                stellarGame.qManager.satisfy("Navigating Space", 1);
 
             },
             drawCursor : function(g, p, scale) {

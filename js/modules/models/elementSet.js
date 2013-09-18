@@ -119,19 +119,30 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
         //===============================================================
         // Ways to transfer, add, fuse, or remove elements
 
-        // Siphon off some elements
+        // Siphon in ONE random element at a time
         siphon : function(target, volume) {
             for (var i = 0; i < volume; i++) {
                 var elem = utilities.getWeightedRandom(target.elementQuantity, function(index, elem) {
                     return index;
-
                 });
+                
+                if(elem !== undefined){
+	                var siphonAmt = Math.min(150, target.elementQuantity[elem]);
+	                //utilities.debugOutput("Siphoning " + siphonAmt);
+	                //console.log(i + "/" + volume+ " Siphoning element " + elem + " amount " + siphonAmt);
 
-                var siphonAmt = Math.min(150, target.elementQuantity[elem]);
-                //utilities.debugOutput("Siphoning " + siphonAmt);
-
-                this.elementQuantity[elem] += siphonAmt;
-                target.elementQuantity[elem] -= siphonAmt
+	                if(this.playerBelt !== undefined){
+	                	var elementName = activeElements[elem].name;
+	                	if(settings[elementName.toLowerCase() + "Unlocked"] === true){
+	                		this.elementQuantity[elem] += siphonAmt;
+	                		target.elementQuantity[elem] -= siphonAmt
+	                		stellarGame.qManager.satisfy("Gather " + elementName);
+	                	}
+	                } else {
+	                	this.elementQuantity[elem] += siphonAmt;
+	                	target.elementQuantity[elem] -= siphonAmt
+	                }
+                }
 
             }
 
