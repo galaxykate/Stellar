@@ -26,7 +26,6 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
             // Release any dust
             onUp : function(touch) {
-                var tool = this;
 
             },
 
@@ -45,6 +44,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                     if (obj.siphonable) {
                         tool.elements.siphon(obj.elements, 1);
                         stellarGame.player.updateElements();
+                       
                     }
 
                     if (touch.overObjects[index].acceptsDust || touch.overObjects[index].pickupable) {
@@ -62,6 +62,8 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 }
 
                 this.moveWithOffset(touch);
+
+                stellarGame.qManager.satisfy("Navigating Space", 1);
 
             },
             drawCursor : function(g, p, scale) {

@@ -9,6 +9,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
     return (function() {
     	var playerInventory;
     	var questScreen;
+    	var spawnedQuestCompletionScreens = [];
 
         function init() {
             console.log("INIT UI");
@@ -44,12 +45,14 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    };
 	    
 	    function makeQuestWindow() {
-	    	questScreen = new Popup("#universe", "Quest Log");
+
+	    	questScreen = new Popup("#overlay_panels", "Quest Log");
+	    	questScreen.view.setZIndex(100);
 	    	
 	    	var universeWidth = screenResolution.width;
 	    	var universeHeight =screenResolution.height;
 	    	
-	    	questScreen.addState("closed", 0, 360, 40, 20, 0.3);
+	    	questScreen.addState("closed", 0, 360, 140, 30, 0.6);
 	    	questScreen.addState("open", 20, 20, universeWidth-50, universeHeight-50, 1);
 	    	questScreen.addTransition("open", "closed", "click");
 	    	questScreen.addTransition("closed", "open", "click", false);
@@ -91,6 +94,20 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    function getInventoryElementPct(name){
 	    	return getPlayerInventory().contents["playerElements"].elementsHolder.getPctByName(name);
 	    };
+	    
+	    function spawnQuestCompletionScreen(quest){
+	    	var qScreen = new Popup("#overlay_panels", "Quest Completed: <br><br><center>" +  quest.name + "</center>");
+	    	var universeWidth = screenResolution.width;
+	    	var universeHeight =screenResolution.height;
+	    	
+	    	qScreen.addState("closed", -1, -1, 0, 0, 0);
+	    	qScreen.addState("open", 200, 100, universeWidth-400, universeHeight-200, 1);
+	    	//qScreen.addTransition("open", "closed", "click");
+	    	//qScreen.addTransition("closed", "open", "click", false);
+	    	qScreen.addCloseDiv();
+	    	qScreen.setState("open");
+	    	
+	    };
 
         return {
             init : init,
@@ -99,6 +116,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
             update: update,
             getInventoryElementAmt: getInventoryElementAmt,
             getInventoryElementPct: getInventoryElementPct,
+            spawnQuestCompletionScreen: spawnQuestCompletionScreen,
         };
 
     })();

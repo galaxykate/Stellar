@@ -148,6 +148,7 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
 
             this.animateZoomTo(minZoom, 1.2);
             this.animateCameraTo(this.focus, 1);
+             stellarGame.qManager.satisfy("Navigating Space", 2);
 
         },
 
@@ -167,6 +168,7 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
                     view.setZoom(utilities.lerp(startZoom, endZoom, pct2), false);
                 }
             });
+            
             this.universe.addTimeSpan(this.zoomAnimation);
 
         },
@@ -187,7 +189,6 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
                     view.camera.position.setTo(p);
                 }
             });
-            this.universe.addTimeSpan(this.cameraAnimation);
 
         },
 
@@ -273,7 +274,9 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
         //=================================================================================
         // Camera Control
 
+
         setZoom : function(zoom, manualControl) {
+
             this.zoom = zoom;
 
             this.camera.setZoom(this.zoom);

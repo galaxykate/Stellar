@@ -55,6 +55,7 @@ define(["inheritance", "modules/models/vector"], function(Inheritance, Vector) {
               			break;
               		case "click":
               			div.click(function(event) {
+              				//console.log("CLICKING ON " + divID);
               				//console.log("div id " + divID + " ==? " + event.target.id)
               				//console.log("bubble? : " + bubble);
               				//console.log("other test? : " + (!bubble && divID === event.target.id));

@@ -29,11 +29,12 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
             },
 
             setZoom : function(value) {
+                stellarGame.qManager.satisfy("Navigating Space", 0);
 
                 this.distance = Math.pow(value, 3) + .01;
                 this.zoom = value;
-            },
 
+            },
 
             finishUpdate : function(time) {
                 //utilities.debugOutput("Camera pos: " + this.position);

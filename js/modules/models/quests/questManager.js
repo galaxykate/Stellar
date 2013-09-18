@@ -25,6 +25,7 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
 				q.setQuestName(Quests[i].name);
 				q.level = Quests[i].level;
 				q.giverType = Quests[i].giver;
+				q.onComplete = Quests[i].onComplete;
 				
 				for(var j = 0; j < Quests[i].conditions.length; j++){
 					q.addCondition(Quests[i].conditions[j].desc);
@@ -35,6 +36,15 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
 			
 			startAllViableQuests();
 			setVisibility();
+			
+			stellarGame.qManager = this;
+			// DEBUG
+			unlockAllQuests();
+        };
+        
+        function unlockAllQuests(){
+        	currentLevel = 999;
+        	startAllViableQuests();
         };
         
         function startAllViableQuests(){
@@ -61,14 +71,22 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
         };
         
         function satisfy(questName, conditionID){
-        	if(questLibrary[questIDByName[questName]].finished === false){
-        		questLibrary[questIDByName[questName]].satisfy(conditionID);
-        		questLibrary[questIDByName[questName]].update(); // figures % completed
-	        	questLibrary[questIDByName[questName]].updateHTMLText();
-	        	if(questLibrary[questIDByName[questName]].finished === true && questLibrary[questIDByName[questName]].fanfair === false){
+        	var quest = questLibrary[questIDByName[questName]];
+        	if(quest !== undefined){
+        	if(quest.finished === false){
+        		quest.satisfy(conditionID);
+        		quest.update(); // figures % completed
+	        	quest.updateHTMLText();
+	        	if(quest.finished === true && quest.fanfair === false){
     				//uiManager.getQuestScreen().flash(); // replace flash with a new pop-up of awesome
-    				questLibrary[questIDByName[questName]].fanfair = true;
+    				uiManager.spawnQuestCompletionScreen(quest);
+    				quest.fanfair = true;
+    				quest.onComplete();
+    				
     			}
+        	}
+        	} else {
+        		console.log("ERROR: Quest by the name '" + questName + "' not defined!!!!");
         	}
         };
 
