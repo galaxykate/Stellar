@@ -148,7 +148,8 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
 
             this.animateZoomTo(minZoom, 1.2);
             this.animateCameraTo(this.focus, 1);
-             stellarGame.qManager.satisfy("Navigating Space", 2);
+
+            stellarGame.qManager.satisfy("Navigating Space", 2);
 
         },
 
@@ -163,12 +164,11 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
             this.zoomAnimation = new TimeSpan({
                 lifespan : time,
                 onChange : function(ellapsed, pct) {
-                    console.log("update zoom " + pct);
                     var pct2 = utilities.sCurve(pct);
                     view.setZoom(utilities.lerp(startZoom, endZoom, pct2), false);
                 }
             });
-            
+
             this.universe.addTimeSpan(this.zoomAnimation);
 
         },
@@ -187,8 +187,12 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
 
                     var p = startPos.lerp(obj.position, pct2);
                     view.camera.position.setTo(p);
+                    debug.output("Camera animated to: " + p);
+                    console.log(p);
                 }
             });
+
+            this.universe.addTimeSpan(this.cameraAnimation);
 
         },
 
@@ -274,7 +278,6 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
         //=================================================================================
         // Camera Control
 
-
         setZoom : function(zoom, manualControl) {
 
             this.zoom = zoom;
@@ -293,6 +296,8 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
 
                 newZoom = utilities.constrain(newZoom, midZoom, maxZoom);
                 this.setZoom(newZoom, manualControl);
+                stellarGame.qManager.satisfy("Navigating Space", 0);
+
             }
 
         },

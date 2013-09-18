@@ -95,15 +95,13 @@ define(["modules/models/elementSet", "inheritance", "modules/models/vector", "mo
 
                 var x = Math.round(widget.ringCenter.x + holder.ringRadius * Math.cos(theta));
                 var y = Math.round(widget.ringCenter.y + holder.ringRadius * Math.sin(theta));
-                
-                
+
                 holder.div.css({
                     left : (x - holder.ballRadius) + "px",
                     top : (y - holder.ballRadius) + "px",
                     width : holder.ballRadius * 2 + "px",
                     height : holder.ballRadius * 2 + "px",
                 });
-                
 
                 widget.resetBar(index, holder);
             });
@@ -136,21 +134,15 @@ define(["modules/models/elementSet", "inheritance", "modules/models/vector", "mo
                 stroke : 'none',
                 'stroke-width' : 5
             });
-            
-            // Quest unlocking
-            var elementName = ElementSet.activeElements[index].name.toLowerCase();
-            //console.log("elementName: " + elementName);
-            if(settings[elementName+"Unlocked"] === true){
-            	//console.log("trying to show " + elementName);
-            	holder.div.css({ visibility : "visible"});
-            	//holder.svgBG.attr({ visibility : "visible"});
-            	//holder.svgBar.attr({ visibility : "visible"});
-            } else {
-            	//console.log("trying to HIDE " + elementName);
-            	holder.div.css({ visibility : "hidden"});
-            	//holder.svgBG.attr("display", "none");
-            	//holder.svgBar.attr("display", "none");
-            }
+
+        },
+
+        disable : function(element) {
+
+        },
+
+        enable : function(element) {
+
         },
 
         deactivate : function(element) {
