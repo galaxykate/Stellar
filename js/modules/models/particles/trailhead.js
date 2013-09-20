@@ -111,7 +111,7 @@ define(["modules/models/vector", "uparticle", particleTypePath + "dust", particl
                 // create stars around
             },
 
-            update : function(time) {
+            beginUpdate : function(time) {
                 this._super(time);
 
                 // See if all the dust is gone. If it is, EXPLODE!
@@ -119,8 +119,9 @@ define(["modules/models/vector", "uparticle", particleTypePath + "dust", particl
                 if (this.dustGoneCounter === this.myDust.length && !this.exploding) {
                     this.exploding = true;
                     explode(this);
+                    stellarGame.qManager.satisfy("Clear a Dust Trail");
                 }
-                //utilities.debugOutput(this.sparkleGoneCounter + "==?" + this.mySparkleCount);
+                debug.output(this.sparkleGoneCounter + "==?" + this.mySparkleCount);
                 if (this.sparkleGoneCounter === this.mySparkleCount) {
                     this.remove();
                 }

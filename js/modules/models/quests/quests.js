@@ -26,64 +26,38 @@ define([], function() {
         	
         {
         	// Requres gathering elements with the move tool (and dumping them into the inventory?)
-        	name : "Gather Hydrogen",
-        	level : 1,
-        	giver : "global",
-        	
-        	conditions : [ { desc : "Move over dust that contains Hydrogen to siphon it into your inventory", }, ],
-        	onComplete: function(){ settings.heliumUnlocked = true;
-        							var element = stellarGame.activeElements[1];
-        							stellarGame.player.widget.disable(element) },
-        }, {
-        	// Requres gathering elements with the move tool (and dumping them into the inventory?)
-        	name : "Gather Helium",
+        	name : "Gather H, He, and C", //elementSet
         	level : 2,
         	giver : "global",
         	
-        	conditions : [ { desc : "Move over dust that contains Helium to siphon it into your inventory", }, ],
-        	onComplete: function(){ settings.carbonUnlocked = true },
+        	conditions : [ { desc : "Move over dust that contains Hydrogen to siphon it into your inventory", },
+        				   { desc : "Move over dust that contains Helium to siphon it into your inventory", }, 
+        				   { desc : "Move over dust that contains Carbon to siphon it into your inventory", },
+        				 ],
+        	onComplete: function(){  },
+        	unlockDescs: [  ],
         }, {
         	// Requres gathering elements with the move tool (and dumping them into the inventory?)
-        	name : "Gather Carbon",
-        	level : 3,
-        	giver : "global",
-        	conditions : [ { desc : "Move over dust that contains Carbon to siphon it into your inventory", }, ],
-        	onComplete: function(){ settings.oxygenUnlocked = true },
-        }, {
-        	// Requres gathering elements with the move tool (and dumping them into the inventory?)
-        	name : "Gather Oxygen",
-        	level : 4,
-        	giver : "global",
-        	conditions : [ { desc : "Move over dust that contains Oxygen to siphon it into your inventory", }, ],
-        	onComplete: function(){ settings.siliconUnlocked = true },
-        }, {
-        	// Requres gathering elements with the move tool (and dumping them into the inventory?)
-        	name : "Gather Silicon",
-        	level : 5,
-        	giver : "global",
-        	conditions : [ { desc : "Move over dust that contains Silicon to siphon it into your inventory", }, ],
-        	onComplete: function(){ settings.ironUnlocked = true },
-        }, {
-        	// Requres gathering elements with the move tool (and dumping them into the inventory?)
-        	name : "Gather Iron",
+        	name : "Gather O, Si, and Fe", //elementSet
         	level : 6,
         	giver : "global",
-        	conditions : [ { desc : "Move over dust that contains Iron to siphon it into your inventory", }, ],
-        	onComplete: function(){ settings.goldUnlocked = true },
+        	
+        	conditions : [ { desc : "Move over dust that contains Oxygen to siphon it into your inventory", },
+        				   { desc : "Move over dust that contains Silicon to siphon it into your inventory", }, 
+        				   { desc : "Move over dust that contains Iron to siphon it into your inventory", },
+        				 ],
+        	onComplete: function(){  },
+        	unlockDescs: [  ],
         }, {
         	// Requres gathering elements with the move tool (and dumping them into the inventory?)
-        	name : "Gather Gold",
-        	level : 7,
+        	name : "Gather Au and U", //elementSet
+        	level : 10,
         	giver : "global",
-        	conditions : [ { desc : "Move over dust that contains Gold to siphon it into your inventory", }, ],
-        	onComplete: function(){ settings.uraniumUnlocked = true },
-        }, {
-        	// Requres gathering elements with the move tool (and dumping them into the inventory?)
-        	name : "Gather Uranium",
-        	level : 8,
-        	giver : "global",
-        	conditions : [ { desc : "Move over dust that contains Uranium to siphon it into your inventory", }, ],
-        	onComplete: function(){ settings.playerElementCapacity += 10 },
+        	conditions : [ { desc : "Move over dust that contains Gold to siphon it into your inventory", },
+        				   { desc : "Move over dust that contains Uranium to siphon it into your inventory", }, 
+        				 ],
+        	onComplete: function(){  },
+        	unlockDescs: [  ],
         }, 
         
         	// ----------------------------------
@@ -91,18 +65,24 @@ define([], function() {
         	// ----------------------------------
         {
         	// Tutorial Business - feeding the star, a basic action
-        	name : "Feed a Star Hydrogen",
+        	name : "Feed a Star Hydrogen", //elements_widget feed.js 
         	level : 0,
         	giver : "global",
         	conditions : [ { desc : "Select Hydrogen in your inventory", }, 
         				   { desc : "Click on a star to give it some Hydrogen", }, ],
-        }, /*{
-        	name : "Feed a Star Helium",
-        	level : 0,
+        	onComplete: function(){ settings.moveZoomToolUnlocked = true
+        							settings.heliumUnlocked = true },
+        	unlockDescs: [ { desc : "Zooming and Movement Unlocked!", },
+        			       { desc : "Helium Unlocked!", }, ],
+        }, {
+        	name : "Feed a Star He and C", //elements_widget feed.js
+        	level : 4,
         	giver : "global",
         	conditions : [ { desc : "Select Helium in your inventory", }, 
-        				   { desc : "Click on a star to give it some Helium", }, ],
-        }, {
+        				   { desc : "Click on a star to give it some Helium NOTE:ONLY WORKS ON KATE'S NEW STAR" , }, 
+        				   { desc : "Do the same for Carbon NOTE:ONLY WORKS ON KATE'S NEW STAR", }, ],
+        	unlockDescs: [  ],
+        }, /*{
         	name : "Feed a Star Carbon",
         	level : 0,
         	giver : "global",
@@ -145,52 +125,60 @@ define([], function() {
         	// ----------------------------------
         {
         	name : "Max out Hydrogen Reserve",
-        	level : 1,
+        	level : 9,
         	giver : "global",
         	conditions : [ { desc : "Fill inventory Hydrogen inventory slot to its maximum", }, ],
         	onComplete: function(){ settings.playerElementCapacity += 10 },
+        	unlockDescs: [ { desc : "Increased Element Carrying Capacity!", }, ],
         }, {
         	name : "Max out Helium Reserve",
-        	level : 2,
+        	level : 10,
         	giver : "global",
         	conditions : [ { desc : "Fill inventory Helium inventory slot to its maximum", }, ],
         	onComplete: function(){ settings.playerElementCapacity += 10 },
+        	unlockDescs: [ { desc : "Increased Element Carrying Capacity!", }, ],
         }, {
         	name : "Max out Carbon Reserve",
-        	level : 3,
+        	level : 11,
         	giver : "global",
         	conditions : [ { desc : "Fill inventory Carbon inventory slot to its maximum", }, ],
         	onComplete: function(){ settings.playerElementCapacity += 10 },
+        	unlockDescs: [ { desc : "Increased Element Carrying Capacity!", }, ],
         }, {
         	name : "Max out Oxygen Reserve",
-        	level : 4,
+        	level : 12,
         	giver : "global",
         	conditions : [ { desc : "Fill inventory Oxygen inventory slot to its maximum", }, ],
         	onComplete: function(){ settings.playerElementCapacity += 10 },
+        	unlockDescs: [ { desc : "Increased Element Carrying Capacity!", }, ],
         }, {
         	name : "Max out Silicon Reserve",
-        	level : 5,
+        	level : 13,
         	giver : "global",
         	conditions : [ { desc : "Fill inventory Silicon inventory slot to its maximum", }, ],
         	onComplete: function(){ settings.playerElementCapacity += 10 },
+        	unlockDescs: [ { desc : "Increased Element Carrying Capacity!", }, ],
         }, {
         	name : "Max out Iron Reserve",
-        	level : 6,
+        	level : 14,
         	giver : "global",
         	conditions : [ { desc : "Fill inventory Iron inventory slot to its maximum", }, ],
         	onComplete: function(){ settings.playerElementCapacity += 10 },
+        	unlockDescs: [ { desc : "Increased Element Carrying Capacity!", }, ],
         }, {
         	name : "Max out Gold Reserve",
-        	level : 7,
+        	level : 15,
         	giver : "global",
         	conditions : [ { desc : "Fill inventory Gold inventory slot to its maximum", }, ],
         	onComplete: function(){ settings.playerElementCapacity += 10 },
+        	unlockDescs: [ { desc : "Increased Element Carrying Capacity!", }, ],
         }, {
         	name : "Max out Uranium Reserve",
-        	level : 8,
+        	level : 16,
         	giver : "global",
         	conditions : [ { desc : "Fill inventory Uranium inventory slot to its maximum", }, ],
         	onComplete: function(){ settings.playerElementCapacity += 10 },
+        	unlockDescs: [ { desc : "Increased Element Carrying Capacity!", }, ],
         }, 
         	// ----------------------------------
         	// ------- Empty Reserves -----------
@@ -198,10 +186,11 @@ define([], function() {
         {
         	// Tutorial Business - introduces the bar of elements 
         	name : "Completely Empty Your Elemental Reserves",
-        	level : 0,
+        	level : 8,
         	giver : "global",
         	conditions : [ { desc : "Spend all your elements on feeding stars", }, ],
         	onComplete: function(){ settings.playerElementCapacity += 10 },
+        	unlockDescs: [ { desc : "Increased Element Carrying Capacity!", }, ],
         }, 
         
         	// ----------------------------------
@@ -210,13 +199,15 @@ define([], function() {
         
         {
         	// Tutorial Business - introduces move tool
-        	name : "Navigating Space",
-        	level : 0,
+        	name : "Navigating Space", //universe_view move.js 
+        	level : 1,
         	giver : "global",
         	conditions : [ { desc : "Zoom out of the home star", },
-        				   { desc : "Click and drag to cruise around space", }, 
-        				   { desc : "Zoom in on a star by double-clicking on it", }, ],
-        	onComplete: function(){ settings.tempToolUnlocked = true },
+        				   { desc : "Click and drag to cruise around space", }, ],
+        	onComplete: function(){ settings.siphoningFromDust = true
+        							settings.carbonUnlocked = true },
+        	unlockDescs: [ { desc : "Siphoning (Picking Up) Dust Unlocked!", },
+        			       { desc : "Carbon Unlocked!", }, ],
         }, 
         
         // Have some heat/density quests
@@ -232,29 +223,32 @@ define([], function() {
         	giver : "global",
         	conditions : [ { desc : "Watch a star go supernova", },
         				   { desc : "Gather up the elements from a supernova", }, ],
+        	unlockDescs: [  ],
         }, {
         	// Requires navigation away from the home star
-        	name : "Discover a New Star",
-        	level : 1,
+        	name : "Examine Another Star", //universe_controller
+        	level : 3,
         	giver : "global",
         	
-        	conditions : [ { desc : "Go out into the wilderness and find a new star!", }, ],
+        	conditions : [ { desc : "Zoom in on a star by double-clicking on it", }, ],
+        	unlockDescs: [  ],
         }, {
         	
         	// Interacting with the various space elements
         	name : "Clear a Dust Trail",
-        	level : 8,
+        	level : 2,
         	giver : "global",
-        	
-        	conditions : [ { desc : "Gather all dust nodes from a trail of dust.", }, ],
+        	conditions : [ { desc : "Gather all dust nodes from a trail of dust", }, ],
+        	onComplete: function(){  },
+        	unlockDescs: [  ],
         }, {
         	
         	// Interacting with the various space elements
         	name : "Clear all Dust Trails in a Region",
-        	level : 8,
+        	level : 9,
         	giver : "global",
-        	
         	conditions : [ { desc : "Gather all dust nodes from all trails of dust in a single region", }, ],
+        	unlockDescs: [  ],
         }
         /*}, {
         	// ----------------------------------

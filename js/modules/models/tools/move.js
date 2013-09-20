@@ -41,7 +41,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                 $.each(touch.overObjects, function(index, obj) {
 
                     debugTouch.output("Siphon " + obj);
-                    if (obj.siphonable) {
+                    if (obj.siphonable && settings.siphoningFromDust) {
                         tool.elements.siphon(obj.elements, 1);
                         stellarGame.player.updateElements();
                        
@@ -61,9 +61,13 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                     target.hover = true;
                 }
 
-                this.moveWithOffset(touch);
-
-                stellarGame.qManager.satisfy("Navigating Space", 1);
+				if(settings.moveZoomToolUnlocked)
+                	this.moveWithOffset(touch);
+                
+                //debugTouch.output("pCO: " + touch.planeCenterOffset.magnitude());
+                
+				if(settings.moveZoomToolUnlocked && touch.planeCenterOffset.magnitude() > 50) // 40 is arbitrary, but gets the camera moving at a decent clip
+                	stellarGame.qManager.satisfy("Navigating Space", 1);
 
             },
             drawCursor : function(g, p, scale) {
@@ -89,30 +93,40 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                     //
 
                     if (stellarGame.touch.pressed) {
-                        // Draw a spiral
-                        g.stroke(1, 0, 1, .8);
-
-                        var streaks = 30;
-                        for (var i = 0; i < streaks; i++) {
-                            var theta = i * Math.PI * 2 / streaks + .2 * Math.sin(i + t);
-
-                            var rPct = ((i * 1.413124 - 1 * 3 * t) % 1 + 1) % 1;
-
-                            rPct = Math.pow(rPct, .8);
-                            g.strokeWeight(4 * (1 - rPct));
-                            g.stroke(1, 0, 1, 1 - rPct);
-                            rPct = rPct * 1.6 - .4;
-                            var r = 30 + 10 * Math.sin(i + 4 * t);
-                            var rInner = r * utilities.constrain(rPct - .1, 0, 1) + 10;
-                            var rOuter = r * utilities.constrain(rPct + .1, 0, 1) + 10;
-                            var spiral = -.06;
-                            var cInnerTheta = Math.cos(theta + spiral * rInner);
-                            var sInnerTheta = Math.sin(theta + spiral * rInner);
-                            var cOuterTheta = Math.cos(theta + spiral * rOuter);
-                            var sOuterTheta = Math.sin(theta + spiral * rOuter);
-                            g.line(rInner * cInnerTheta, rInner * sInnerTheta, rOuter * cOuterTheta, rOuter * sOuterTheta);
-
-                        }
+                    	if(settings.moveZoomToolUnlocked){
+	                        // Draw a spiral
+	                        g.stroke(1, 0, 1, .8);
+	
+	                        var streaks = 30;
+	                        for (var i = 0; i < streaks; i++) {
+	                            var theta = i * Math.PI * 2 / streaks + .2 * Math.sin(i + t);
+	
+	                            var rPct = ((i * 1.413124 - 1 * 3 * t) % 1 + 1) % 1;
+	
+	                            rPct = Math.pow(rPct, .8);
+	                            g.strokeWeight(4 * (1 - rPct));
+	                            g.stroke(1, 0, 1, 1 - rPct);
+	                            rPct = rPct * 1.6 - .4;
+	                            var r = 30 + 10 * Math.sin(i + 4 * t);
+	                            var rInner = r * utilities.constrain(rPct - .1, 0, 1) + 10;
+	                            var rOuter = r * utilities.constrain(rPct + .1, 0, 1) + 10;
+	                            var spiral = -.06;
+	                            var cInnerTheta = Math.cos(theta + spiral * rInner);
+	                            var sInnerTheta = Math.sin(theta + spiral * rInner);
+	                            var cOuterTheta = Math.cos(theta + spiral * rOuter);
+	                            var sOuterTheta = Math.sin(theta + spiral * rOuter);
+	                            g.line(rInner * cInnerTheta, rInner * sInnerTheta, rOuter * cOuterTheta, rOuter * sOuterTheta);
+	                        }
+                       } else {
+                       		g.fill(1, 0, 1);
+                			g.text("Movement Disabled", -40, -25);
+                			g.text("Do Some Quests!", -40, 35);
+                       }
+                       if(settings.siphoningFromDust === false){
+                       		g.fill(1, 0, 1);
+                			g.text("Siphoning Disabled", -40, -40);
+                			g.text("Do Some Quests!", -40, 35);
+                       }
 
                     }
                 }

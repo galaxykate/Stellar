@@ -14,7 +14,8 @@ var settings = {
 	    settings.goldUnlocked= true;
 	    settings.uraniumUnlocked= true;
 	    settings.playerElementCapacity= 100;
-	    settings.moveToolUnlocked= true;
+	    settings.moveZoomToolUnlocked= true;
+	    settings.siphoningFromDust = true;
 	    settings.tempToolUnlocked= true;
 	    settings.densityToolUnlocked= true;
 	},
@@ -33,7 +34,12 @@ var settings = {
     playerElementCapacity: 10,
     
     // unlocks via quests
-    moveToolUnlocked: true,
+    moveZoomToolUnlocked: false,
+    siphoningFromDust: false,
     tempToolUnlocked: false,
     densityToolUnlocked: false,
+    
 };
+
+// debug
+//settings.unlockAll();

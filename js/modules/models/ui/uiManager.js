@@ -96,7 +96,13 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    };
 	    
 	    function spawnQuestCompletionScreen(quest){
-	    	var qScreen = new Popup("#overlay_panels", "Quest Completed: <br><br><center>" +  quest.name + "</center>");
+	    	var completeText = "Quest Completed: <br><br><center>" + quest.name + "<br>";
+	    	for(var i = 0; i < quest.unlockDescs.length; i++){
+	    		completeText += "<br>" + quest.unlockDescs[i];
+	    	}
+	    	completeText += "</center>"
+	    	
+	    	var qScreen = new Popup("#overlay_panels", completeText);
 	    	var universeWidth = screenResolution.width;
 	    	var universeHeight =screenResolution.height;
 	    	
@@ -106,7 +112,6 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    	//qScreen.addTransition("closed", "open", "click", false);
 	    	qScreen.addCloseDiv();
 	    	qScreen.setState("open");
-	    	qScreen.addOnCloseFunc(quest.onComplete);
 	    	
 	    };
 

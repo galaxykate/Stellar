@@ -49,7 +49,10 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                     obj.excite(1);
 
                     this.onFeed(amt);
-                    if(tool.element.name === "Hydrogen") stellarGame.qManager.satisfy("Feed a Star " + tool.element.name, 1);
+                    if (tool.element.index === 0) stellarGame.qManager.satisfy("Feed a Star Hydrogen", 1);
+                    else if (tool.element.index === 1) stellarGame.qManager.satisfy("Feed a Star He and C", 1);
+                    else if (tool.element.index === 2) stellarGame.qManager.satisfy("Feed a Star He and C", 2);
+                    
                     return true;
                 }
                 if (obj.elements !== undefined) {

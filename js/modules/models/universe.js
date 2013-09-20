@@ -15,8 +15,8 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             stellarGame.universe = this;
 
             this.spawnTable = new ChanceTable();
-            this.spawnTable.addOption(particleTypes.Star, "star", 1);
-            //   this.spawnTable.addOption(particleTypes.Trailhead, "dusttrail", 1);
+            //this.spawnTable.addOption(particleTypes.Star, "star", 1);
+               this.spawnTable.addOption(particleTypes.Trailhead, "dusttrail", 1);
             //  this.spawnTable.addOption(particleTypes.Critter, "critter", 1);
 
             this.touchMarker = new particleTypes.UParticle();

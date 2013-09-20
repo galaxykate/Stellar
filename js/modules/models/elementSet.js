@@ -135,10 +135,14 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
 
 	                if(this.playerBelt !== undefined){
 	                	var elementName = activeElements[elem].name;
-	                	if(settings[elementName.toLowerCase() + "Unlocked"] === true){
+	                	if(settings[elementName.toLowerCase() + "Unlocked"] === true){ 
+	                		//can this be made more efficient? Currently if an element is not unlocked, 
+	                		// the system POUNDS at this function and gets no where
 	                		this.elementQuantity[elem] += siphonAmt;
 	                		target.elementQuantity[elem] -= siphonAmt
-	                		stellarGame.qManager.satisfy("Gather " + elementName);
+	                		if(elem <=2) stellarGame.qManager.satisfy("Gather H, He, and C", elem); 
+	                		else if (elem <=5) stellarGame.qManager.satisfy("Gather O, Si, and Fe", elem-3); 
+	                		else stellarGame.qManager.satisfy("Gather Au and U", elem-6); 
 	                	}
 	                } else {
 	                	this.elementQuantity[elem] += siphonAmt;

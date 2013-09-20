@@ -274,8 +274,10 @@ define(["modules/models/elementSet", "inheritance", "modules/models/vector", "mo
                 if (stellarGame.focused) {
                     widget.setActiveElement(element);
                     elementHolder.tool.activate();
-                    if(element.name === "Hydrogen"){
+                    if(element.index === 0){
                     	stellarGame.qManager.satisfy("Feed a Star " + element.name, 0);
+                    } else if (element.index === 1) {
+                    	stellarGame.qManager.satisfy("Feed a Star He and C", 0);
                     }
                 }
 
