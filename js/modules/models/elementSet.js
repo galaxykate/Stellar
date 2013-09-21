@@ -57,6 +57,8 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
         activeElements[index] = element;
 
     });
+    
+    stellarGame.activeElements = activeElements;
 
     var ElementSet = Class.extend({
 

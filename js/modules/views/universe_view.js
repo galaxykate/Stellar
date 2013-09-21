@@ -156,7 +156,6 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
             });
             this.animateCameraTo(this.focus, 1);
 
-            stellarGame.qManager.satisfy("Navigating Space", 2);
 
         },
 

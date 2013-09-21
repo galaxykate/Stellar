@@ -31,7 +31,9 @@ define([], function() {
         	giver : "global",
         	
         	conditions : [ { desc : "Move over dust that contains Hydrogen to siphon it into your inventory", }, ],
-        	onComplete: function(){ settings.heliumUnlocked = true },
+        	onComplete: function(){ settings.heliumUnlocked = true;
+        							var element = stellarGame.activeElements[1];
+        							stellarGame.player.widget.disable(element) },
         }, {
         	// Requres gathering elements with the move tool (and dumping them into the inventory?)
         	name : "Gather Helium",

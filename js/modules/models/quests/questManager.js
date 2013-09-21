@@ -38,8 +38,23 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
 			setVisibility();
 			
 			stellarGame.qManager = this;
+			
+			// CURRENTLY DOES NOT WORK!!! My need to call after widget is initialized
+			//lockAllElementsExceptHydrogen()
+			
 			// DEBUG
-			unlockAllQuests();
+			//unlockAllQuests();
+        };
+        
+        // CURRENTLY DOES NOT WORK!!! My need to call after widget is initialized
+        function lockAllElementsExceptHydrogen(){
+        	$.each(stellarGame.activeElements, function(index, element) {
+                if(index > 0){
+                	console.log("qManager disabiling " + index + ", " + element.name);
+                	stellarGame.elementWidget.disable(element)
+                }
+            });
+        	
         };
         
         function unlockAllQuests(){
@@ -49,7 +64,7 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
         
         function startAllViableQuests(){
         	for(var i = 0; i < questLibrary.length; i++){
-        		if(questLibrary[i].level <= currentLevel && questLibrary[i].finished !== true){
+        		if(questLibrary[i].level <= currentLevel && questLibrary[i].finished !== true && questLibrary[i].started !== true){
         			questLibrary[i].start();
         			questLibrary[i].createDiv();
         		}
@@ -81,8 +96,11 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
     				//uiManager.getQuestScreen().flash(); // replace flash with a new pop-up of awesome
     				uiManager.spawnQuestCompletionScreen(quest);
     				quest.fanfair = true;
-    				quest.onComplete();
-    				
+    				//if(quest.onComplete !== undefined) quest.onComplete(); // handled when quest screen is closed
+    				if(currentLevel < quest.level+1){ 
+    					currentLevel = quest.level+1;
+    					startAllViableQuests()
+    				}
     			}
         	}
         	} else {
@@ -93,6 +111,7 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
         return {
             init : init,
             startAllViableQuests : startAllViableQuests,
+            lockAllElementsExceptHydrogen: lockAllElementsExceptHydrogen,
             update : update,
             satisfy : satisfy,
         };

@@ -35,7 +35,7 @@ define(["modules/models/elementSet", "inheritance", "modules/models/vector", "mo
 
             this.bar.appendTo(this.holder);
             this.barFill.appendTo(this.bar);
-          //  this.endBall.appendTo(this.bar);
+            //  this.endBall.appendTo(this.bar);
 
             this.bgColor = element.idColor.cloneShade(-.7, 1);
             this.highlightColor = element.idColor.cloneShade(.5, 1);
@@ -180,6 +180,10 @@ define(["modules/models/elementSet", "inheritance", "modules/models/vector", "mo
         },
 
         setActiveElement : function(element) {
+            if (element.name === "Hydrogen") {
+                stellarGame.qManager.satisfy("Feed a Star " + element.name, 0);
+            }
+
             console.log("SET ACTIVE ELEMENT " + element);
 
             if (this.activeElement && this.activeElement !== element)
