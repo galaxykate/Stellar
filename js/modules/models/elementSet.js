@@ -43,23 +43,28 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
     };
 
     var activeElementNames = ["Hydrogen", "Helium", "Carbon", "Oxygen", "Silicon", "Iron", "Gold", "Uranium"];
+    var elementsBySymbol = [];
     var activeElements = [];
     // Which elements are actually active in this game?
     // We may not want all of them.
 
     $.each(activeElementNames, function(index, elementName) {
         var elemData = Elements[elementName];
-        activeElements[index] = {
+        var element = {
             name : elementName,
             number : elemData.atomic_number,
             symbol : elemData.symbol,
             index : index,
+
             idColor : new KColor((index * .12 + .4) % 1, 1, 1),
+
+            toString : function() {
+                return this.symbol;
+            }
         };
-        // Find the index in activeElements using name of the Element
-        activeElements[elementName] = {
-            id : index
-        };
+        elementsBySymbol[elemData.symbol] = element;
+        activeElements[index] = element;
+
     });
 
     var ElementSet = Class.extend({
@@ -125,23 +130,23 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
                 var elem = utilities.getWeightedRandom(target.elementQuantity, function(index, elem) {
                     return index;
                 });
-                
-                if(elem !== undefined){
-	                var siphonAmt = Math.min(150, target.elementQuantity[elem]);
-	                //utilities.debugOutput("Siphoning " + siphonAmt);
-	                //console.log(i + "/" + volume+ " Siphoning element " + elem + " amount " + siphonAmt);
 
-	                if(this.playerBelt !== undefined){
-	                	var elementName = activeElements[elem].name;
-	                	if(settings[elementName.toLowerCase() + "Unlocked"] === true){
-	                		this.elementQuantity[elem] += siphonAmt;
-	                		target.elementQuantity[elem] -= siphonAmt
-	                		stellarGame.qManager.satisfy("Gather " + elementName);
-	                	}
-	                } else {
-	                	this.elementQuantity[elem] += siphonAmt;
-	                	target.elementQuantity[elem] -= siphonAmt
-	                }
+                if (elem !== undefined) {
+                    var siphonAmt = Math.min(150, target.elementQuantity[elem]);
+                    //utilities.debugOutput("Siphoning " + siphonAmt);
+                    //console.log(i + "/" + volume+ " Siphoning element " + elem + " amount " + siphonAmt);
+
+                    if (this.playerBelt !== undefined) {
+                        var elementName = activeElements[elem].name;
+                        if (settings[elementName.toLowerCase() + "Unlocked"] === true) {
+                            this.elementQuantity[elem] += siphonAmt;
+                            target.elementQuantity[elem] -= siphonAmt
+                            stellarGame.qManager.satisfy("Gather " + elementName);
+                        }
+                    } else {
+                        this.elementQuantity[elem] += siphonAmt;
+                        target.elementQuantity[elem] -= siphonAmt
+                    }
                 }
 
             }
@@ -607,6 +612,14 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
 
     ElementSet.createElementCapacities = createElementCapacities;
     ElementSet.activeElements = activeElements;
+
+    ElementSet.getElementBySymbol = function(symbol) {
+        var e = elementsBySymbol[symbol];
+        if (e === undefined)
+            return activeElements[0];
+        return e;
+
+    }
     return ElementSet;
 
 });

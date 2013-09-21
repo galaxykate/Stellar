@@ -34,12 +34,23 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             this.completed = true;
 
             if (this.onFinish)
-                this.onFinish(ellapsed);
+                this.onFinish();
 
         },
 
         getPct : function() {
             return (this.ellapsed) / this.lifespan;
+        },
+
+        drawClock : function(g, center, radius) {
+            var pct = this.getPct();
+            g.fill(0);
+            g.ellipse(center.x, center.y, radius, radius);
+            g.fill(1);
+            g.arc(center.x, center.y, radius - 1, radius - 1, 0, 2 * pct * Math.PI);
+            g.fill(0);
+            g.ellipse(center.x, center.y, radius * .2, radius * .2);
+
         },
 
         toString : function() {

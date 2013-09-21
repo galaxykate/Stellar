@@ -6,25 +6,123 @@
 
 define(['modules/controllers/universe_controller', 'modules/models/tools/move'], function(universeController, MoveTool) {
 
+    var addOption = function(key, defaultValue) {
+
+        stellarGame.options[key] = defaultValue;
+
+        // add a div for the checkbox
+        var div = $('<div/>', {
+            id : key + '_checkbox',
+            "class" : "option_checkbox_holder",
+            text : key
+        });
+
+        var checkbox = $('<input/>', {
+            type : "checkbox",
+            name : key,
+        });
+        checkbox.appendTo(div);
+        checkbox.prop('checked', defaultValue);
+
+        checkbox.change(function() {
+            stellarGame.options[key] = this.checked;
+        });
+
+        div.appendTo("#options_panel");
+
+    };
+
+    var createSlider = function(parent, name, label, settings, onChange) {
+        var holder = $("<div/>", {
+            id : name + "_slider",
+            "class" : "tuning_slider_holder"
+        });
+        parent.append(holder);
+
+        holder.html("");
+
+        var bar = $("<div/>", {
+            id : name + "_bar",
+            "class" : "slider_bar"
+        });
+
+        var valueOutput = $("<div/>", {
+            id : name + "_label",
+            "class" : "slider_label"
+        });
+
+        holder.append(bar);
+        holder.append(valueOutput);
+        var changeValue = function(value) {
+            valueOutput.html(label + ": " + value);
+            stellarGame.tunings[name] = Math.pow(value, 2);
+        };
+
+        settings.slide = function(event, ui) {
+            changeValue(ui.value);
+
+        };
+        bar.slider(settings);
+
+        bar.setValue = function(value) {
+
+            bar.slider('value', value);
+            changeValue(value);
+        };
+
+        bar.setValue(settings.value);
+
+        bar.setMax = function(max) {
+            bar.slider('option', {
+                min : 0,
+                max : max
+            });
+
+        };
+
+        return bar;
+    };
+
+    var tuningHolder = $("#tuning_panel");
+    var addTuning = function(key, defaultValue, min, max) {
+
+        stellarGame.tunings[key] = defaultValue;
+
+        var slider = createSlider(tuningHolder, key, key, {
+            min : min,
+            max : max,
+            step : .03,
+            value : defaultValue,
+        });
+
+    };
+
     var GameController = Class.extend({
         init : function() {
 
             // Add developer options
-            stellarGame.addOption("showText", false);
-            stellarGame.addOption("showStarNames", true);
-            stellarGame.addOption("simStarEvolution", false);
-            stellarGame.addOption("drawQuadTree", false);
-            stellarGame.addOption("outputStarDrawing", false);
-            stellarGame.addOption("drawCameraQuad", false);
-            stellarGame.addOption("drawCamera", false);
-            stellarGame.addOption("drawActiveQuads", false);
-            stellarGame.addOption("drawTouchMarker", false);
-            stellarGame.addOption("outputActiveObjects", false);
-            stellarGame.addOption("outputActiveQuads", false);
+            addOption("showText", false);
+            addOption("showStarNames", true);
+            addOption("simStarEvolution", false);
+            addOption("drawQuadTree", false);
+            addOption("outputStarDrawing", false);
+            addOption("drawCameraQuad", false);
+            addOption("drawCamera", false);
+            addOption("drawActiveQuads", false);
+            addOption("drawTouchMarker", false);
+            addOption("outputActiveObjects", false);
+            addOption("outputActiveQuads", false);
+            addOption("hideDevPanels", true);
 
-            stellarGame.addOption("showUpdateQuests", true);
+            addOption("showUpdateQuests", true);
 
-            stellarGame.addTuning("moveSpeed", .05, 0, 1);
+            addTuning("moveSpeed", 1, .1, 5);
+            addTuning("gravity", 1, .1, 5);
+            addTuning("thermalPressure", 1, .1, 5);
+
+            addTuning("juiceRefill", .1, .1, 5);
+            addTuning("bubbleForce", 0, 0, 5);
+            addTuning("containerForce", .1, .1, 5);
 
             //================================================================
             //================================================================
@@ -251,6 +349,8 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
                 setToActive(panel, true);
             });
             toggleDevPanels();
+            if (stellarGame.options.hideDevPanels)
+                toggleDevPanels();
 
             universeController.init();
 

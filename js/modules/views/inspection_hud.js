@@ -8,8 +8,8 @@ define(["inheritance"], function(Inheritance) {
         init : function() {
             this.holderDiv = $("#inspection_hud");
             this.titleDiv = $("#inspection_title");
-            this.graphDiv = $("inspection_graph");
-            this.detailDiv = $("inspection_details");
+            this.graphDiv = $("#inspection_graph");
+            this.detailDiv = $("#inspection_details");
             this.active = false;
             this.holderDiv.hide();
         },
@@ -28,8 +28,11 @@ define(["inheritance"], function(Inheritance) {
 
         update : function() {
             if (this.active) {
-                
-                this.titleDiv.html(this.focus);
+
+                this.titleDiv.html(this.focus.name);
+                if (this.focus.getDetailHTML !== undefined)
+                    this.detailDiv.html(this.focus.getDetailHTML());
+                  
             }
         }
     });

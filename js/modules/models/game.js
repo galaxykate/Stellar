@@ -24,8 +24,9 @@ define(['modules/views/game_view', 'modules/controllers/game_controller', 'modul
         // Give the game controller access to the universe view so that it
         //  can find objects by screen position
         var gameController = new GameController();
-        
-       
+
+        stellarGame.uiTime = 0;
+        stellarGame.simTime = 0;
 
         uiManager.init();
         QuestManager.init();

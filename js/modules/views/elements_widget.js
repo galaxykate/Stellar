@@ -3,7 +3,7 @@
  */
 
 define(["modules/models/elementSet", "inheritance", "modules/models/vector", "modules/models/tools/feed", "raphael"], function(ElementSet, inheritance, Vector, FeedTool, RAPHAEL) {
-
+    var useRaphael = false;
     var makePolarSVG = function(r, theta, offset) {
         return Math.round(r * Math.cos(theta) + offset.x) + " " + Math.round(r * Math.sin(theta) + offset.y);
     };
@@ -23,20 +23,19 @@ define(["modules/models/elementSet", "inheritance", "modules/models/vector", "mo
         init : function(div) {
             var widget = this;
             stellarGame.player.setWidget(this);
-            div.html("HELLO WIDGET");
 
             this.activeElement = undefined;
 
             // Create a round thing?
             this.ringCenter = new Vector(0, 0);
             this.ringRadius = 120;
-            this.ringHolder = $('<div/>', {
-                id : "element_widget_ring"
-            });
-            div.append(this.ringHolder);
+            this.ringHolder = $("#element_widget_ring");
+
+            var vialCanvas = $("#element_widget_vials");
 
             // create svg
-            widget.graph = Raphael(document.getElementById('element_widget_ring'), 170, 170);
+            if (useRaphael)
+                widget.graph = Raphael(document.getElementById('element_widget_ring'), 170, 170);
 
             // create all the element holders
             widget.elementHolders = [];
@@ -45,6 +44,24 @@ define(["modules/models/elementSet", "inheritance", "modules/models/vector", "mo
             $.each(ElementSet.activeElements, function(index, element) {
                 var holder = widget.createElementHolder(element, index);
                 widget.elementHolders.push(holder);
+            });
+
+            // Create a widget to draw the vials
+
+            var canvas = document.getElementById("element_widget_vials");
+
+            // attaching the sketchProc function to the canvas
+            var vials = new Processing(canvas, function(processing) {
+                var g = processing;
+                g.draw = function() {
+
+                    g.colorMode(g.HSB, 1);
+                    g.background(.55, 1, 1);
+                    g.ellipseMode(g.CENTER_RADIUS);
+                    g.fill(0);
+                    var vialRadius = 200;
+                    g.ellipse(0, 0, vialRadius, vialRadius);
+                }
             });
 
         },
@@ -115,26 +132,28 @@ define(["modules/models/elementSet", "inheritance", "modules/models/vector", "mo
             var pct = amt / capacity;
             var element = ElementSet.activeElements[index];
 
-            var bgPath = makeWedgeLinepath(20, holder.ringRadius, holder.startTheta, holder.endTheta, widget.ringCenter);
-            var barPath = makeWedgeLinepath(holder.ringRadius, holder.ringRadius * (1 - pct * .7), holder.startTheta, holder.endTheta, widget.ringCenter);
+            if (useRaphael) {
+                var bgPath = makeWedgeLinepath(20, holder.ringRadius, holder.startTheta, holder.endTheta, widget.ringCenter);
+                var barPath = makeWedgeLinepath(holder.ringRadius, holder.ringRadius * (1 - pct * .7), holder.startTheta, holder.endTheta, widget.ringCenter);
 
-            holder.svgBG.attr("path", bgPath);
-            holder.svgBar.attr("path", barPath);
-            var element = holder.element;
-            var hex = element.idColor.toHex();
+                holder.svgBG.attr("path", bgPath);
+                holder.svgBar.attr("path", barPath);
 
-            holder.svgBar.attr({
-                fill : "#" + hex,
-                stroke : 'none',
-                'stroke-width' : 5
-            });
+                var element = holder.element;
+                var hex = element.idColor.toHex();
 
-            holder.svgBG.attr({
-                fill : "#" + holder.bgColor.toHex(),
-                stroke : 'none',
-                'stroke-width' : 5
-            });
+                holder.svgBar.attr({
+                    fill : "#" + hex,
+                    stroke : 'none',
+                    'stroke-width' : 5
+                });
 
+                holder.svgBG.attr({
+                    fill : "#" + holder.bgColor.toHex(),
+                    stroke : 'none',
+                    'stroke-width' : 5
+                });
+            };
         },
 
         disable : function(element) {
@@ -179,12 +198,15 @@ define(["modules/models/elementSet", "inheritance", "modules/models/vector", "mo
                 excitement : {
                     power : 0,
                 },
-
-                svgBG : widget.graph.path("M 250 250 l 0 -50 l -50 0 l 0 -50 l -50 0 l 0 50 l -50 0 l 0 50 z"),
-                svgBar : widget.graph.path("M 250 250 l 0 -50 l -50 0 l 0 -50 l -50 0 l 0 50 l -50 0 l 0 50 z"),
                 bgColor : element.idColor.cloneShade(-.4, 1),
                 highlightColor : element.idColor.cloneShade(.5, 1),
+
                 element : element,
+            }
+
+            if (useRaphael) {
+                elementHolder.svgBG = widget.graph.path("M 250 250 l 0 -50 l -50 0 l 0 -50 l -50 0 l 0 50 l -50 0 l 0 50 z");
+                elementHolder.svgBar = widget.graph.path("M 250 250 l 0 -50 l -50 0 l 0 -50 l -50 0 l 0 50 l -50 0 l 0 50 z");
             }
 
             var onFeed = function() {

@@ -70,9 +70,13 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
             };
 
             this.focus = undefined;
+            this.focusScale = 1;
 
             // Initialize the universe view to use processing
             initProcessing = function(g) {
+                g.polarVertex = function(r, theta) {
+                    this.vertex(r * Math.cos(theta), r * Math.sin(theta));
+                }
                 g.size(P_WIDTH, P_HEIGHT);
 
                 g.colorMode(g.HSB, 1);
@@ -119,6 +123,7 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
             stellarGame.focused = false;
             console.log("--------------");
             console.log("Unfocus");
+            this.focusMode = false;
 
             if (this.focus)
                 this.focus.inFocus = false;
@@ -146,14 +151,16 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
             this.focus = obj;
             obj.inFocus = true;
 
-            this.animateZoomTo(minZoom, 1.2);
+            this.animateZoomTo(minZoom, 1.2, function() {
+                view.focusMode = true;
+            });
             this.animateCameraTo(this.focus, 1);
 
             stellarGame.qManager.satisfy("Navigating Space", 2);
 
         },
 
-        animateZoomTo : function(endZoom, time) {
+        animateZoomTo : function(endZoom, time, onFinish) {
             console.log("Animate zoom to " + endZoom);
             var view = this;
             // stop the previous zoom
@@ -168,6 +175,8 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
                     view.setZoom(utilities.lerp(startZoom, endZoom, pct2), false);
                 }
             });
+
+            this.zoomAnimation.onFinish = onFinish;
 
             this.universe.addTimeSpan(this.zoomAnimation);
 
@@ -188,7 +197,7 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
                     var p = startPos.lerp(obj.position, pct2);
                     view.camera.position.setTo(p);
                     debug.output("Camera animated to: " + p);
-                    console.log(p);
+
                 }
             });
 
@@ -226,6 +235,8 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
             utilities.constrain(time.ellapsed, .01, .1);
 
             stellarGame.time.universeTime = time.total;
+            stellarGame.uiTime = time.total;
+            stellarGame.simTime = time.total;
 
             if (!this.isUpdating) {
                 this.startUpdating();
@@ -254,7 +265,11 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
                 });
 
                 // Compile all the arrays of contents into a single array
-                this.activeObjects = this.activeObjects.concat.apply(this.activeObjects, contentsArrays);
+                if (this.focusMode) {
+                    this.activeObjects = [this.focus];
+                } else {
+                    this.activeObjects = this.activeObjects.concat.apply(this.activeObjects, contentsArrays);
+                }
 
                 if (stellarGame.options.outputActiveObjects) {
                     debug.output("======================================");
@@ -441,6 +456,8 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
                     if (!obj.drawUntransformed && obj.position !== undefined) {
 
                         g.translate(screenPos.x, screenPos.y);
+                        if (view.focus === obj)
+                            view.focusScale = context.distanceScale;
                         g.scale(context.distanceScale, context.distanceScale);
 
                     }

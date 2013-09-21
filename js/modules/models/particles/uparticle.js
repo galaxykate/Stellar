@@ -186,7 +186,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     var speed2 = Math.min(speed, this.maxVelocity);
                     if (speed !== speed2 && speed !== 0) {
                         this.velocity.mult(speed2 / speed);
-                     
+
                     }
                 }
 
@@ -233,7 +233,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             initAsParticle : function() {
                 this.position = new Vector(0, 0);
                 this.velocity = new Vector(0, 0);
-                this.forces = [];
+               
                 this.totalForce = new Vector(0, 0);
                 this.mass = 1;
                 this.drag = .93;
@@ -270,7 +270,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     g.ellipse(0, 0, this.radius + 10, this.radius + 10);
                 }
 
-                if (this.selected) {
+                if (this.selected && !this.inFocus) {
                     this.idColor.stroke(g, .2, 1);
                     g.noFill();
                     g.strokeWeight(5);
@@ -325,41 +325,47 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 }
 
             },
-            drawAsBlinkenStar : function(g, segmentDetail, useNoise, useTriangle) {
-                var i, j;
-                var t = stellarGame.time.universeTime;
-                var radius = this.radius * .4;
-                g.noStroke();
+
+            drawBlinkenStar : function(g, color, innerRadius, range, extension, t) {
                 var points = 5;
                 var spikiness = .5;
                 var starLevels = 2;
-                for ( j = 0; j < starLevels; j++) {
-                    var jPct = j * 1.0 / (starLevels - 1);
+                var segmentDetail = 3;
 
-                    g.beginShape();
+                g.beginShape();
 
-                    var pop = 0;
-                    var segments = points * segmentDetail;
-                    g.fill(.065, (0.4 - 0.4 * jPct), 1, 0.2 + jPct);
-                    for ( i = 0; i < segments + 1; i++) {
-                        var theta = i * 2 * Math.PI / segments;
+                var segments = points * segmentDetail;
 
-                        var spike = Math.abs(Math.sin(theta * points / 2));
-                        spike = 1 - Math.pow(spike, .2);
+                color.fill(g);
+                for ( i = 0; i < segments + 1; i++) {
+                    var theta = i * 2 * Math.PI / segments;
 
-                        var sparkle = .5;
-                        if (useNoise)
-                            sparkle = spikiness * utilities.pnoise(t * 2 + theta + this.idNumber) + .1;
-                        sparkle = Math.pow(sparkle, 2);
+                    var spike = Math.abs(Math.sin(theta * points / 2));
+                    spike = 1 - Math.pow(spike, .2);
 
-                        var r = .3 * radius * (spike * sparkle);
+                    var sparkle = .5;
+                    sparkle = spikiness * utilities.pnoise(t * 2 + theta + this.idNumber) + .1;
+                    sparkle = Math.pow(sparkle, 2);
 
-                        r += .4 + 1.5 * pop;
-                        r *= radius * .7 * (1.2 - Math.pow(.7 * jPct, 1));
-                        g.vertex(r * Math.cos(theta), r * Math.sin(theta));
-                    }
-                    g.endShape();
+                    var r = range * (spike * sparkle);
+
+                    r *= .7 * (1.2 - Math.pow(.7 * extension, 1));
+                    r += innerRadius;
+                    g.vertex(r * Math.cos(theta), r * Math.sin(theta));
                 }
+                g.endShape();
+
+            },
+
+            drawAsBlinkenStar : function(g, hue, saturation, innerRadius, range, t) {
+                var i, j;
+
+                var useNoise = true;
+                g.noStroke();
+                for (var i = 0; i < 2; i++) {
+                    this.drawBlinkenStar();
+                }
+
             },
             toString : function() {
                 return "p" + this.idNumber + this.position;
