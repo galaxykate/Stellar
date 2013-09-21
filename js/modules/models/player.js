@@ -12,17 +12,18 @@ define(["modules/models/elementSet", "kcolor", "inheritance"], function(ElementS
         // Create the player (or load from data?)
         init : function() {
             var player = this;
-            this.elementBelt = {
-                capacity : ElementSet.createElementCapacities(10),
-                quantity : new ElementSet(this),
-            };
-            this.elementBelt.quantity.playerBelt = true; // For quest completion tracking
+            this.elementBelt = new ElementSet(this);
+            this.elementBelt.setCapacity(10);
+
+            this.elementBelt.playerBelt = true;
+
+            // For quest completion tracking
 
             this.idColor = new KColor(.55, 1, 1);
 
             $.each(ElementSet.activeElements, function(index, element) {
                 //player.elementBelt.quantity.setQuantity(index, player.elementBelt.capacity[index]);
-                player.elementBelt.quantity.setQuantity(index, player.elementBelt.capacity[index] * .3);
+                player.elementBelt.setQuantityToPctCapacity(index, .3);
             });
 
         },

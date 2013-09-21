@@ -61,8 +61,7 @@ define(["modules/views/universe_view", "modules/views/elements_widget", "inherit
         init : function(universe) {
             var elementsWidget = new ElementsWidget($("#elements_pane"));
             stellarGame.elementsWidget = elementsWidget;
-            elementsWidget.setActiveElement(undefined);
-
+      
             this.universeView = new UniverseView(stellarGame.universe);
         }
     });

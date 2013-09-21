@@ -128,20 +128,7 @@ define(["modules/models/elementSet", "kcolor", "modules/models/vector", "particl
                 this.defaultTool.activate();
             },
 
-            //===========================================================
-            //===========================================================
-            // View stuff
-
-            createPaletteDiv : function(parent) {
-                var palette = $('#tools_pane');
-
-                // add all the tool buttons
-                $.each(this.tools, function(index, tool) {
-                    palette.append(tool.createPaletteButton(palette));
-
-                });
-
-            },
+         
 
             //===========================================================
             //===========================================================

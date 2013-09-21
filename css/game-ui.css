@@ -86,9 +86,8 @@ body {
 	z-index: 42;
 	position: relative;
 	background-color: rgba(255, 255, 255, .3);
-	box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
 	float: left;
-	width: 90%;
+	
 	padding: 10px;
 	margin: 2px;
 	overflow: visible;
@@ -249,62 +248,11 @@ popupHeading {
 	box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
 }
 
-.palette {
-	z-index: 56;
-	position: static;
-	padding: 5px;
-	width: 200px;
-	height: 25px;
-	transition: all 0.22s;
-	overflow: hidden;
-}
-.palette:hover {
-
-	height: 300px;
-}
-
-.palette_button {
-	float: left;
-	width: 80px;
-	margin: 2px;
-	height: 20px;
-	background-color: rgba(100, 105, 110, .6);
-	border-radius: 10px;
-	border: 2px solid rgba(255,255, 255, 1);
-	box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
-}
-
-.palette_button:hover {
-	background-color: rgba(160, 170, 190, 1);
-	box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
-}
-
 #element_widget_ring {
+	overflow: visible;
 	position: relative;
 	width: 150px;
 	height: 150px;
-}
-
-.element_widget_element {
-	position: absolute;
-	width: 20px;
-	height: 20px;
-	overflow: hidden;
-	border-radius: 150px;
-	transition-property: all;
-	transition-duration: 250ms;
-	transition-timing-function: cubic-bezier(.2,.5,.43,1.73);
-}
-
-#element_widget_vials_holder {
-	width: 200px;
-	height: 200px;
-	border-bottom-right-radius: 90px;
-	overflow: hidden;
-}
-#element_widget_vials {
-	width: 200px;
-	height: 200px;
 }
 
 .element_holder_canvas {
@@ -315,6 +263,58 @@ popupHeading {
 	height: 60px;
 }
 
+.element_widget_bar {
+	width: 160px;
+	height: 20px;
+	padding: 2px;
+	border-radius: 150px;
+	transition-property: all;
+	transition-duration: 250ms;
+	transition-timing-function: cubic-bezier(.2,.5,.43,1.73);
+}
+
+.element_widget_bar_fill {
+	position: absolute;
+	box-shadow: inset 0 0 10px #000000;
+	border-radius: 150px;
+	transition-property: all;
+	transition-duration: 250ms;
+	transition-timing-function: cubic-bezier(.2,.5,.43,1.73);
+}
+
+.element_widget_ball {
+	position: absolute;
+	height: 24px;
+	width: 24px;
+	box-shadow: inset 0 0 10px #000000;
+	border-radius: 150px;
+	transition-property: all;
+	transition-duration: 250ms;
+	transition-timing-function: cubic-bezier(.2,.5,.43,1.73);
+}
+
+.element_widget_element {
+	position: static;
+	margin: 2px;
+	transition-property: all;
+	transition-duration: 250ms;
+	transition-timing-function: cubic-bezier(.2,.5,.43,1.73);
+}
+
+.inventory_pane {
+	margin: 2px;
+	padding: 5px;
+	color: white;
+	border-radius: 15px;
+	border: 3px solid white;
+	background-color: rgba(220, 230, 250, .2);
+}
+
+#elements_pane {
+	height: 210px;
+	width: 190px;
+	pointer-events: auto;
+}
 #inspection_hud {
 
 }

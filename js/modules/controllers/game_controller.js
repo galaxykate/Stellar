@@ -259,14 +259,6 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
             //======================================================
             //======================================================
             // Inventory
-            var inventoryPanel = createSlidePanel({
-                id : "inventory_panel",
-                direction : "left",
-                rangeStart : 10,
-                rangeEnd : 300,
-                thickness : 150,
-
-            });
 
             var toolsPane = $('#tools_pane');
             var elementsPane = $('#elements_pane');
@@ -341,8 +333,17 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
                 });
             };
 
-            $("#universe_canvas").keypress(function() {
-                toggleDevPanels();
+            $("#app").keypress(function(event) {
+                var key = event.which;
+                var c = String.fromCharCode(key);
+                if (c === 'd')
+                    toggleDevPanels();
+
+                if (key >= 48 && key <= 57) {
+                    var index = key - 48;
+                    stellarGame.player.elementBelt.setQuantityToPctCapacity(index, 1);
+                }
+
             });
 
             $.each(allPanels, function(index, panel) {
