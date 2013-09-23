@@ -11,15 +11,6 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
         g.vertex(r * Math.cos(theta), r * Math.sin(theta));
     };
 
-    var createElementCapacities = function(size) {
-        var capacities = [];
-        for (var i = 0; i < activeElements.length; i++) {
-            capacities[i] = size;
-
-        }
-        return capacities;
-    };
-
     // Draw an arc around some radius: used to show proportion of elements
     var segmentsPerCircle = 50;
     function drawArc(g, innerRadius, outerRadius, startTheta, endTheta) {
@@ -43,23 +34,28 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
     };
 
     var activeElementNames = ["Hydrogen", "Helium", "Carbon", "Oxygen", "Silicon", "Iron", "Gold", "Uranium"];
+    var elementsBySymbol = [];
     var activeElements = [];
     // Which elements are actually active in this game?
     // We may not want all of them.
 
     $.each(activeElementNames, function(index, elementName) {
         var elemData = Elements[elementName];
-        activeElements[index] = {
+        var element = {
             name : elementName,
             number : elemData.atomic_number,
             symbol : elemData.symbol,
             index : index,
+
             idColor : new KColor((index * .12 + .4) % 1, 1, 1),
+
+            toString : function() {
+                return this.symbol;
+            }
         };
-        // Find the index in activeElements using name of the Element
-        activeElements[elementName] = {
-            id : index
-        };
+        elementsBySymbol[elemData.symbol] = element;
+        activeElements[index] = element;
+
     });
     
     stellarGame.activeElements = activeElements;
@@ -105,6 +101,28 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
             }
         },
 
+        setCapacity : function(size) {
+            this.capacities = [];
+            for (var i = 0; i < activeElements.length; i++) {
+                this.capacities[i] = size;
+
+            }
+        },
+
+        getCapacityPct : function(index) {
+            return this.elementQuantity[index] / this.capacities[index];
+        },
+
+        setQuantityToPctCapacity : function(index, pct) {
+            this.elementQuantity[index] = this.capacities[index] * pct;
+            this.changedValue();
+        },
+
+        // override
+        changedValue : function() {
+
+        },
+
         //===============================================================
         //===============================================================
         //===============================================================
@@ -148,6 +166,7 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
 	                	this.elementQuantity[elem] += siphonAmt;
 	                	target.elementQuantity[elem] -= siphonAmt
 	                }
+
                 }
 
             }
@@ -156,7 +175,6 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
             target.setTotalMass();
 
         },
-
         transfer : function(target, element, amt) {
             var index = element.index;
             amt = Math.min(this.elementQuantity[index], amt);
@@ -166,7 +184,6 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
             target.setTotalMass();
 
         },
-
         remove : function(element, amt) {
             var index = element.index;
             amt = Math.min(this.elementQuantity[index], amt);
@@ -174,7 +191,6 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
             this.setTotalMass();
             return amt;
         },
-
         add : function(element, amt) {
             var index = element.index;
             this.elementQuantity[index] += amt;
@@ -611,8 +627,15 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
         },
     });
 
-    ElementSet.createElementCapacities = createElementCapacities;
     ElementSet.activeElements = activeElements;
+
+    ElementSet.getElementBySymbol = function(symbol) {
+        var e = elementsBySymbol[symbol];
+        if (e === undefined)
+            return activeElements[0];
+        return e;
+
+    }
     return ElementSet;
 
 });

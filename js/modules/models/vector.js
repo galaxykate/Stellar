@@ -194,6 +194,12 @@ define(["three"], function(THREE) {
 
             //===========================================================
             //===========================================================
+            isValid : function() {
+                return (!isNaN(this.x) && !isNaN(this.y) && !isNaN(this.z) ) && this.x !== undefined && this.y !== undefined && this.z !== undefined;
+            },
+
+            //===========================================================
+            //===========================================================
             translateTo : function(g) {
                 g.translate(this.x, this.y);
             },
@@ -204,13 +210,17 @@ define(["three"], function(THREE) {
             bezier : function(g, c0, c1) {
                 g.bezierVertex(c0.x, c0.y, c1.x, c1.y, this.x, this.y);
             },
-
             bezierWithRelativeControlPoints : function(g, p, c0, c1) {
                 // "x" and "y" were not defined, so I added "this." in front. Hopefully that's the intended action (April)
                 g.bezierVertex(p.x + c0.x, p.y + c0.y, this.x + c1.x, this.y + c1.y, this.x, this.y);
             },
             vertex : function(g) {
                 g.vertex(this.x, this.y);
+            },
+            offsetVertex : function(g, offset, m) {
+                if (m === undefined)
+                    m = 1;
+                g.vertex(this.x + offset.x * m, this.y + offset.y * m);
             },
             drawCircle : function(g, radius) {
                 g.ellipse(this.x, this.y, radius, radius);
@@ -233,7 +243,6 @@ define(["three"], function(THREE) {
             toThreeVector : function() {
                 return new THREE.Vector3(this.x, this.y, this.z);
             },
-
             toSVG : function() {
                 return Math.round(this.x) + " " + Math.round(this.y);
             },
@@ -243,8 +252,14 @@ define(["three"], function(THREE) {
 
             toString : function(precision) {
                 if (precision === undefined)
-                    precision = 0;
+                    precision = 2;
+
                 return "(" + this.x.toFixed(precision) + ", " + this.y.toFixed(precision) + ", " + this.z.toFixed(precision) + ")";
+            },
+
+            invalidToString : function() {
+
+                return "(" + this.x + ", " + this.y + ", " + this.z + ")";
             },
         };
 

@@ -85,9 +85,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
                 //   this.drawDirection(g, p);
 
-                g.fill(1, 0, 1);
-                g.text(this.elements.totalMass, 5, 15);
-
+            
                 if (this.mode === MOVE) {
                     // Removing touch pressed for now for UI interaction
                     //
