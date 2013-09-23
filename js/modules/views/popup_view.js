@@ -53,8 +53,9 @@ define(["inheritance"], function(Inheritance) {
             	//console.log("appended div " + this.divID + " to: " + this.parentStr);
             },
             
-            removePopupDiv : function() {
-            	$(this.parentStr).remove("#" + this.divID);
+            removePopupDiv : function(args) {
+            	console.log("I AM TRYING TO REMOVE " + args.divID + " from " + args.parentStr);
+            	$("#" + args.divID).remove();
             	//console.log("removed div " + this.divID + " from: " + this.parentStr);
             },
 

@@ -155,7 +155,7 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
 		        if(this.activeState === "closed"){
 		        	this.view.removeClass("popup_open");
 		        	this.view.addClass("popup_closed");
-		        	if(this.onCloseFunc !== undefined) this.onCloseFunc();
+		        	if(this.onCloseFunc !== undefined) this.onCloseFunc(this.onCloseArgs);
 		        }
 		        if(this.activeState === "open"){
 		        	this.view.removeClass("popup_closed");
@@ -171,8 +171,9 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
             	//
             },
             
-            addOnCloseFunc : function(func) {
+            addOnCloseFunc : function(func, args) {
             	this.onCloseFunc = func;
+            	this.onCloseArgs = args;
             },
             
             update : function() {

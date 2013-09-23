@@ -114,33 +114,27 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    
 	    function spawnQuestCompletionScreen(quest){
 	    	var completeText = "Quest Completed: " + quest.name;
-	    	var qScreen = new Popup("#" + notifications.view.divID, "");
-	    	qScreen.view.setRegularHTML(completeText);
-	    	
-	    	qScreen.addState("closed", -1, -1, 0, 0, 0);
-	    	qScreen.addState("open", undefined, undefined, 240, undefined);
-	    	qScreen.addCloseDiv();
-	    	qScreen.addOnCloseFunc(qScreen.view.hide);
-	    	
-	    	qScreen.setState("open");
-	    	qScreen.view.removeClass("popup");
-	    	qScreen.view.removeClass("popup_open");
-	    	qScreen.view.addClass("notice");
+	    	makeNotificationScreen(completeText);
 	    	
 	    	for(var i = 0; i < quest.unlockDescs.length; i++){
 	    		var unlockText = quest.unlockDescs[i];
-	    		var conditionScreen = new Popup("#" + notifications.view.divID, "");
-	    		conditionScreen.view.setRegularHTML(unlockText);
-	    		conditionScreen.addState("closed", -1, -1, 0, 0, 0);
-		    	conditionScreen.addState("open", undefined, undefined, 240, undefined);
-		    	conditionScreen.addCloseDiv();
-		    	conditionScreen.addOnCloseFunc(qScreen.view.hide);
-		    	
-		    	conditionScreen.setState("open");
-		    	conditionScreen.view.removeClass("popup");
-		    	conditionScreen.view.removeClass("popup_open");
-		    	conditionScreen.view.addClass("notice");
+	    		makeNotificationScreen(unlockText);
+	    		
 	    	}
+	    };
+	    
+	    function makeNotificationScreen(text){
+	    	var notice = new Popup("#" + notifications.view.divID, "");
+    		notice.view.setRegularHTML(text);
+    		notice.addState("closed", -1, -1, 0, 0, 0);
+	    	notice.addState("open", undefined, undefined, 240, undefined);
+	    	notice.addCloseDiv();
+	    	notice.addOnCloseFunc(notice.view.removePopupDiv, notice.view);
+	    	
+	    	notice.setState("open");
+	    	notice.view.removeClass("popup");
+	    	notice.view.removeClass("popup_open");
+	    	notice.view.addClass("notice");
 	    };
 
         return {
@@ -151,6 +145,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
             getInventoryElementAmt: getInventoryElementAmt,
             getInventoryElementPct: getInventoryElementPct,
             spawnQuestCompletionScreen: spawnQuestCompletionScreen,
+            makeNotificationScreen: makeNotificationScreen,
         };
 
     })();
