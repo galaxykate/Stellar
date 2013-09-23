@@ -18,6 +18,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
             //makeInventoryPopup();
             makeQuestWindow();
             makeNotificationPanel();
+            stellarGame.uiManager = this;
         };
         
         function makeInventoryPopup() {
@@ -114,16 +115,16 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    
 	    function spawnQuestCompletionScreen(quest){
 	    	var completeText = "Quest Completed: " + quest.name;
-	    	makeNotificationScreen(completeText);
+	    	makeNotificationMessage(completeText);
 	    	
 	    	for(var i = 0; i < quest.unlockDescs.length; i++){
 	    		var unlockText = quest.unlockDescs[i];
-	    		makeNotificationScreen(unlockText);
+	    		makeNotificationMessage(unlockText);
 	    		
 	    	}
 	    };
 	    
-	    function makeNotificationScreen(text){
+	    function makeNotificationMessage(text){
 	    	var notice = new Popup("#" + notifications.view.divID, "");
     		notice.view.setRegularHTML(text);
     		notice.addState("closed", -1, -1, 0, 0, 0);
@@ -145,7 +146,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
             getInventoryElementAmt: getInventoryElementAmt,
             getInventoryElementPct: getInventoryElementPct,
             spawnQuestCompletionScreen: spawnQuestCompletionScreen,
-            makeNotificationScreen: makeNotificationScreen,
+            makeNotificationMessage: makeNotificationMessage,
         };
 
     })();
