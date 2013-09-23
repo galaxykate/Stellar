@@ -8,7 +8,6 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
     return (function() {
     	var htmlCount = 0;
     	
-    	
     	// ========================================
     	// View stuff
     	
@@ -158,6 +157,12 @@ define(["inheritance", "modules/models/vector", "uparticle", "modules/models/ele
             		//utilities.debugOutput("updating in popupContents");
             		this.elementsHolder.update();
             	}
+            },
+            
+            setHTML : function(str) {
+            	this.html = str;
+            	var parent = $("#" + this.parentDivID)
+            	parent.html(str);
             },
  
             

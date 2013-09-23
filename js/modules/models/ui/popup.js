@@ -9,7 +9,7 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
 
         var Popup = Class.extend({
 
-            init : function(parentString, text) {
+            init : function(parentString, text, useBottom) {
 				//console.log("Init a popup!!!");
 				this.states = [];
 				this.transitions = [];
@@ -18,7 +18,13 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
 				this.view = new PopupView(parentString);
 				this.controller = new PopupController();
 				this.activeState = null;
-				this.view.createPopupDiv(text, 0, 0, 0, 0);
+				
+				if(useBottom === undefined || useBottom === false){
+            		this.useBottom = false;
+            	} else {
+            		this.useBottom = true;
+            	}
+				this.view.createPopupDiv(text);
 				this.hasCloseDiv = false;
             	
             },
@@ -31,6 +37,10 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
             	this.contents[name] = goodies;
             	//if(this.contentNames.length > 0) this.view.createSpacerSpan();
             	this.contentNames.push(name);
+            },
+            
+            setHTMLForContents : function(name, str){
+            	this.contents[name].setHTML(str);
             },
             
             addNullSelectionTool : function() {
@@ -83,7 +93,7 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
             
             addState : function(name, x, y, width, height, opa) {
             	var state = {
-            		"top": y,
+            		"top": y, // MAY NOT ACTUALLY BE TOP, check this.useBottom
             		"left": x,
             		"width": width,
             		"height": height,
@@ -117,7 +127,7 @@ define(["inheritance", "modules/models/vector", 'modules/views/popup_view', 'mod
             	//console.log(this.states);
             	//console.log(this.states[name]);
             	// set top, left, width, height in view
-            	this.view.updatePopupDiv(this.states[name].top, this.states[name].left, this.states[name].width, this.states[name].height, this.states[name].opacity);
+            	this.view.updatePopupDiv(this.states[name].left, this.states[name].top, this.states[name].width, this.states[name].height, this.states[name].opacity, this.useBottom);
             	this.controller.clearActions(this.view.divID);
             	
             	// loop through transitions and put them in controller

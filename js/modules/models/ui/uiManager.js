@@ -10,12 +10,14 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
     	var playerInventory;
     	var questScreen;
     	var spawnedQuestCompletionScreens = [];
+    	var notifications;
 
         function init() {
             console.log("INIT UI");
 
             //makeInventoryPopup();
             makeQuestWindow();
+            makeNotificationPanel();
         };
         
         function makeInventoryPopup() {
@@ -64,7 +66,22 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    	
 	    	var quests = new PopupContents();
 	    	quests.initStatisticsHTMLHolder();
-	    	questScreen.addContents("quests", quests);
+	    	questScreen.addContents("quests", quests)
+	    };
+	    
+	    function makeNotificationPanel(){
+	    	// Notifications starts at the bottom of the screen and grows upwards
+	    	notifications = new Popup("#overlay_panels", "", true);
+	    	notifications.view.removeClass("popup");
+	    	notifications.view.addClass("notificationPanel");
+	    	notifications.view.setRegularHTML("");
+	    	
+	    	var universeHeight =screenResolution.height;
+	    	var universeWidth = screenResolution.width;
+	    	
+	    	notifications.addState("always", universeWidth-300, 0, 250, undefined, 1, true);
+	    	notifications.setState("always");
+	    	notifications.view.setBGColor(1, 1, 1, 0);
 	    };
 	    
 	    function generateUniverseStatistics(){
@@ -96,23 +113,34 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    };
 	    
 	    function spawnQuestCompletionScreen(quest){
-	    	var completeText = "Quest Completed: <br><br><center>" + quest.name + "<br>";
-	    	for(var i = 0; i < quest.unlockDescs.length; i++){
-	    		completeText += "<br>" + quest.unlockDescs[i];
-	    	}
-	    	completeText += "</center>"
-	    	
-	    	var qScreen = new Popup("#overlay_panels", completeText);
-	    	var universeWidth = screenResolution.width;
-	    	var universeHeight =screenResolution.height;
+	    	var completeText = "Quest Completed: " + quest.name;
+	    	var qScreen = new Popup("#" + notifications.view.divID, "");
+	    	qScreen.view.setRegularHTML(completeText);
 	    	
 	    	qScreen.addState("closed", -1, -1, 0, 0, 0);
-	    	qScreen.addState("open", 200, 100, universeWidth-400, universeHeight-200, 1);
-	    	//qScreen.addTransition("open", "closed", "click");
-	    	//qScreen.addTransition("closed", "open", "click", false);
+	    	qScreen.addState("open", undefined, undefined, 240, undefined);
 	    	qScreen.addCloseDiv();
-	    	qScreen.setState("open");
+	    	qScreen.addOnCloseFunc(qScreen.view.hide);
 	    	
+	    	qScreen.setState("open");
+	    	qScreen.view.removeClass("popup");
+	    	qScreen.view.removeClass("popup_open");
+	    	qScreen.view.addClass("notice");
+	    	
+	    	for(var i = 0; i < quest.unlockDescs.length; i++){
+	    		var unlockText = quest.unlockDescs[i];
+	    		var conditionScreen = new Popup("#" + notifications.view.divID, "");
+	    		conditionScreen.view.setRegularHTML(unlockText);
+	    		conditionScreen.addState("closed", -1, -1, 0, 0, 0);
+		    	conditionScreen.addState("open", undefined, undefined, 240, undefined);
+		    	conditionScreen.addCloseDiv();
+		    	conditionScreen.addOnCloseFunc(qScreen.view.hide);
+		    	
+		    	conditionScreen.setState("open");
+		    	conditionScreen.view.removeClass("popup");
+		    	conditionScreen.view.removeClass("popup_open");
+		    	conditionScreen.view.addClass("notice");
+	    	}
 	    };
 
         return {
