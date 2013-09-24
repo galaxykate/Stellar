@@ -3,13 +3,16 @@
  */
 define(["modules/models/elementSet"], function(ElementSet) {
     var LayerGraph = Class.extend({
+
         init : function(layers, name, segmentCount) {
             this.name = name;
             this.layers = layers;
             this.segmentCount = segmentCount;
-            this.xMult = 1;
+
             this.total = 0;
             this.logScale = false;
+            this.displayMultiplier = 1;
+            this.dir = 1;
 
             this.values = [];
             for (var i = 0; i < this.segmentCount; i++) {
@@ -26,7 +29,18 @@ define(["modules/models/elementSet"], function(ElementSet) {
                 this.blurFilter[i + this.filterLength] = (1 / (Math.sqrt(2 * Math.PI) * sigma)) * Math.pow(Math.E, exp);
             }
 
+            this.position = new Vector((i * 20), 0);
+
             this.blur();
+        },
+
+        setDisplayNumber : function(displayNumber) {
+            this.displayNumber = displayNumber;
+            if (displayNumber % 2 === 1)
+                this.dir = -1;
+
+            this.position.x = this.dir * displayNumber * 70 + 100;
+            console.log(this.position);
         },
 
         getDifferential : function(point, span) {
@@ -34,9 +48,8 @@ define(["modules/models/elementSet"], function(ElementSet) {
             var sample1 = this.sampleAt(point + span);
             return sample1 - sample0;
         },
-
         getIndexSplit : function(y) {
-            var index = this.getInded(y);
+            var index = this.getIndex(y);
             var index0 = Math.floor(index);
             var index1 = Math.ceil(index);
             index0 = utilities.constrain(index0, 0, this.segmentCount - 1);
@@ -60,18 +73,19 @@ define(["modules/models/elementSet"], function(ElementSet) {
                 this.values[i] = fxn(graph.values[i], radius);
             }
         },
+        addValue : function(value, start, end) {
 
-        addValue : function(value, territory) {
-            var start = territory.innerRadius;
-            var end = territory.outerRadius;
             var startIndex = this.getIndex(start);
             var endIndex = this.getIndex(end) - 1;
+
             // get the two indices closest
 
             // get the min and max index
             var min = Math.floor(startIndex);
             var max = Math.ceil(endIndex);
+            var valueAdded = 0;
 
+       
             // Fill in all the values
             for (var i = min; i <= max; i++) {
                 var pct = 1;
@@ -89,23 +103,30 @@ define(["modules/models/elementSet"], function(ElementSet) {
                 pct = utilities.constrain(pct, 0, 1);
 
                 this.values[i] += value * pct;
+                valueAdded += value * pct;
             }
 
         },
-
-        getIndex : function(y) {
-            return -this.segmentCount * y / this.layers.radius;
+        set : function(i, value) {
+            this.values[i] = value;
         },
-
+        calculateTotal : function() {
+            this.total = 0;
+            for (var i = 0; i < this.segmentCount; i++) {
+                this.total += this.values[i];
+            }
+        },
+        getIndex : function(y) {
+            return this.segmentCount * y / this.layers.radius;
+        },
         sampleAt : function(y) {
             var value = 0;
-            var split = this.getIndexSplit(-y);
+            var split = this.getIndexSplit(y);
             value += split[0].pct * this.values[split[0].index];
             value += split[1].pct * this.values[split[1].index];
 
             return value;
         },
-
         getBlurredValue : function(index) {
             var total = 0;
             for (var i = -this.filterLength; i <= this.filterLength; i++) {
@@ -119,50 +140,61 @@ define(["modules/models/elementSet"], function(ElementSet) {
         },
         clear : function() {
             for (var i = 0; i < this.segmentCount; i++) {
-                this.values[i] = 1;
+                this.values[i] = 0;
             }
         },
-
         blur : function() {
-            this.total = 0;
+
+            // Add up the original
+            var originalTotal = 0;
+            for (var i = 0; i < this.segmentCount; i++) {
+                originalTotal += this.values[i];
+            }
+
             var blurredValues = [];
             for (var i = 0; i < this.segmentCount; i++) {
                 blurredValues[i] = this.getBlurredValue(i);
-
             }
 
             for (var i = 0; i < this.segmentCount; i++) {
                 this.values[i] = blurredValues[i];
                 this.total += this.values[i];
             }
+
             this.total /= this.segmentCount;
         },
         valueToColor : function(value) {
             if (value === undefined || isNaN(value))
                 value = 0;
+
+            var value = 5 * Math.pow(Math.abs(value), .5);
             return new KColor((.5 + -value * .03) % 1, 1, 1);
         },
-
         valueToGraphX : function(val) {
             var v = val;
             if (this.logScale)
                 v = Math.log(v);
 
-            return v * this.xMult;
+            return v * this.displayMultiplier;
         },
+        draw : function(g, screenRadius) {
 
-        draw : function(g, xOffset, dir) {
-            xOffset *= dir;
+            g.pushMatrix();
+            this.position.translateTo(g);
+            g.noStroke();
+
             g.fill(1);
 
-            g.textSize(6);
-            g.text(this.name, xOffset, 10);
-            g.rect(xOffset, 0, 200, .5);
-            var h = -this.layers.radius / this.segmentCount;
+            g.textSize(14);
+            g.text(this.name, 0, 15);
+            g.text("total: " + this.total.toFixed(2), 0, 28);
+            g.rect(0, 0, 200, .5);
+            g.text("sr: " + screenRadius, 0, 42);
+            var h = -screenRadius / this.segmentCount;
             var drawAngled = true;
             for (var i = 0; i < this.segmentCount - 1; i++) {
-                var x0 = dir * this.valueToGraphX(this.values[i]);
-                var x1 = dir * this.valueToGraphX(this.values[i + 1]);
+                var x0 = this.dir * this.valueToGraphX(this.values[i]);
+                var x1 = this.dir * this.valueToGraphX(this.values[i + 1]);
 
                 var y0 = h * i;
                 var y1 = h * (i + 1);
@@ -178,13 +210,14 @@ define(["modules/models/elementSet"], function(ElementSet) {
 
                 this.valueToColor(val).fill(g, 0, 1);
                 g.beginShape();
-                g.vertex(xOffset, y0);
-                g.vertex(xOffset, y1);
-                g.vertex(x1 + xOffset, y1);
-                g.vertex(x0 + xOffset, y0);
+                g.vertex(0, y0);
+                g.vertex(0, y1);
+                g.vertex(x1, y1);
+                g.vertex(x0, y0);
                 g.endShape();
 
             }
+            g.popMatrix();
         }
     });
     return LayerGraph;

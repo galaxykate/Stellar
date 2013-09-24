@@ -70,7 +70,6 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
             };
 
             this.focus = undefined;
-            this.focusScale = 1;
 
             // Initialize the universe view to use processing
             initProcessing = function(g) {
@@ -155,7 +154,6 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
                 view.focusMode = true;
             });
             this.animateCameraTo(this.focus, 1);
-
 
         },
 
@@ -264,7 +262,7 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
                 });
 
                 // Compile all the arrays of contents into a single array
-                if (this.focusMode) {
+                if (this.focusMode && this.focus) {
                     this.activeObjects = [this.focus];
                 } else {
                     this.activeObjects = this.activeObjects.concat.apply(this.activeObjects, contentsArrays);
@@ -353,6 +351,12 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
 
             context.layer = "overlay";
             this.drawLayer(context);
+
+            // Draw the focused object
+
+            if (this.focus !== undefined) {
+                this.focus.drawFocus(context);
+            }
 
             if (stellarGame.options.drawActiveQuads) {
                 // Draw all the active quads
@@ -455,8 +459,7 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
                     if (!obj.drawUntransformed && obj.position !== undefined) {
 
                         g.translate(screenPos.x, screenPos.y);
-                        if (view.focus === obj)
-                            view.focusScale = context.distanceScale;
+
                         g.scale(context.distanceScale, context.distanceScale);
 
                     }

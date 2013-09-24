@@ -177,6 +177,8 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
             // Get all the active objects that are regions
             this.activeRegions = _.filter(activeObjects, function(obj) {
+                if (obj === undefined)
+                    return false;
                 return obj.isRegion;
             });
 
@@ -215,8 +217,10 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
         // Activate some function for all the active objects
         applyToActiveObjects : function(fxn, arg) {
             $.each(this.activeObjects, function(index, obj) {
-                if (obj[fxn] !== undefined)
-                    obj[fxn](arg);
+                if (obj !== undefined) {
+                    if (obj[fxn] !== undefined)
+                        obj[fxn](arg);
+                }
             })
         },
         updatePhysics : function(time) {

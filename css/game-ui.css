@@ -87,7 +87,6 @@ body {
 	position: relative;
 	background-color: rgba(255, 255, 255, .3);
 	float: left;
-	
 	padding: 10px;
 	margin: 2px;
 	overflow: visible;
@@ -143,6 +142,7 @@ body {
 #options_panel:hover {
 	top: -10px;
 }
+
 .tuning_slider_holder {
 	height: 30px;
 }
@@ -369,4 +369,8 @@ popupHeading {
 	transition-property: all;
 	transition-duration: 250ms;
 	transition-timing-function: cubic-bezier(.2,.5,.43,1.73);
+}
+#inspector_graph_label {
+	position: absolute;
+	color: white;
 }

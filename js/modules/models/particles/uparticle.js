@@ -233,7 +233,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             initAsParticle : function() {
                 this.position = new Vector(0, 0);
                 this.velocity = new Vector(0, 0);
-               
+
                 this.totalForce = new Vector(0, 0);
                 this.mass = 1;
                 this.drag = .93;
@@ -252,6 +252,9 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
 
             //===============================================================
             // Update this particle according to physics
+            drawFocus : function(context) {
+
+            },
 
             drawBackground : function(context) {
 

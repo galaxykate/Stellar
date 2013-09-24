@@ -43,11 +43,12 @@ define(["modules/models/face/face", "modules/models/particles/star_sim/star_laye
             g.ellipse(0, 0, 15, 15);
         },
 
-        drawFocused : function(context) {
+        drawFocus : function(context) {
             var g = context.g;
+            this.focusScale = context.distanceScale;
 
             if (this.inFocus && this.layers) {
-                this.layers.draw(g);
+                this.layers.draw(context.g);
             }
         },
 
@@ -63,12 +64,6 @@ define(["modules/models/face/face", "modules/models/particles/star_sim/star_laye
                 //  this.face.draw(g);
 
             }
-
-            if (this.inFocus && this.layers) {
-                this.layers.draw(context.g);
-            }
-
-            this.drawFocused(context);
 
         },
 

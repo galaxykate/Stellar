@@ -113,22 +113,27 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
             addOption("outputActiveObjects", false);
             addOption("outputActiveQuads", false);
             addOption("hideDevPanels", true);
+            addOption("showBubbleForces", false);
 
             addOption("showUpdateQuests", true);
 
             addTuning("moveSpeed", 1, .1, 5);
             addTuning("gravity", 1, .1, 5);
             addTuning("thermalPressure", 1, .1, 5);
+            addTuning("gasPressureConstant", 40, 10, 500);
 
             addTuning("juiceRefill", .1, .1, 5);
-            addTuning("bubbleForce", 0, 0, 5);
-            addTuning("containerForce", .1, .1, 5);
+            addTuning("bubbleForce", .4, 0, 5);
+            addTuning("containerForce", .3, .01, 5);
 
             //================================================================
             //================================================================
             //================================================================
             // Tool management
             stellarGame.activeTool = undefined;
+
+            // Hide the nav bar
+            $("#nav_controls").hide();
 
             var moveTool = new MoveTool(this, "Move", "move");
             stellarGame.setActiveTool = function(tool) {
