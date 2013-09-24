@@ -5,7 +5,7 @@
 // Organize the game
 // Singleton pattern from here: http://stackoverflow.com/questions/1479319/simplest-cleanest-way-to-implement-singleton-in-javascript
 
-define(['modules/views/game_view', 'modules/controllers/game_controller', 'modules/models/universe', 'modules/models/ui/uiManager', 'modules/models/quests/questManager', "modules/models/player"], function(GameView, GameController, Universe, uiManager, QuestManager, Player) {
+define(['modules/views/game_view', 'modules/controllers/game_controller', 'modules/models/universe', 'modules/models/ui/uiManager', 'modules/models/quests/questManager', "modules/models/player", 'modules/models/saving/saveManager'], function(GameView, GameController, Universe, uiManager, QuestManager, Player, SaveManager) {
 
     var startGame = function() {
         // Make this into a global object
@@ -14,6 +14,7 @@ define(['modules/views/game_view', 'modules/controllers/game_controller', 'modul
         //============================================================
         //============================================================
         //============================================================
+        SaveManager.init();
         stellarGame.player = new Player();
 
         var universe = new Universe();

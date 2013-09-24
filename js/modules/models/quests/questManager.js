@@ -50,6 +50,41 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
 			unlockAllQuests();
         };
         
+        function loadFromData(data){
+        	// data should be a questManager from the save file
+        	currentLevel = data.currentLevel;
+        	
+        	console.log(".... LOADING QUESTS ....")
+        	for(var i = 0; i < data.questLibrary.length; i++){
+        		var id = questIDByName[data.questLibrary[i].name];
+        		if(id >= 0){
+        			// The quest already exists, update its progress
+        			questLibrary[id].started = data.questLibrary[i].started;
+        			questLibrary[id].finished = data.questLibrary[i].finished;
+        			questLibrary[id].fanfair = data.questLibrary[i].fanfair;
+        			for(var j = 0; j < questLibrary[id].conditions.length; j++){
+        				if(data.questLibrary[i].conditions[j].satisfied)
+        					questLibrary[id].conditions[j].satisfy();
+        			}
+        			
+        			if(data.questLibrary[i].finished === true){
+        				questLibrary[id].questCompleteTint(true);
+        			}
+        			
+        			questLibrary[id].update();
+        			questLibrary[id].updateHTMLText();
+        			
+        		} else {
+        			// The quest did not previously exist, add it fresh
+        			console.log("WARNING: Quest I haven't seen before, worry about adding it later");
+        		}
+				
+			}
+        	
+        	startAllViableQuests();
+			setVisibility();
+        };
+        
         // CURRENTLY DOES NOT WORK!!! My need to call after widget is initialized
         function lockAllElementsExceptHydrogen(){
         	$.each(stellarGame.activeElements, function(index, element) {
@@ -114,6 +149,7 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
 
         return {
             init : init,
+            loadFromData: loadFromData,
             startAllViableQuests : startAllViableQuests,
             lockAllElementsExceptHydrogen: lockAllElementsExceptHydrogen,
             update : update,
