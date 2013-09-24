@@ -226,7 +226,7 @@ define(["modules/models/vector", "jQueryUITouchPunch", "jQueryHammer", "kcolor",
                     console.log("CLICK " + touch.overObjects[0]);
                     if (touch.overObjects[0] && !touch.overObjects[0].inFocus){
                         universeView.focusOn(touch.overObjects[0], .2);
-                        stellarGame.qManager.satisfy("Navigating Space", 2);
+                        stellarGame.qManager.satisfy("Examine Another Star", 0);
                     }
                 } else
                     console.log("CLICKED NOTHING");

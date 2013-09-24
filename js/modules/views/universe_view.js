@@ -299,17 +299,18 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
         },
 
         modifyZoom : function(delta, manualControl) {
-
-            var newZoom = this.zoom + .003 * delta;
-            if (this.focus) {
-                if (delta > 0)
-                    this.unfocus();
-            } else {
-
-                newZoom = utilities.constrain(newZoom, midZoom, maxZoom);
-                this.setZoom(newZoom, manualControl);
-                stellarGame.qManager.satisfy("Navigating Space", 0);
-
+			if(settings.moveZoomToolUnlocked){
+	            var newZoom = this.zoom + .003 * delta;
+	            if (this.focus) {
+	                if (delta > 0)
+	                    this.unfocus();
+	            } else {
+	
+	                newZoom = utilities.constrain(newZoom, midZoom, maxZoom);
+	                this.setZoom(newZoom, manualControl);
+	                stellarGame.qManager.satisfy("Navigating Space", 0);
+	
+	            }
             }
 
         },

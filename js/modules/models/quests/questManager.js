@@ -26,9 +26,13 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
 				q.level = Quests[i].level;
 				q.giverType = Quests[i].giver;
 				q.onComplete = Quests[i].onComplete;
+				q.unlockDescs = [];
 				
 				for(var j = 0; j < Quests[i].conditions.length; j++){
 					q.addCondition(Quests[i].conditions[j].desc);
+				}
+				for(var j = 0; j < Quests[i].unlockDescs.length; j++){
+					q.unlockDescs.push(Quests[i].unlockDescs[j].desc);
 				}
 				questLibrary.push(q);
 				questIDByName[q.name] = i;
@@ -43,7 +47,7 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
 			//lockAllElementsExceptHydrogen()
 			
 			// DEBUG
-			//unlockAllQuests();
+			unlockAllQuests();
         };
         
         // CURRENTLY DOES NOT WORK!!! My need to call after widget is initialized
@@ -96,7 +100,7 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
     				//uiManager.getQuestScreen().flash(); // replace flash with a new pop-up of awesome
     				uiManager.spawnQuestCompletionScreen(quest);
     				quest.fanfair = true;
-    				//if(quest.onComplete !== undefined) quest.onComplete(); // handled when quest screen is closed
+    				if(quest.onComplete !== undefined) quest.onComplete();
     				if(currentLevel < quest.level+1){ 
     					currentLevel = quest.level+1;
     					startAllViableQuests()

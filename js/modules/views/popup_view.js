@@ -53,27 +53,46 @@ define(["inheritance"], function(Inheritance) {
             	//console.log("appended div " + this.divID + " to: " + this.parentStr);
             },
             
-            removePopupDiv : function() {
-            	$(this.parentStr).remove("#" + this.divID);
+            removePopupDiv : function(args) {
+            	console.log("I AM TRYING TO REMOVE " + args.divID + " from " + args.parentStr);
+            	$("#" + args.divID).remove();
             	//console.log("removed div " + this.divID + " from: " + this.parentStr);
             },
 
-			createPopupDiv : function(text, x, y, wid, hei, opa) {
-				
-				//this.removePopupDiv();
+			createPopupDiv : function(text, x, y, wid, hei, opa, useBottom) {
+				//console.log("creating div " + this.divID + ", " + x + ", " + y + ", " + wid + ", " + hei + ", " + opa + ", " + useBottom);
 				
                 this.options = {
-                    html : "<popupHeading>" + text + "</popupHeading>" + "<br><br>",
                     "class" : "popup",
                     "id" : this.divID,
-                    top: y,
-                    left: x,
-                    width: wid,
-                    height: hei,
-                    opacity: opa
                 };
+                if(useBottom === undefined || useBottom === false){
+                	this.options.top = y;
+                } else {
+                	this.options.bottom = y;
+                }
+                if(x !== undefined) this.options.left = x;
+                if(wid !== undefined) this.options.width = wid;
+                if(hei !== undefined) this.options.height = hei;
+                if(opa !== undefined) this.options.opacity = opa;
+                console.log(this.options);
                 
 				this.div = $('<div/>', this.options);
+				//console.log("creativing div " + this.divID + " with text " + text);
+				if(text !== "" && text !== undefined){
+					//console.log("TEXT SENSED! MAKING TITLE HTML");
+					//console.log(text);
+					this.titleHTML = text + "<br><br>";
+					this.titleDivID = this.divID + "_titleText";
+					var titleOptions = {
+						"class" : "popupHeading",
+						"id" : this.titleDivID,
+						html : this.titleHTML
+					}
+					if(wid !== undefined) titleOptions.width = wid-30; //to make room for close div
+					this.titleDiv = $('<div/>', titleOptions);
+					this.div.append(this.titleDiv);
+				} 
 				
 				this.appendPopupDiv();
 
@@ -86,7 +105,7 @@ define(["inheritance"], function(Inheritance) {
            			html : "X",
                     "class" : "closeButton",
                     "id" : this.divID + "_close",
-                    top: 10,
+                    top: -20, //10
                     left: div.width()-20,
                     width: 20,
                     height: 20,
@@ -135,23 +154,73 @@ define(["inheritance"], function(Inheritance) {
            		var closeDiv = $("#" + this.divID + "_close");
            		closeDiv.hide();
            	},
+           	
+           	hide : function() {
+           		$("#" + this.divID).hide();
+           	},
+           	
+           	show : function() {
+           		$("#" + this.divID).show();
+           	},
             
-            updatePopupDiv : function(x, y, wid, hei, opa) {
-            	//console.log("updating div " + this.divID);
+            updatePopupDiv : function(x, y, wid, hei, opa, useBottom) {
+            	console.log("updating div " + this.divID + ", " + x + ", " + y + ", " + wid + ", " + hei + ", " + opa + ", " + useBottom);
             	var div = $("#" + this.divID);
             	
-            	div.css('top', x + 'px');
-            	div.css('left', y + 'px');
-            	div.css('width', wid + 'px');
-            	div.css('height', hei + 'px');
-            	div.css({ opacity: opa });
-            	
+            	if(useBottom === undefined || useBottom === false){
+                	div.css('top', y + 'px');
+                } else {
+                	div.css('bottom', y + 'px');
+                }
+            	//div.css('top', x + 'px');
+            	if(x !== undefined) div.css('left', x + 'px');
+                if(wid !== undefined) div.css('width', wid + 'px');
+                if(hei !== undefined) div.css('height', hei + 'px');
+                if(opa !== undefined) div.css({ opacity: opa });
+                
+                if(this.titleHTML !== undefined && this.titleHTML !== ""){
+					var titleDiv = $("#" + this.titleDivID);
+					if(wid !== undefined) titleDiv.css('width', (wid-50) + 'px'); //to make room for close div
+				} 
+				if(this.regularHTML !== undefined && this.regularHTML !== ""){
+					var regularDiv = $("#" + this.regularDivID);
+					if(wid !== undefined) regularDiv.css('width', (wid-50) + 'px'); //to make room for close div
+				} 
+				
             },
             
             setZIndex : function(z) {
             	//console.log("updating div " + this.divID);
             	var div = $("#" + this.divID);
             	div.css('z-index', z);
+            },
+            
+            setBGColor : function(r, g, b, a){
+            	var div = $("#" + this.divID);
+            	div.css("background-color", "rgba(" + r +","+ g +","+ b +","+ a + ")");
+            },
+            
+            setRegularHTML : function(text, keepTitle){
+            	if(this.regularHTML){
+            		// change what's already here
+            		//console.log("updating regularHTML " + this.divID + " with text " + text);
+            		var regularDiv = $("#" + this.regularDivID);
+            		this.regularHTML = text;
+					regularDiv.html(text);
+            	} else {
+            		// Make new variables and div
+            		//console.log("making new regularHTML " + this.divID + " with text " + text);
+            		this.regularHTML = text;
+					this.regularDivID = this.divID + "_regularText";
+					var regularOptions = {
+						"class" : "popupText",
+						"id" : this.regularDivID,
+						html : this.regularHTML
+					}
+					this.regularDiv = $('<div/>', regularOptions);
+					var div = $("#" + this.divID);
+					this.div.append(this.regularDiv);
+            	}
             },
             
             addClass : function(c){

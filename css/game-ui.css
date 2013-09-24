@@ -153,14 +153,30 @@ body {
 	height: 15px;
 }
 
+.notificationPanel {
+	z-index: 60;
+	position: absolute;
+	padding: 2px;
+	overflow: hidden;
+	pointer-events: auto;
+}
+
+.notice {
+	z-index: 60;
+	display: inline-block;
+	padding: 5px;
+	background-color: rgba(225, 235, 255, .8);
+	border-radius: 10px;
+	transition: all 0.22s;
+	overflow: auto;
+	border: 2px solid rgba(255,255, 255, 1);
+	pointer-events: auto;
+}
+
 .popup {
 	z-index: 60;
 	position: absolute;
 	padding: 10px;
-	width: 25px;
-	height: 200px;
-	top: 0px;
-	left: 0px;
 	background-color: rgba(225, 235, 255, .8);
 	border-radius: 10px;
 	transition: all 0.22s;
@@ -202,9 +218,15 @@ body {
 	box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
 }
 
-popupHeading {
-	font-size: 2em;
+.popupHeading {
+	font-size:2em;
+	display:inline-block;
 	pointer-events: none;
+}
+
+.popupText {
+	font-size:1em;
+	display:inline-block;
 }
 
 .elementCanvasHolder {
@@ -232,7 +254,8 @@ popupHeading {
 
 .closeButton {
 	z-index: 60;
-	position: absolute;
+	float: right;
+	display:inline-block;
 	padding: 1px;
 	top: 5px;
 	left: 0px;

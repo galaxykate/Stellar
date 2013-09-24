@@ -145,23 +145,28 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
                 var elem = utilities.getWeightedRandom(target.elementQuantity, function(index, elem) {
                     return index;
                 });
+                
+                if(elem !== undefined){
+	                var siphonAmt = Math.min(150, target.elementQuantity[elem]);
+	                //utilities.debugOutput("Siphoning " + siphonAmt);
+	                //console.log(i + "/" + volume+ " Siphoning element " + elem + " amount " + siphonAmt);
 
-                if (elem !== undefined) {
-                    var siphonAmt = Math.min(150, target.elementQuantity[elem]);
-                    //utilities.debugOutput("Siphoning " + siphonAmt);
-                    //console.log(i + "/" + volume+ " Siphoning element " + elem + " amount " + siphonAmt);
+	                if(this.playerBelt !== undefined){
+	                	var elementName = activeElements[elem].name;
+	                	if(settings[elementName.toLowerCase() + "Unlocked"] === true){ 
+	                		//can this be made more efficient? Currently if an element is not unlocked, 
+	                		// the system POUNDS at this function and gets no where
+	                		this.elementQuantity[elem] += siphonAmt;
+	                		target.elementQuantity[elem] -= siphonAmt
+	                		if(elem <=2) stellarGame.qManager.satisfy("Gather H, He, and C", elem); 
+	                		else if (elem <=5) stellarGame.qManager.satisfy("Gather O, Si, and Fe", elem-3); 
+	                		else stellarGame.qManager.satisfy("Gather Au and U", elem-6); 
+	                	}
+	                } else {
+	                	this.elementQuantity[elem] += siphonAmt;
+	                	target.elementQuantity[elem] -= siphonAmt
+	                }
 
-                    if (this.playerBelt !== undefined) {
-                        var elementName = activeElements[elem].name;
-                        if (settings[elementName.toLowerCase() + "Unlocked"] === true) {
-                            this.elementQuantity[elem] += siphonAmt;
-                            target.elementQuantity[elem] -= siphonAmt
-                            stellarGame.qManager.satisfy("Gather " + elementName);
-                        }
-                    } else {
-                        this.elementQuantity[elem] += siphonAmt;
-                        target.elementQuantity[elem] -= siphonAmt
-                    }
                 }
 
             }
