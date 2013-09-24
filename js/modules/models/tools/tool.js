@@ -125,7 +125,7 @@ define(["modules/models/vector", "uparticle", "kcolor"], function(Vector, UParti
                 // Add some movement based on the edge that we're pointing at
                 if (touch.planeCenterOffset.magnitude() !== 0) {
                     var edgeStrength = touch.screenPct.magnitude();
-                    var moveStrength = 300 * Math.pow(Math.max(edgeStrength - .3, 0), 1.5) * stellarGame.tunings.moveSpeed;
+                    var moveStrength = 100 * Math.pow(Math.max(edgeStrength - .3, 0), 1.5) * stellarGame.tunings.moveSpeed;
                     this.direction.addMultiple(touch.planeCenterOffset, -moveStrength / touch.planeCenterOffset.magnitude());
 
                     stellarGame.universe.addScrollingMovement(this.direction);

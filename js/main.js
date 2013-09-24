@@ -54,15 +54,16 @@ var utilities = {
             totalWeight += array[i];
         };
 
-        var randomNumber = Math.floor(Math.random() * totalWeight);
+        var target = Math.random() * totalWeight;
         var cumWeight = 0;
 
         for (var i = 0; i < length; i++) {
+            cumWeight += array[i];
 
-            cumWeight += array[i]
-            if (randomNumber < cumWeight) {
+            if (target <= cumWeight) {
                 return i;
             }
+
         };
 
     },

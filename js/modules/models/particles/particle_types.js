@@ -27,7 +27,7 @@ define(particleFiles, function() {
         var length = typeConstructors.length;
         for (var i = 0; i < length; i++) {
             var name = particleKeyNames[i];
-        
+
             particleTypes[name] = typeConstructors[i];
         }
 

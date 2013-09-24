@@ -158,7 +158,6 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 }
 
                 if (this.target) {
-                    debug.output("Move " + this.name + " to " + this.target);
                     var targetOffset = Vector.sub(this.position, this.target.position);
                     var d = targetOffset.magnitude();
                     if (d < 15) {
@@ -228,6 +227,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             initAsElementContainer : function() {
                 //console.log(this.idNumber + " initAsElementContainer");
                 this.elements = new ElementSet(this);
+
             },
 
             initAsParticle : function() {

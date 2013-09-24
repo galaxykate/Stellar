@@ -57,7 +57,7 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
         activeElements[index] = element;
 
     });
-    
+
     stellarGame.activeElements = activeElements;
 
     var ElementSet = Class.extend({
@@ -69,16 +69,10 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
 
             this.elementQuantity = [];
             this.elementExcitements = [];
-            var max = Math.random() * Math.random() * Math.random() * 5 + 1;
 
             for (var i = 0; i < activeElements.length; i++) {
-                if (i < max) {
 
-                    this.elementQuantity[i] = Math.random() * 300 + 50;
-                } else {
-
-                    this.elementQuantity[i] = 0;
-                }
+                this.elementQuantity[i] = 0;
                 this.elementExcitements[i] = 0;
 
             }
@@ -89,33 +83,72 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
 
         },
 
-        fillElements : function(maxElements, startAmt, dieOff) {
-            var amt = startAmt;
+        //====================================================================================
+        //====================================================================================
+        //====================================================================================
+        //====================================================================================
+        //====================================================================================
+        // Basics
 
-            for (var i = 0; i < activeElements.length; i++) {
-                if (i === 0) {
-                    //   this.elementQuantity[i] = 1;
-                    // this.elementQuantity[i] = amt;
-                }
-                amt *= dieOff;
+        // Set this element to this amount (limited by capacity)
+        set : function(element, amt) {
+            // Get index
+            var index = element;
+            if (element.index !== undefined)
+                index = element.index;
+
+            if (this.capacities !== undefined) {
+                var space = this.capacities[index] - this.elementQuantity[index];
+                amt = Math.min(space, amt);
             }
+
+            this.elementQuantity[index] = amt;
+            this.updateElement(index);
+            return amt;
         },
 
-        setCapacity : function(size) {
-            this.capacities = [];
-            for (var i = 0; i < activeElements.length; i++) {
-                this.capacities[i] = size;
+        get : function(element) {
+            // Get index
+            var index = element;
+            if (element.index !== undefined)
+                index = element.index;
+            return this.elementQuantity[index];
+        },
 
+        remove : function(element, amt) {
+            // Get index
+            var index = element;
+            if (element.index !== undefined)
+                index = element.index;
+
+            amt = Math.min(this.elementQuantity[index], amt);
+            this.elementQuantity[index] -= amt;
+            this.updateElement(index);
+            return amt;
+        },
+
+        // add this amount to this element (limited by capacity)
+        add : function(element, amt) {
+            // Get index
+            var index = element;
+            if (element.index !== undefined)
+                index = element.index;
+
+            if (this.capacities !== undefined) {
+                var space = this.capacities[index] - this.elementQuantity[index];
+                amt = Math.min(space, amt);
             }
+
+            this.elementQuantity[index] += amt;
+            this.updateElement(index);
+            return amt;
         },
 
-        getCapacityPct : function(index) {
-            return this.elementQuantity[index] / this.capacities[index];
-        },
-
-        setQuantityToPctCapacity : function(index, pct) {
-            this.elementQuantity[index] = this.capacities[index] * pct;
+        // This element has changed
+        updateElement : function(index) {
+            this.setTotalMass();
             this.changedValue();
+
         },
 
         // override
@@ -123,15 +156,39 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
 
         },
 
-        //===============================================================
-        //===============================================================
-        //===============================================================
-        // Getters
-        getAmtByName : function(name) {
-            return this.elementQuantity[activeElements[name].id];
+        //====================================================================================
+        //====================================================================================
+        //====================================================================================
+        //====================================================================================
+        //====================================================================================
+        //
+
+        fillElements : function(maxElements, startAmt, dieOff) {
+            var amt = startAmt;
+
+            for (var i = 0; i < activeElements.length; i++) {
+                if (i < maxElements) {
+                    this.set(i, amt);
+
+                    amt *= dieOff;
+                }
+            }
         },
-        getPctByName : function(name) {
-            return getAmtByName(name) / this.totalMass();
+
+        setCapacity : function(size) {
+            this.capacities = [];
+            for (var i = 0; i < activeElements.length; i++) {
+                this.capacities[i] = size;
+            }
+        },
+
+        getCapacityPct : function(index) {
+            return this.get(index) / this.capacities[index];
+        },
+
+        setQuantityToPctCapacity : function(index, pct) {
+            this.elementQuantity[index] = this.capacities[index] * pct;
+            this.changedValue();
         },
 
         //===============================================================
@@ -140,152 +197,43 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
         // Ways to transfer, add, fuse, or remove elements
 
         // Siphon in ONE random element at a time
-        siphon : function(target, volume) {
-            for (var i = 0; i < volume; i++) {
-                var elem = utilities.getWeightedRandom(target.elementQuantity, function(index, elem) {
-                    return index;
-                });
-                
-                if(elem !== undefined){
-	                var siphonAmt = Math.min(150, target.elementQuantity[elem]);
-	                //utilities.debugOutput("Siphoning " + siphonAmt);
-	                //console.log(i + "/" + volume+ " Siphoning element " + elem + " amount " + siphonAmt);
+        siphon : function(targetElements, volume) {
+            // Pick an element
+            var index = targetElements.getRandomElementIndex();
+            if (index !== undefined) {
+                var element = activeElements[index];
 
-	                if(this.playerBelt !== undefined){
-	                	var elementName = activeElements[elem].name;
-	                	if(settings[elementName.toLowerCase() + "Unlocked"] === true){ 
-	                		//can this be made more efficient? Currently if an element is not unlocked, 
-	                		// the system POUNDS at this function and gets no where
-	                		this.elementQuantity[elem] += siphonAmt;
-	                		target.elementQuantity[elem] -= siphonAmt
-	                		if(elem <=2) stellarGame.qManager.satisfy("Gather H, He, and C", elem); 
-	                		else if (elem <=5) stellarGame.qManager.satisfy("Gather O, Si, and Fe", elem-3); 
-	                		else stellarGame.qManager.satisfy("Gather Au and U", elem-6); 
-	                	}
-	                } else {
-	                	this.elementQuantity[elem] += siphonAmt;
-	                	target.elementQuantity[elem] -= siphonAmt
-	                }
+                var canSiphon = true;
 
+                if (this.playerBelt) {
+                    //   canSiphon = settings[element.name.toLowerCase() + "Unlocked"];
                 }
 
-            }
+                if (canSiphon) {
 
-            this.setTotalMass();
-            target.setTotalMass();
+                    // Try to siphon the maximum amount;
+                    var siphonAmt = volume;
+                    siphonAmt = targetElements.remove(element, siphonAmt);
+                    this.add(element, siphonAmt);
 
-        },
-        transfer : function(target, element, amt) {
-            var index = element.index;
-            amt = Math.min(this.elementQuantity[index], amt);
-            this.elementQuantity[index] -= amt;
-            target.elementQuantity[index] += amt;
-            this.setTotalMass();
-            target.setTotalMass();
-
-        },
-        remove : function(element, amt) {
-            var index = element.index;
-            amt = Math.min(this.elementQuantity[index], amt);
-            this.elementQuantity[index] -= amt;
-            this.setTotalMass();
-            return amt;
-        },
-        add : function(element, amt) {
-            var index = element.index;
-            this.elementQuantity[index] += amt;
-            this.setTotalMass();
-            return amt;
-        },
-
-        // Siphon off 1 element by name and percentage
-        siphonOneByName : function(target, elementName, pct) {
-            var index;
-            for (var i = 0; i < activeElements.length; i++) {
-                if (activeElements[i].name === elementName) {
-                    index = i;
+                    if (index <= 2)
+                        stellarGame.qManager.satisfy("Gather H, He, and C", index);
+                    else if (index <= 5)
+                        stellarGame.qManager.satisfy("Gather O, Si, and Fe", index - 3);
+                    else
+                        stellarGame.qManager.satisfy("Gather Au and U", index - 6);
                 }
-
             }
-
-            var siphonAmt = Math.max(1, target.elementQuantity[index] * pct);
-            if (target.elementQuantity[index] < siphonAmt)
-                siphonAmt = target.elementQuantity[index];
-            utilities.debugOutput("Siphoning " + siphonAmt);
-
-            this.elementQuantity[index] += siphonAmt;
-            target.elementQuantity[index] -= siphonAmt
-
-            this.setTotalMass();
-            target.setTotalMass();
-
-        },
-        setQuantity : function(index, volume) {
-            this.elementQuantity[index] = volume;
-
-            this.setTotalMass();
-        },
-        addElement : function(elementName, volume) {
-            var index;
-            for (var i = 0; i < activeElements.length; i++) {
-                if (activeElements[i].name === elementName) {
-                    index = i;
-                }
-
-            }
-
-            utilities.touchOutput("Add " + elementName + " " + volume);
-            this.elementQuantity[index] += volume;
-            utilities.touchOutput(" result " + this.elementQuantity[elementName]);
-
-            this.setTotalMass();
         },
 
-        // Transfer a specific amount of elements to the target
-        transferAmountsTo : function(target, amounts) {
-            for (var i = 0; i < amounts.length; i++) {
-                this.elementQuantity[i] -= amounts[i];
-                target.elementQuantity[i] += amounts[i];
-
-            }
-
-            this.setTotalMass();
-            target.setTotalMass();
-
-        },
-
-        // Transfer some of the elements to the target
-        transferTo : function(target, pct) {
-            for (var i = 0; i < activeElements.length; i++) {
-                var amt = this.elementQuantity[i] * pct;
-                this.elementQuantity[i] -= amt;
-                target.elementQuantity[i] += amt;
-
-            }
-            this.setTotalMass();
-            target.setTotalMass();
-
-        },
-
-        // Multiply the elements by some amount
-        multiply : function(m) {
-            for (var i = 0; i < activeElements.length; i++) {
-                this.elementQuantity[i] *= m;
-
-            }
-            this.setTotalMass();
-
-        },
-        clearAllElements : function() {
-            for (var i = 0; i < activeElements.length; i++) {
-                this.elementQuantity[i] = 0;
-            }
-
-            this.setTotalMass();
-        },
         //===============================================================
         //===============================================================
         //===============================================================
+
+        getRandomElementIndex : function() {
+
+            return utilities.getWeightedRandom(this.elementQuantity);
+        },
 
         setTotalMass : function() {
             this.totalMass = 0;
@@ -437,32 +385,29 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
             for (var i = 0; i < activeElements.length; i++) {// big elements are on top
                 //for (var i = activeElements.length - 1; i >= 0; i--) {// big elements are on bottom
                 //var amt = this.elementQuantity[i];
-
-                var amt = Math.ceil(Math.log(this.elementQuantity[i]));
-
-                amt = Math.min(amt, 1);
-                //var elementRad = activeElements[i].number/10;
-
-                // var elementRad = Math.log(activeElements[i].number);
-
-                var volume = utilities.constrain(this.elementQuantity[i], 0, 10000);
-                var elementRad = .05 * volume * Math.pow(1.8, i);
-                elementRad = Math.pow(elementRad, .5);
-                //var elementRad = Math.sqrt(activeElements[i].number);
-                if (elementRad < minRadius)
-                    elementRad = minRadius;
-
-                activeElements[i].idColor.fill(g);
-
-                g.noStroke();
-                //g.text(Math.floor(this.elementQuantity[i]), 0, 12 * i);
-
+                var amt = this.get(i);
                 if (amt > 0) {
+                    var amt = Math.ceil(Math.log(amt));
+
+                    amt = Math.max(amt, 1);
+
+                    var volume = utilities.constrain(this.elementQuantity[i], 0, 10000);
+                    var elementRad = .05 * volume * Math.pow(1.8, i);
+                    elementRad = Math.pow(elementRad, .5);
+
+                    elementRad = 2;
+
+                    activeElements[i].idColor.fill(g);
+
+                    g.noStroke();
+                    //g.text(Math.floor(this.elementQuantity[i]), 0, 12 * i);
+
                     // very rough scaling parameters, need to find better functions
                     for (var j = 0; j < amt; j++) {
                         var spread = radius * Math.pow(this.totalMass, .4) + 5;
                         var r = spread * .02 * Math.pow(i, .4) + 5;
                         var theta = j + t * (3 * Math.sin(i + j + this.parent.idNumber) - .5) + 10;
+                        debug.output(r + " " + theta + " " + elementRad);
                         //      var xloc = 2 * radius * utilities.pnoise(.1 * t + 200 + amt + elementRad + j) - radius;
                         //i* 10;//
                         //     var yloc = 2 * radius * utilities.pnoise(.1 * t + 100 + amt + elementRad + j) - radius;
@@ -470,8 +415,8 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
                         //    g.ellipse(xloc, yloc, elementRad, elementRad)
                         g.ellipse(r * Math.cos(theta), r * Math.sin(theta), elementRad, elementRad)
                     }
-                }
 
+                }
             }
         },
         drawAsSlice : function(g, radius, burning) {
@@ -514,106 +459,8 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
 
             }
         },
-
-        // ===============================================================
-        // ==================== View Stuff ========================
-        // ===============================================================
-
-        addAllElementsToADiv : function(parentID, contents) {
-            var elementSet = this;
-            this.parentIDFromUI = parentID;
-            this.contents = contents;
-
-            var parent = $("#" + parentID);
-            parent.mouseleave(function() {
-
-                elementSet.varMouseDown = false;
-            });
-            elementSet.processings = [];
-            for (var i = 0; i < activeElements.length; i++) {
-                //if(this.elementQuantity[i] > 0){
-                this.createSpanForElement(parentID, activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i], i);
-                //}
-            }
-        },
-
-        // Only call once all elements have been added to the parent div!
-        updateAllElementsInDiv : function() {
-
-            for (var i = 0; i < activeElements.length; i++) {
-                this.updateSpanForElement(activeElements[i].symbol, activeElements[i].name, this.elementQuantity[i], i);
-            }
-        },
-        createSpanForElement : function(parentID, elementID, elementName, elementAmount, i) {
-            var elementSet = this;
-
-            var newCanvas = $('<canvas/>', {
-                'id' : this.parentIDFromUI + "_" + elementID + "_canvas"
-            }).width(20).height(20);
-            //console.log(newCanvas);
-
-            var options = {
-                //html : elementName + ": " + elementAmount + "<br>",
-                //"class" : "element",
-                "class" : "elementCanvasHolder",
-                "id" : this.parentIDFromUI + "_" + elementID,
-
-                // ========= controller stuff ===========
-                mousedown : function() {
-                },
-                mouseup : function() {
-                    elementSet.contents.setNewSelectedDivID(elementSet.parentIDFromUI + "_" + elementID, elementSet);
-                    elementSet.siphonElement = elementName;
-                    console.log(elementSet.siphonElement);
-                },
-                mouseleave : function() {
-                },
-                mouseenter : function() {
-
-                }
-            };
-
-            var span = $('<span/>', options);
-            span.append(newCanvas);
-            span.css({
-                opacity : .2
-            });
-
-            var parent = $("#" + parentID);
-            parent.append(span);
-
-            var processing = new Processing(this.parentIDFromUI + "_" + elementID + "_canvas", function(g) {
-
-                g.size(30, 30);
-                g.colorMode(g.HSB, 1);
-
-                g.id = i;
-                g.elementAmount = 2;
-
-                g.draw = function() {
-                    g.background(1, 0, .7, .3);
-                    //g.background(250, 250, 250, .3);
-                    g.noStroke();
-                    g.fill(.1 * g.id, 1, 1);
-
-                    var element = g.elementAmount;
-                    if (elementAmount <= 2) {
-                        //console.log("*** " + g.id + ": " + elementAmount);
-                        element = 2;
-                    }
-                    var radius = 4 * Math.log(element);
-                    //console.log("rad: " + radius);
-                    //utilities.debugOutput("Rad " + elementID + ": " + radius);
-                    g.ellipse(15, 15, radius, radius);
-                };
-
-            });
-            elementSet.processings.push(processing);
-
-        },
         placeInUniverseFromInventory : function() {
             // FIND A TARGET
-            //console.log(this);
             utilities.debugOutput("SIPHONING...? " + this.siphonElement);
             stellarGame.touch.activeTool.elements.siphonOneByName(this, this.siphonElement, .01);
 

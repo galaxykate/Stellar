@@ -189,7 +189,7 @@ define(["modules/models/elementSet"], function(ElementSet) {
             g.text(this.name, 0, 15);
             g.text("total: " + this.total.toFixed(2), 0, 28);
             g.rect(0, 0, 200, .5);
-            g.text("sr: " + screenRadius, 0, 42);
+           
             var h = -screenRadius / this.segmentCount;
             var drawAngled = true;
             for (var i = 0; i < this.segmentCount - 1; i++) {

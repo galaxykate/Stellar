@@ -26,8 +26,8 @@ define(["modules/models/vector", "uparticle", particleTypePath + "dust", particl
 
         var Trailhead = UParticle.extend({
 
-            init : function(universe) {
-                this._super(universe);
+            init : function() {
+                this._super();
                 this.radius = Math.random() * 20 + 10;
                 stellarGame.statistics.numberOfTrails++;
                 this.exploding = false;
@@ -35,6 +35,7 @@ define(["modules/models/vector", "uparticle", particleTypePath + "dust", particl
                 this.dustGoneCounter = 0;
                 this.sparkleGoneCounter = 0;
                 this.minLOD = 2;
+
             },
 
             drawBackground : function(g, options) {
@@ -103,6 +104,7 @@ define(["modules/models/vector", "uparticle", particleTypePath + "dust", particl
                     }
 
                     var dust = new Dust(stellarGame.universe, this);
+                    dust.elements.fillElements(3, 2, .7);
                     dust.setRadius(10);
                     dust.position.setTo(p);
                     stellarGame.universe.spawn(dust);
@@ -121,7 +123,6 @@ define(["modules/models/vector", "uparticle", particleTypePath + "dust", particl
                     explode(this);
                     stellarGame.qManager.satisfy("Clear a Dust Trail");
                 }
-                debug.output(this.sparkleGoneCounter + "==?" + this.mySparkleCount);
                 if (this.sparkleGoneCounter === this.mySparkleCount) {
                     this.remove();
                 }

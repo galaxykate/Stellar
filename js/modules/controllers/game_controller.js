@@ -117,7 +117,7 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
 
             addOption("showUpdateQuests", true);
 
-            addTuning("moveSpeed", 1, .1, 5);
+            addTuning("moveSpeed", .3, .1, 5);
             addTuning("gravity", 1, .1, 5);
             addTuning("thermalPressure", 1, .1, 5);
             addTuning("gasPressureConstant", 40, 10, 500);

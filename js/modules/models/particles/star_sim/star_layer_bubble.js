@@ -151,7 +151,6 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
                 var m = 1 / this.mass;
                 $.each(this.forces, function(index, force) {
                     count++;
-                    debug.output(index + ": " + force);
                     g.stroke((count * .154) % 1, 1, 1);
                     g.strokeWeight(1);
                     g.line(force.x * m, force.y * m, 0, 0);
@@ -160,7 +159,6 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
                 g.textSize(4);
                 g.fill(1);
                 g.text(this.getThermalPressure(), 5, 0);
-                debug.output(this.forces.pressure);
             }
 
         },

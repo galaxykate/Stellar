@@ -16,7 +16,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
             this.spawnTable = new ChanceTable();
             //this.spawnTable.addOption(particleTypes.Star, "star", 1);
-               this.spawnTable.addOption(particleTypes.Trailhead, "dusttrail", 1);
+            this.spawnTable.addOption(particleTypes.Trailhead, "dusttrail", 1);
             //  this.spawnTable.addOption(particleTypes.Critter, "critter", 1);
 
             this.touchMarker = new particleTypes.UParticle();
@@ -166,13 +166,10 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
 
             stellarGame.time.universeTime = time.total;
             stellarGame.time.updateCount++;
-            debug.output("Touched: ");
-            debug.outputArray(stellarGame.touch.overObjects);
-
+        
             // Update all the timespans
             $.each(this.timespans, function(index, timespan) {
                 timespan.increment(time.ellapsed);
-                debug.output(index + ": " + timespan);
             });
 
             // Get all the active objects that are regions
@@ -261,6 +258,7 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
             universe.regionCenters = [];
             var count = 10;
             var spacing = 700;
+
             for (var i = 0; i < count; i++) {
                 for (var j = 0; j < count; j++) {
                     var wiggleX = spacing * 1 * Math.sin(i + j + Math.random(30));
@@ -271,12 +269,14 @@ define(["modules/models/vector", "kcolor", "quadtree", "particleTypes", 'modules
                     var region = new particleTypes.Region(center);
                     universe.spawn(region);
                     universe.regions.push(region);
+
+                    // is this the start region?
                     if (center.magnitude() < startRegionDistance) {
                         this.startRegion = region;
-                        region.isStartRegion = true;
                         startRegionDistance = center.magnitude();
                     }
                 }
+                this.startRegion.isStartRegion = true;
             }
 
             // Set the region center

@@ -42,22 +42,16 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
 
                     debugTouch.output("Siphon " + obj);
 
+                    // if this element can be siphoned from
                     if (obj.elements !== undefined && obj.siphonable && settings.siphoningFromDust) {
                         tool.elements.siphon(obj.elements, 1);
                         stellarGame.player.updateElements();
-
-                    }
-
-                    if (touch.overObjects[index].acceptsDust || touch.overObjects[index].pickupable) {
-                        target = touch.overObjects[index];
                     }
 
                     if (obj.excite)
                         obj.excite(1);
 
                 });
-
-                //if(target === undefined && touch.overObjects.length > 0) target = touch.overObjects[0];
 
                 if (target) {
                     target.hover = true;
@@ -72,6 +66,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                     stellarGame.qManager.satisfy("Navigating Space", 1);
 
             },
+
             drawCursor : function(g, p, scale) {
 
                 var t = stellarGame.time.universeTime;
