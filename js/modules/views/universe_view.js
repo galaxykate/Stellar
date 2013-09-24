@@ -20,7 +20,7 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
     };
 
     var getLODFromDistance = function(d) {
-        var divisions = [300, 350, 500, 900, 2500, 12000];
+        var divisions = [300, 350, 500, 700, 900, 1200, 1500, 12000];
         for (var i = 0; i < divisions.length - 1; i++) {
             var start = divisions[i];
             var end = divisions[i + 1];
@@ -299,18 +299,18 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
         },
 
         modifyZoom : function(delta, manualControl) {
-			if(settings.moveZoomToolUnlocked){
-	            var newZoom = this.zoom + .003 * delta;
-	            if (this.focus) {
-	                if (delta > 0)
-	                    this.unfocus();
-	            } else {
-	
-	                newZoom = utilities.constrain(newZoom, midZoom, maxZoom);
-	                this.setZoom(newZoom, manualControl);
-	                stellarGame.qManager.satisfy("Navigating Space", 0);
-	
-	            }
+            if (settings.moveZoomToolUnlocked) {
+                var newZoom = this.zoom + .003 * delta;
+                if (this.focus) {
+                    if (delta > 0)
+                        this.unfocus();
+                } else {
+
+                    newZoom = utilities.constrain(newZoom, midZoom, maxZoom);
+                    this.setZoom(newZoom, manualControl);
+                    stellarGame.qManager.satisfy("Navigating Space", 0);
+
+                }
             }
 
         },
@@ -430,7 +430,7 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
             context.screenPos = screenPos;
 
             this.universe.draw(context);
-            var drawAll = true;
+
             $.each(this.activeObjects, function(index, obj) {
 
                 var centerDistance = view.camera.position.getDistanceTo(obj.position);
@@ -449,13 +449,17 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
                 */
 
                 // If this object should draw at all at this distance
-                if (drawAll || obj.minLOD === undefined || obj.minLOD >= context.LOD.index) {
+                if (obj.minLOD === undefined || obj.minLOD >= context.LOD.index) {
                     // figure out where this object is, and translate appropriately
                     g.pushMatrix();
 
                     // convert into the screen positon
 
                     view.convertToScreenPosition(obj.position, context.screenPos);
+                    /*
+                     g.fill(1);
+                     g.text(context.LOD.index, screenPos.x, screenPos.y);
+                     */
                     context.distanceScale = Math.pow(500 / screenPos.z, 1);
                     if (!obj.drawUntransformed && obj.position !== undefined) {
 

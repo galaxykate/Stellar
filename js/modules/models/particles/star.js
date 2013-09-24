@@ -272,7 +272,7 @@ define(["inheritance", "modules/models/vector", "modules/models/face", "modules/
             init : function(universe) {
 
                 this._super(universe);
-                this.minLOD = 3;
+                this.minLOD = 8;
                 this.name = UParticle.generateName();
 
                 this.initAsTouchable();

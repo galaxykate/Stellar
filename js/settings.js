@@ -35,7 +35,7 @@ var settings = {
     
     // unlocks via quests
     moveZoomToolUnlocked: false,
-    siphoningFromDust: false,
+    siphoningFromDust: true,
     tempToolUnlocked: false,
     densityToolUnlocked: false,
     

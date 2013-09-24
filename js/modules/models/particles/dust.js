@@ -25,7 +25,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "up
                 }
                 stellarGame.statistics.numberOfDust++;
                 this.type = "dust";
-                this.minLOD = 1;
+                this.minLOD = 3;
             },
 
             drawBackground : function(context) {
