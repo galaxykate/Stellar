@@ -375,7 +375,8 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 var useNoise = true;
                 g.noStroke();
                 for (var i = 0; i < 2; i++) {
-                    this.drawBlinkenStar();
+                 var color = new KColor(hue, saturation - i, 1, 1);
+                   this.drawBlinkenStar(g, color, innerRadius*(1 - i*.2), range*(1 - i*.8), 0, t);
                 }
 
             },

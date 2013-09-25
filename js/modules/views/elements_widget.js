@@ -76,6 +76,16 @@ define(["modules/models/elementSet", "inheritance", "modules/models/vector", "mo
 
         },
 
+        disable : function() {
+            this.holder.hide();
+            this.disabled = true;
+        },
+
+        enable : function() {
+            this.holder.show();
+            this.disabled = false;
+        },
+
         setPositions : function() {
             var pct = this.widget.belt.getCapacityPct(this.element.index);
             var ballR = 12;
@@ -158,11 +168,14 @@ define(["modules/models/elementSet", "inheritance", "modules/models/vector", "mo
         },
 
         disable : function(element) {
-
+            this.elementHolders[element.index].disable();
+            this.resetPositions();
         },
 
         enable : function(element) {
+            this.elementHolders[element.index].enable();
 
+            this.resetPositions();
         },
 
         // Set things based on what element is currently active

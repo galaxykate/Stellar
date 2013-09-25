@@ -4,19 +4,20 @@
 
 // Its the Universe!
 
-define(["modules/models/face/face", "modules/models/particles/star_sim/star_layers", "uparticle"], function(Face, StarLayers, UParticle) {
+define(["modules/models/face/face", "modules/models/particles/star_sim/star_layers", "uparticle", "modules/models/face"], function(Face, StarLayers, UParticle, Face) {
     var chandrasekharLimit = 20;
     var Star = UParticle.extend({
 
         init : function(universe) {
 
             this._super(universe);
-            this.minLOD = 3;
+            this.minLOD = 6;
 
             this.initAsTouchable();
             this.initAsParticle();
 
-            this.name = UParticle.generateName() + "dfasdkjafk";
+            this.name = UParticle.generateName();
+
             this.radius = 50;
             this.excitement = {
                 power : 0,
@@ -39,8 +40,7 @@ define(["modules/models/face/face", "modules/models/particles/star_sim/star_laye
         drawBackground : function(context) {
             this._super(context);
             var g = context.g;
-            g.fill(1, 0, 1, .2);
-            g.ellipse(0, 0, 15, 15);
+         
         },
 
         drawFocus : function(context) {
@@ -56,14 +56,23 @@ define(["modules/models/face/face", "modules/models/particles/star_sim/star_laye
 
             this._super(context);
             var g = context.g;
+            g.noStroke();
 
-            if (context.LOD.index < 1) {
-                if (this.face === undefined)
-                    this.face = new Face(this);
+            if (context.LOD.index < 2) {
 
-                //  this.face.draw(g);
+                //this.drawAsBlinkenStar(g, 0.3, 1, this.radius, this.radius * 19, t);
 
+            } else if (context.LOD.index < 7) {
+                var layers = 2;
+                for (var i = 0; i < layers; i++) {
+                    var pct = Math.pow(i/layers, .2);
+                    var r = this.radius * (1 - pct);
+                    g.fill(.2, .2 - .2 * i, 1, .2 + .8 * (i));
+                    g.ellipse(0, 0, r, r);
+                }
             }
+
+            var t = stellarGame.time.universeTime;
 
         },
 
@@ -111,6 +120,8 @@ define(["modules/models/face/face", "modules/models/particles/star_sim/star_laye
         },
 
         updateSimulation : function(time) {
+            if (this.face)
+                this.face.update(time, this.radius, this.radius);
 
             var last = this.excitement.power;
             this.excitement.power *= Math.pow(this.excitement.dieoff, time.ellapsed);

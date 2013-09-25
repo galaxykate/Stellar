@@ -238,6 +238,15 @@ define(["three"], function(THREE) {
                 g.line(this.x, this.y, v.x * m + this.x, v.y * m + this.y);
             },
 
+            drawArc : function(g, r, theta0, theta1) {
+                var range = theta1 - theta0;
+                var segments = Math.ceil(range / .2);
+                for (var i = 0; i < segments + 1; i++) {
+                    var theta = theta0 + range * (i / segments);
+                    g.vertex(this.x + r * Math.cos(theta), this.y + r * Math.sin(theta));
+                }
+            },
+
             //===========================================================
             //===========================================================
             toThreeVector : function() {
@@ -256,7 +265,6 @@ define(["three"], function(THREE) {
 
                 return "(" + this.x.toFixed(precision) + ", " + this.y.toFixed(precision) + ", " + this.z.toFixed(precision) + ")";
             },
-
             invalidToString : function() {
 
                 return "(" + this.x + ", " + this.y + ", " + this.z + ")";

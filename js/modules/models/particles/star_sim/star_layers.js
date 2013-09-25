@@ -298,7 +298,8 @@ define(["modules/models/elementSet", starSimPrefix + "star_layer_graph", starSim
 
             // Calculate the gas pressure
             var gasPressure = this.graphs.gasPressure;
-            gasPressure.displayMultiplier = 130;
+            this.graphs.gasPressure.powerScale = .2;
+            gasPressure.displayMultiplier = 30;
             for (var i = 0; i < graphDetail; i++) {
                 var press = moles.values[i] * gasConstant * temperature.values[i] / this.graphs.volume.values[i];
 
@@ -430,27 +431,27 @@ define(["modules/models/elementSet", starSimPrefix + "star_layer_graph", starSim
 
             // Create a bunch of dust
             for (var i = 0; i < this.bubbles.length; i++) {
-                var radius = 1 + 2*Math.pow(i, .7);
-                var theta = 5 + 1.2*Math.pow(i, .7);
+                var radius = 1 + 2 * Math.pow(i, .7);
+                var theta = 5 + 1.2 * Math.pow(i, .7);
                 var d = new Dust();
                 d.drag = .97;
                 d.position.setTo(this.star.position);
                 d.position.addPolar(radius, theta);
-                d.velocity.setToPolar(30 + 120*Math.random(), theta);
+                d.velocity.setToPolar(30 + 120 * Math.random(), theta);
                 d.elements.set(this.bubbles[i].element, 1);
                 stellarGame.universe.spawn(d);
                 console.log(d);
-                
+
             }
         },
 
         draw : function(g) {
             var layers = this;
 
-            g.fill(1, 0, 1, .3);
-            g.ellipse(0, 0, this.radius, this.radius);
             //   this.screenScale = this.star.focusScale;
             this.screenRadius = this.radius * this.zoomScale;
+            g.fill(1, 0, 1, .3);
+            g.ellipse(0, 0, this.screenRadius, this.screenRadius);
 
             // Draw graphs
             var graphOffset = 10;
@@ -467,7 +468,7 @@ define(["modules/models/elementSet", starSimPrefix + "star_layer_graph", starSim
             // Draw the bubbles territories
 
             for (var i = 0; i < this.bubbles.length; i++) {
-                this.bubbles[i].drawTerritory(g);
+                this.bubbles[i].drawTerritory(g, this.zoomScale);
             }
 
             // Draw bg

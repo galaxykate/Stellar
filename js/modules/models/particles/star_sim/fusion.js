@@ -114,20 +114,23 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
 
         draw : function(g, scale) {
             g.pushMatrix();
-            g.scale(scale, scale);
             
          
-            var thickness = 1 / scale;
-            var p0 = this.n0.position;
-            var p1 = this.n1.position;
-            var r0 = this.n0.radius + thickness;
-            var r1 = this.n1.radius + thickness;
+            var thickness = 5;
+            var p0 = new Vector(this.n0.position);
+            var p1 = new Vector(this.n1.position);
+            p0.mult(scale);
+            p1.mult(scale);
+            var r0 = this.n0.screenR + thickness;
+            var r1 = this.n1.screenR + thickness;
 
-            this.reaction.color.fill(g, -.4, 1);
+            //this.reaction.color.fill(g, -.4, 1);
+            g.fill(1, 0, 1, 1);
             g.noStroke();
-            g.ellipse(p0.x, p0.y, r0, r0);
-            g.ellipse(p1.x, p1.y, r1, r1);
-
+         //   g.ellipse(p0.x, p0.y, r0, r0);
+           // g.ellipse(p1.x, p1.y, r1, r1);
+  g.fill(1, 0, 1, .6);
+          
             // Draw a connected blob
 
             var offset = p0.getOffsetTo(p1);
@@ -145,8 +148,10 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
             p0.vertex(g);
             p0.offsetVertex(g, normal0, r0);
             p1.offsetVertex(g, normal0, r1);
+            p1.drawArc(g, r1, theta0 + angle + Math.PI, theta1 + angle + Math.PI);
             p1.offsetVertex(g, normal1, r1);
             p0.offsetVertex(g, normal1, r0);
+            p0.drawArc(g, r0, theta0 + angle, theta1 + angle);
             g.endShape();
 
             var center = p0.lerp(p1, .5);

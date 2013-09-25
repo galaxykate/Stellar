@@ -54,8 +54,10 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
 
             this.div.css({
                 "background" : this.element.idColor.toCSS(),
+                "color" : this.element.shadowColor.toCSS(),
                 width : divR + "px",
                 height : divR + "px",
+                
                 left : Math.floor(Math.random() * 600) + "px",
                 top : Math.floor(Math.random() * 600) + "px",
             });
@@ -115,13 +117,14 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
         //================================================================
         //================================================================
 
-        drawTerritory : function(g) {
+        drawTerritory : function(g, scale) {
             this.element.idColor.fill(g, .3 * Math.sin(this.idNumber), 0);
             this.element.idColor.stroke(g, .7, 1);
             g.strokeWeight(.2);
-            var w = 2;
-            g.rect(-w / 2, -this.territory.innerRadius, w, -(this.territory.outerRadius - this.territory.innerRadius));
+            var w = 20;
+            g.rect(-w / 2, -this.territory.innerRadius*scale, w, -scale*(this.territory.outerRadius - this.territory.innerRadius));
         },
+        
         drawBackground : function(g) {
             var t = stellarGame.simTime;
             var heatRad = this.radius + .2 * Math.pow(this.heat, .6);

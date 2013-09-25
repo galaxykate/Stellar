@@ -55,7 +55,8 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
         };
         elementsBySymbol[elemData.symbol] = element;
         activeElements[index] = element;
-
+        element.highlightColor = element.idColor.cloneShade(.5, 1);
+        element.shadowColor = element.idColor.cloneShade(-.5, 1);
     });
 
     stellarGame.activeElements = activeElements;
@@ -407,7 +408,6 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
                         var spread = radius * Math.pow(this.totalMass, .4) + 5;
                         var r = spread * .02 * Math.pow(i, .4) + 5;
                         var theta = j + t * (3 * Math.sin(i + j + this.parent.idNumber) - .5) + 10;
-                        debug.output(r + " " + theta + " " + elementRad);
                         //      var xloc = 2 * radius * utilities.pnoise(.1 * t + 200 + amt + elementRad + j) - radius;
                         //i* 10;//
                         //     var yloc = 2 * radius * utilities.pnoise(.1 * t + 100 + amt + elementRad + j) - radius;

@@ -12,6 +12,7 @@ define(["modules/models/elementSet"], function(ElementSet) {
             this.total = 0;
             this.logScale = false;
             this.displayMultiplier = 1;
+            this.powerScale = 1;
             this.dir = 1;
 
             this.values = [];
@@ -85,7 +86,6 @@ define(["modules/models/elementSet"], function(ElementSet) {
             var max = Math.ceil(endIndex);
             var valueAdded = 0;
 
-       
             // Fill in all the values
             for (var i = min; i <= max; i++) {
                 var pct = 1;
@@ -174,6 +174,8 @@ define(["modules/models/elementSet"], function(ElementSet) {
             var v = val;
             if (this.logScale)
                 v = Math.log(v);
+            if (this.powerScale !== 1)
+                v = Math.pow(v, this.powerScale);
 
             return v * this.displayMultiplier;
         },
@@ -189,7 +191,7 @@ define(["modules/models/elementSet"], function(ElementSet) {
             g.text(this.name, 0, 15);
             g.text("total: " + this.total.toFixed(2), 0, 28);
             g.rect(0, 0, 200, .5);
-           
+
             var h = -screenRadius / this.segmentCount;
             var drawAngled = true;
             for (var i = 0; i < this.segmentCount - 1; i++) {
