@@ -61,7 +61,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                 };
 
                 this.setRadius(10);
-
+               
                 this.initAsParticle();
 
                 this.position.setToPolar(Math.random() * 200 + 100, Math.random() * 100);
@@ -126,6 +126,15 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             },
 
             //===============================================================
+            //
+            focusOn : function() {
+                this.inFocus = true;
+            },
+
+            unfocus : function() {
+                this.inFocus = false;
+            },
+            //===============================================================
             // Update this particle according to physics
             beginUpdate : function(time) {
 
@@ -179,7 +188,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
             updatePosition : function(time) {
                 var t = time.ellapsed;
 
-                this.velocity.addMultiple(this.totalForce, t);
+                this.velocity.addMultiple(this.totalForce, t / this.mass);
                 if (this.maxVelocity) {
                     var speed = this.velocity.magnitude();
                     var speed2 = Math.min(speed, this.maxVelocity);

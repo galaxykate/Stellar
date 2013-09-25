@@ -125,7 +125,7 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
             this.focusMode = false;
 
             if (this.focus)
-                this.focus.inFocus = false;
+                this.focus.unfocus();
 
             this.focus = undefined;
             this.inspectionHUD.unfocus();
@@ -148,7 +148,8 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
                 this.focus.inFocus = false;
 
             this.focus = obj;
-            obj.inFocus = true;
+
+            obj.focusOn();
 
             this.animateZoomTo(minZoom, 1.2, function() {
                 view.focusMode = true;
@@ -438,15 +439,7 @@ define(["processing", "modules/models/edge", "three", "modules/views/inspection_
                 // Figure out the actual lod of this object
                 context.LOD = getLODFromDistance(view.camera.orbitDistance + centerDistance);
 
-                /*
-                if (view.focus !== undefined) {
-                console.log(view.focus);
-                if (view.focus === obj)
-                context.LOD = 1;
-                else
-                context.LOD = 12;
-                }
-                */
+               
 
                 // If this object should draw at all at this distance
                 if (obj.minLOD === undefined || obj.minLOD >= context.LOD.index) {

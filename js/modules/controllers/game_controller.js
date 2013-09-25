@@ -284,7 +284,7 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
                 direction : "top",
                 rangeStart : 460,
                 rangeEnd : 590,
-                thickness : 190,
+                thickness : 300,
 
             });
 
@@ -293,7 +293,7 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
                 direction : "top",
                 rangeStart : 620,
                 rangeEnd : 730,
-                thickness : 150,
+                thickness : 250,
 
             });
 

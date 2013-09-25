@@ -112,9 +112,12 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
             this.deleted = true;
         },
 
-        draw : function(g) {
-            debug.output(this);
-            var thickness = 1;
+        draw : function(g, scale) {
+            g.pushMatrix();
+            g.scale(scale, scale);
+            
+         
+            var thickness = 1 / scale;
             var p0 = this.n0.position;
             var p1 = this.n1.position;
             var r0 = this.n0.radius + thickness;
@@ -147,8 +150,10 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
             g.endShape();
 
             var center = p0.lerp(p1, .5);
-            this.timespan.drawClock(g, center, 3);
+            this.timespan.drawClock(g, center, 3 / scale);
             // / g.noStroke();
+
+            g.popMatrix();
 
         },
 
@@ -158,7 +163,7 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
     });
 
     Fusion.canFuse = function(n0, n1, distance) {
-        var closeEnough = distance < 30;
+        var closeEnough = distance < 40;
         var inOrder = n0.element.number >= n1.element.number;
         var bothFree = !n0.isFusing && !n1.isFusing;
         return closeEnough && bothFree;

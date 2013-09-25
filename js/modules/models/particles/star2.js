@@ -89,6 +89,13 @@ define(["modules/models/face/face", "modules/models/particles/star_sim/star_laye
             this.layers.addBubble(element);
         },
 
+        focusOn : function() {
+            this._super();
+        },
+
+        unfocus : function() {
+            this._super();
+        },
         //==========================================================================
         //==========================================================================
         //==========================================================================
@@ -125,7 +132,7 @@ define(["modules/models/face/face", "modules/models/particles/star_sim/star_laye
             if (this.layers) {
                 s += "Mass: " + this.layers.mass.toFixed(2) + "<br>";
                 s += "Radius: " + this.layers.radius.toFixed(2) + "<br>";
-                s += "Gravity: " + this.layers.gravity.toFixed(2) + "<br>";
+                s += "ScreenRadius: " + this.layers.screenRadius.toFixed(2) + "<br>";
                 s += "FusionJuice: " + this.layers.fusionJuice.toFixed(2) + "<br>";
                 s += "Burn Rate: " + this.layers.burnRate.toFixed(2) + "<br>";
                 s += "Luminosity: " + this.layers.luminosity.toFixed(2) + "<br>";

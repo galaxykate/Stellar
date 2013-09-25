@@ -18,10 +18,9 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
             this.element = element;
             this.isFusing = false;
             this.radius = bubbleRadius * (1 + Math.pow(element.number, .3));
-
-            console.log(this.element.name + " " + this.mass);
+            this.drag = .9;
             this.idNumber = bubbleCount;
-            this.maxVelocity = 200;
+            this.maxVelocity = 20;
             this.layers = layers;
             this.upwardsPressure = 0;
             this.downwardsPressure = 0;
@@ -32,6 +31,8 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
                 wander : new Vector(),
 
             }
+            this.initAsParticle();
+            this.mass = element.number;
 
             this.kineticEnergy = 10 + Math.random() * 20;
             this.territory = {
@@ -73,14 +74,15 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
             this._super(time);
             var outwardsForce = 0;
             var speed = 50;
-            var gravity = this.layers.gravity;
-            var weight = gravity * speed * Math.pow(this.element.number, .3);
+
+            var gravity = this.layers.getValue("gravity", y);
+            var weight = gravity * speed * this.mass*stellarGame.tunings.gravity;
 
             var wander = -0 * (utilities.pnoise(time.total + this.idNumber + 100) - .3);
 
             this.electronDegeneracyPressure = speed * 2 * Math.pow(y, -.5);
 
-            var xPull = Math.abs(this.position.x);
+            var xPull = Math.abs(30*this.position.x/this.layers.radius);
             var xForce = -stellarGame.tunings.containerForce * Math.pow(xPull, 4) / this.position.x;
             this.forces.containment.setTo(xForce, 0);
             this.forces.wander.setTo(0, wander);
@@ -100,6 +102,8 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
             });
 
             // bubble.totalForce.mult(0);
+            
+            this.maxVelocity = this.layers.radius;
         },
         setTerritory : function(innerRadius, outerRadius) {
             // Calculate the territory, etc
@@ -131,9 +135,9 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
 
             // Find the screen pos and move the div to it;
 
-            this.screenR = this.radius * this.layers.screenScale;
-            this.screenX = this.layers.screenScale * this.position.x + screenResolution.width/2;
-            this.screenY = this.layers.screenScale * this.position.y + screenResolution.height/2;
+            this.screenR = this.radius * (.3 + Math.pow(this.layers.zoomScale, .5));
+            this.screenX = this.layers.zoomScale * this.position.x + screenResolution.width / 2;
+            this.screenY = this.layers.zoomScale * this.position.y + screenResolution.height / 2;
 
             debug.output(this.screenX.toFixed(2) + " " + this.screenY.toFixed(2) + " " + this.screenR.toFixed(2));
             this.div.css({
@@ -155,10 +159,6 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
                     g.strokeWeight(1);
                     g.line(force.x * m, force.y * m, 0, 0);
                 })
-
-                g.textSize(4);
-                g.fill(1);
-                g.text(this.getThermalPressure(), 5, 0);
             }
 
         },

@@ -18,7 +18,7 @@ define(["modules/models/elementSet"], function(ElementSet) {
             for (var i = 0; i < this.segmentCount; i++) {
                 this.values[i] = Math.random() * 30;
             }
-            this.filterLength = 4;
+            this.filterLength = 2;
             var sigma = 2;
 
             this.blurFilter = [];

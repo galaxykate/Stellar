@@ -29,7 +29,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
             },
 
             setZoom : function(value) {
-            
+
                 this.distance = Math.pow(value, 3) + .01;
                 this.zoom = value;
 
@@ -48,6 +48,7 @@ define(["inheritance", "modules/models/vector", "uparticle", "three"], function(
             setOrbit : function(r, theta, phi) {
                 var camera = this;
                 var threeCamera = this.threeCamera;
+                stellarGame.cameraDistance = r;
                 camera.orbitDistance = r;
                 camera.orbitTheta = theta;
                 camera.orbitPhi = phi;
