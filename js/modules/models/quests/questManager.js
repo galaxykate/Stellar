@@ -47,7 +47,7 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
 			//lockAllElementsExceptHydrogen()
 			
 			// DEBUG
-			unlockAllQuests();
+			//unlockAllQuests();
         };
         
         function loadFromData(data){
@@ -127,7 +127,7 @@ define(["modules/models/quests/quests", "modules/models/quests/quest", "modules/
         function satisfy(questName, conditionID){
         	var quest = questLibrary[questIDByName[questName]];
         	if(quest !== undefined){
-        	if(quest.finished === false){
+        	if(quest.finished === false && quest.started === true){
         		quest.satisfy(conditionID);
         		quest.update(); // figures % completed
 	        	quest.updateHTMLText();

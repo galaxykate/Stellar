@@ -80,7 +80,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    	var universeHeight =screenResolution.height;
 	    	var universeWidth = screenResolution.width;
 	    	
-	    	notifications.addState("always", universeWidth-300, 0, 250, undefined, 1, true);
+	    	notifications.addState("always", universeWidth-300, 0, 260, undefined, 1, true);
 	    	notifications.setState("always");
 	    	notifications.view.setBGColor(1, 1, 1, 0);
 	    };

@@ -45,4 +45,4 @@ var settings = {
 
 
 // debug
-settings.unlockAll();
+//settings.unlockAll();
