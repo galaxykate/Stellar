@@ -53,6 +53,9 @@ define(["modules/models/elements", "modules/models/reactions", "kcolor", "inheri
                 return this.symbol;
             }
         };
+        if (index === 0)
+            element.idColor = new KColor(.45, .3, .8);
+
         elementsBySymbol[elemData.symbol] = element;
         activeElements[index] = element;
         element.highlightColor = element.idColor.cloneShade(.5, 1);

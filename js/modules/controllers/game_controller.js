@@ -120,12 +120,12 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
             addTuning("moveSpeed", .3, .1, 5);
             addTuning("gravity", 1, .1, 5);
             addTuning("thermalPressure", 1, .1, 5);
-            addTuning("gasPressureConstant", 40, 10, 500);
+            addTuning("gasPressureConstant", 500, 20, 1500);
 
             addTuning("juiceRefill", .1, .1, 5);
             addTuning("bubbleForce", .4, 0, 5);
             addTuning("containerForce", .3, .01, 5);
-
+            
             //================================================================
             //================================================================
             //================================================================

@@ -57,7 +57,7 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
                 "color" : this.element.shadowColor.toCSS(),
                 width : divR + "px",
                 height : divR + "px",
-                
+
                 left : Math.floor(Math.random() * 600) + "px",
                 top : Math.floor(Math.random() * 600) + "px",
             });
@@ -78,13 +78,13 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
             var speed = 50;
 
             var gravity = this.layers.getValue("gravity", y);
-            var weight = gravity * speed * this.mass*stellarGame.tunings.gravity;
+            var weight = gravity * speed * this.mass * stellarGame.tunings.gravity;
 
             var wander = -0 * (utilities.pnoise(time.total + this.idNumber + 100) - .3);
 
             this.electronDegeneracyPressure = speed * 2 * Math.pow(y, -.5);
 
-            var xPull = Math.abs(30*this.position.x/this.layers.radius);
+            var xPull = Math.abs(30 * this.position.x / this.layers.radius);
             var xForce = -stellarGame.tunings.containerForce * Math.pow(xPull, 4) / this.position.x;
             this.forces.containment.setTo(xForce, 0);
             this.forces.wander.setTo(0, wander);
@@ -93,7 +93,10 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
             this.forces.bubble = this.layers.getForceOn(this);
 
             // Pressure force
-            this.forces.pressure.setTo(0, -900 * this.layers.getValue("gasPressure", Math.abs(this.position.y)));
+            var gasPressure = 900*this.layers.getValue("gasPressure", y);
+            var edp = this.layers.getValue("edp", y);
+            
+            this.forces.pressure.setTo(0, edp + -gasPressure);
             this.forces.gravity.setTo(0, weight);
 
             $.each(this.forces, function(index, force) {
@@ -104,7 +107,7 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
             });
 
             // bubble.totalForce.mult(0);
-            
+
             this.maxVelocity = this.layers.radius;
         },
         setTerritory : function(innerRadius, outerRadius) {
@@ -122,9 +125,9 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
             this.element.idColor.stroke(g, .7, 1);
             g.strokeWeight(.2);
             var w = 20;
-            g.rect(-w / 2, -this.territory.innerRadius*scale, w, -scale*(this.territory.outerRadius - this.territory.innerRadius));
+            g.rect(-w / 2, -this.territory.innerRadius * scale, w, -scale * (this.territory.outerRadius - this.territory.innerRadius));
         },
-        
+
         drawBackground : function(g) {
             var t = stellarGame.simTime;
             var heatRad = this.radius + .2 * Math.pow(this.heat, .6);
