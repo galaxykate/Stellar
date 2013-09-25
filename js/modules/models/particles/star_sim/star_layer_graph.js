@@ -4,11 +4,11 @@
 define(["modules/models/elementSet"], function(ElementSet) {
     var LayerGraph = Class.extend({
 
-        init : function(layers, name, segmentCount) {
+        init : function(layers, name, segmentCount, isUserFacing) {
             this.name = name;
             this.layers = layers;
             this.segmentCount = segmentCount;
-
+            this.isUserFacing = isUserFacing;
             this.total = 0;
             this.logScale = false;
             this.displayMultiplier = 1;
@@ -41,7 +41,7 @@ define(["modules/models/elementSet"], function(ElementSet) {
                 this.dir = -1;
 
             this.position.x = this.dir * displayNumber * 70 + 100;
-            console.log(this.position);
+ 
         },
 
         getDifferential : function(point, span) {

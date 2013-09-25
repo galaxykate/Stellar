@@ -23,6 +23,7 @@ define(["modules/models/elementSet", starSimPrefix + "star_layer_graph", starSim
             this.screenRadius = 250;
             this.setRadius(90);
             this.mass = 0;
+            this.gravityMultiplier = 1;
 
             this.fusionJuice = 0;
             this.burnRate = 0;
@@ -43,14 +44,15 @@ define(["modules/models/elementSet", starSimPrefix + "star_layer_graph", starSim
 
             this.graphs = {
 
-                moles : new LayerGraph(this, "moles", graphDetail),
-                volume : new LayerGraph(this, "volume", graphDetail),
-                kineticEnergy : new LayerGraph(this, "kinEnergy", graphDetail),
+                moles : new LayerGraph(this, "moles", graphDetail, false),
+                volume : new LayerGraph(this, "volume", graphDetail, false),
+                kineticEnergy : new LayerGraph(this, "kinEnergy", graphDetail, true),
 
-                temperature : new LayerGraph(this, "temperature", graphDetail),
-                gasPressure : new LayerGraph(this, "gasPressure", graphDetail),
-                mass : new LayerGraph(this, "mass", graphDetail),
-                gravity : new LayerGraph(this, "gravity", graphDetail),
+                temperature : new LayerGraph(this, "temperature", graphDetail, true),
+                gasPressure : new LayerGraph(this, "gasPressure", graphDetail, true),
+                mass : new LayerGraph(this, "mass", graphDetail, true),
+                gravity : new LayerGraph(this, "gravity", graphDetail, true),
+                edp : new LayerGraph(this, "electronDegeneracy", graphDetail, true),
                 /*
                  radiationPressure : new LayerGraph(this, "radPressure", graphDetail),
                  */
@@ -243,6 +245,9 @@ define(["modules/models/elementSet", starSimPrefix + "star_layer_graph", starSim
             return pressureForce;
         },
 
+        addEnergyAt : function(y, amt) {
+        },
+
         generateGraphs : function() {
             var layers = this;
             var gasConstant = stellarGame.tunings.gasPressureConstant;
@@ -288,7 +293,7 @@ define(["modules/models/elementSet", starSimPrefix + "star_layer_graph", starSim
             });
 
             var temperature = this.graphs.temperature;
-            temperature.displayMultiplier = 30;
+            temperature.displayMultiplier = 300;
             // Set all the temperature layers
             //   What temperature is a layer?  The sum of all the kinetic energy in it, divided by the volume
             for (var i = 0; i < graphDetail; i++) {
@@ -307,6 +312,14 @@ define(["modules/models/elementSet", starSimPrefix + "star_layer_graph", starSim
             }
             gasPressure.blur();
 
+            // The electron degeneracy pressure is the final outward push of non-burning mass
+            var edp = this.graphs.edp;
+            for (var i = 0; i < graphDetail; i++) {
+                var moles = this.graphs.moles.values[i];
+                var density = moles / this.graphs.volume.values[i];
+                edp.set(i, density);
+            }
+
             // Calculate the cumulative mass and gravity
             var gravity = this.graphs.gravity;
             var cumMass = 0;
@@ -314,7 +327,7 @@ define(["modules/models/elementSet", starSimPrefix + "star_layer_graph", starSim
                 cumMass += mass.values[i];
                 var r = stepSize * (i + 1);
                 var g = cumMass / r + 1;
-                gravity.set(i, g);
+                gravity.set(i, g) * this.gravityMultiplier;
             }
 
             $.each(this.graphs, function(index, graph) {
@@ -380,7 +393,7 @@ define(["modules/models/elementSet", starSimPrefix + "star_layer_graph", starSim
             // bubbles lose a little energy
 
             $.each(this.bubbles, function(index, bubble) {
-                bubble.energyLoss = bubble.kineticEnergy * .1 * time.ellapsed;
+                bubble.energyLoss = bubble.kineticEnergy * .2 * time.ellapsed;
                 bubble.kineticEnergy -= bubble.energyLoss;
             });
 
@@ -392,7 +405,9 @@ define(["modules/models/elementSet", starSimPrefix + "star_layer_graph", starSim
 
             // Start some number of fusions
             layers.fusionJuice += 20 * layers.graphs.gasPressure.total / layers.radius;
+            layers.fusionJuice = Math.min(layers.fusionJuice, 300);
             $.each(layers.potentialFusions, function(index, fusion) {
+
                 if (layers.fusionJuice > 200) {
                     layers.fusionJuice -= 200;
                     layers.fusions.push(fusion);
@@ -420,49 +435,71 @@ define(["modules/models/elementSet", starSimPrefix + "star_layer_graph", starSim
                 return !fusion.deleted;
             });
 
-            if (this.radius < 10)
+            if (this.mass / this.radius > 5)
                 this.supernova();
 
         },
 
         supernova : function() {
-            stellarGame.universeView.unfocus();
-            this.star.remove();
+            var layers = this;
+            if (!this.isGoingSupernova) {
+                this.isGoingSupernova = true;
+                this.gravityMultiplier = 10;
+                setTimeout(function() {
 
-            // Create a bunch of dust
-            for (var i = 0; i < this.bubbles.length; i++) {
-                var radius = 1 + 2 * Math.pow(i, .7);
-                var theta = 5 + 1.2 * Math.pow(i, .7);
-                var d = new Dust();
-                d.drag = .97;
-                d.position.setTo(this.star.position);
-                d.position.addPolar(radius, theta);
-                d.velocity.setToPolar(30 + 120 * Math.random(), theta);
-                d.elements.set(this.bubbles[i].element, 1);
-                stellarGame.universe.spawn(d);
-                console.log(d);
+                    stellarGame.universeView.unfocus();
+                    layers.star.remove();
 
+                    // Create a bunch of dust
+                    for (var i = 0; i < layers.bubbles.length; i++) {
+                        var radius = 1 + 2 * Math.pow(i, .7);
+                        var theta = 5 + 1.2 * Math.pow(i, .7);
+                        var d = new Dust();
+                        d.drag = .97;
+                        d.position.setTo(layers.star.position);
+                        d.position.addPolar(radius, theta);
+                        d.velocity.setToPolar(30 + 120 * Math.random(), theta);
+
+                        var elem0 = layers.bubbles[i].element;
+                        var elem1 = ElementSet.activeElements[elem0.index + 1];
+                        if (elem1)
+                            d.elements.set(elem1, 1);
+                        else
+                            d.elements.set(elem0, 1);
+
+                        stellarGame.universe.spawn(d);
+
+                    }
+                }, 1500);
             }
         },
 
         draw : function(g) {
             var layers = this;
+            var t = stellarGame.time.universeTime;
 
             //   this.screenScale = this.star.focusScale;
             this.screenRadius = this.radius * this.zoomScale;
             g.fill(1, 0, 1, .3);
             g.ellipse(0, 0, this.screenRadius, this.screenRadius);
 
+            if (this.isGoingSupernova) {
+                for (var i = 0; i < 10; i++) {
+                    var r = (this.screenRadius) * (i / 10) * (1 + Math.sin(5 * t + i));
+                    g.fill(1, 0, 1, .1);
+                    g.ellipse(0, 0, r, r);
+                }
+            }
+
             // Draw graphs
-            var graphOffset = 10;
-            var side = 1;
+
+            var graphCount = 0;
             $.each(this.graphs, function(index, graph) {
-
-                graph.draw(g, layers.screenRadius);
-
-                graphOffset += 20;
-
-                side *= -1;
+                if (graph.isUserFacing) {
+                    graph.setDisplayNumber(graphCount);
+                    graph.draw(g, layers.screenRadius);
+                    graphCount++;
+                }
             });
 
             // Draw the bubbles territories

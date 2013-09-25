@@ -44,6 +44,7 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
     new Reaction(["C", "C"], ["O", "He", "He"], 250, 1.2);
     new Reaction(["O", "O"], ["Si", "He"], 250, 1.2);
     new Reaction(["Si", "He"], ["Fe"], 250, .8);
+    new Reaction(["Fe", "He"], ["Au"], 250, -.8);
 
     var Fusion = Class.extend({
 
@@ -56,6 +57,8 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
 
             this.n0.isFusing = true;
             this.n1.isFusing = true;
+            this.productionEnergy = reaction.activationEnergy * reaction.energyMultiplier;
+            this.center = this.n0.position.lerp(this.n1.position, .5);
 
         },
 
@@ -88,7 +91,14 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
         },
 
         update : function(time) {
+            this.center = this.n0.position.lerp(this.n1.position, .5);
+
+            var pct = time.ellapsed / this.timespan.lifespan;
+            this.layers.addEnergyAt(this.center.y, this.productionEnergy * pct);
             this.timespan.increment(time.ellapsed);
+
+            this.n0.kineticEnergy += (pct * this.productionEnergy / 2);
+            this.n1.kineticEnergy += (pct * this.productionEnergy / 2);
         },
 
         fuse : function() {
@@ -114,8 +124,7 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
 
         draw : function(g, scale) {
             g.pushMatrix();
-            
-         
+
             var thickness = 5;
             var p0 = new Vector(this.n0.position);
             var p1 = new Vector(this.n1.position);
@@ -127,10 +136,10 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
             //this.reaction.color.fill(g, -.4, 1);
             g.fill(1, 0, 1, 1);
             g.noStroke();
-         //   g.ellipse(p0.x, p0.y, r0, r0);
-           // g.ellipse(p1.x, p1.y, r1, r1);
-  g.fill(1, 0, 1, .6);
-          
+            //   g.ellipse(p0.x, p0.y, r0, r0);
+            // g.ellipse(p1.x, p1.y, r1, r1);
+            g.fill(1, 0, 1, .6);
+
             // Draw a connected blob
 
             var offset = p0.getOffsetTo(p1);
@@ -155,7 +164,7 @@ define(["modules/models/elementSet", "uparticle"], function(ElementSet, UParticl
             g.endShape();
 
             var center = p0.lerp(p1, .5);
-            this.timespan.drawClock(g, center, 3 / scale);
+            this.timespan.drawClock(g, center, 3);
             // / g.noStroke();
 
             g.popMatrix();
