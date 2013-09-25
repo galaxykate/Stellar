@@ -75,6 +75,7 @@ define(["inheritance", "modules/models/vector", "modules/models/elementSet", "no
                     power : 0,
                     dieoff : .9,
                 };
+                
 
             },
 

@@ -40,7 +40,7 @@ define(["modules/models/face/face", "modules/models/particles/star_sim/star_laye
         drawBackground : function(context) {
             this._super(context);
             var g = context.g;
-         
+
         },
 
         drawFocus : function(context) {
@@ -58,14 +58,14 @@ define(["modules/models/face/face", "modules/models/particles/star_sim/star_laye
             var g = context.g;
             g.noStroke();
 
-            if (context.LOD.index < 2) {
+            if (context.LOD.index < 0) {
 
                 //this.drawAsBlinkenStar(g, 0.3, 1, this.radius, this.radius * 19, t);
 
             } else if (context.LOD.index < 7) {
                 var layers = 2;
                 for (var i = 0; i < layers; i++) {
-                    var pct = Math.pow(i/layers, .2);
+                    var pct = Math.pow(i / layers, .2);
                     var r = this.radius * (1 - pct);
                     g.fill(.2, .2 - .2 * i, 1, .2 + .8 * (i));
                     g.ellipse(0, 0, r, r);
@@ -79,7 +79,11 @@ define(["modules/models/face/face", "modules/models/particles/star_sim/star_laye
         drawOverlay : function(context) {
             this._super(context);
             var g = context.g;
+            if (context.LOD.index < 4) {
+                g.fill(1);
+                g.text(this.name, 5, 10);
 
+            }
         },
 
         //==========================================================================
