@@ -76,11 +76,11 @@ define([], function() {
         			       { desc : "Helium Unlocked!", }, ],
         }, {
         	name : "Feed a Star He and C", //elements_widget feed.js
-        	level : 4,
+        	level : 3,
         	giver : "global",
         	conditions : [ { desc : "Select Helium in your inventory", }, 
-        				   { desc : "Click on a star to give it some Helium NOTE:ONLY WORKS ON KATE'S NEW STAR" , }, 
-        				   { desc : "Do the same for Carbon NOTE:ONLY WORKS ON KATE'S NEW STAR", }, ],
+        				   { desc : "Click on a star to give it some Helium" , }, //NOTE:ONLY WORKS ON KATE'S NEW STAR
+        				   { desc : "Do the same for Carbon", }, ], //NOTE:ONLY WORKS ON KATE'S NEW STAR
         	unlockDescs: [  ],
         }, /*{
         	name : "Feed a Star Carbon",
@@ -203,7 +203,8 @@ define([], function() {
         	level : 1,
         	giver : "global",
         	conditions : [ { desc : "Zoom out of the home star", },
-        				   { desc : "Click and drag to cruise around space", }, ],
+        				   { desc : "Click and drag to cruise around space", }, 
+        				   { desc : "Double-click on a star to zoom in on it" }],
         	onComplete: function(){ settings.siphoningFromDust = true
         							settings.carbonUnlocked = true },
         	unlockDescs: [ { desc : "Siphoning (Picking Up) Dust Unlocked!", },
@@ -224,7 +225,7 @@ define([], function() {
         	conditions : [ { desc : "Watch a star go supernova", },
         				   { desc : "Gather up the elements from a supernova", }, ],
         	unlockDescs: [  ],
-        }, {
+        }, /*{
         	// Requires navigation away from the home star
         	name : "Examine Another Star", //universe_controller
         	level : 3,
@@ -232,7 +233,7 @@ define([], function() {
         	
         	conditions : [ { desc : "Zoom in on a star by double-clicking on it", }, ],
         	unlockDescs: [  ],
-        }, {
+        },*/ {
         	
         	// Interacting with the various space elements
         	name : "Clear a Dust Trail",

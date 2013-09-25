@@ -193,10 +193,9 @@ define(["modules/models/elementSet", "inheritance", "modules/models/vector", "mo
         },
 
         setActiveElement : function(element) {
-            if (element.name === "Hydrogen") {
-                stellarGame.qManager.satisfy("Feed a Star " + element.name, 0);
-            }
-
+            if (element.index === 0) stellarGame.qManager.satisfy("Feed a Star Hydrogen", 0);
+            else if (element.index === 1) stellarGame.qManager.satisfy("Feed a Star He and C", 0);
+                        
             console.log("SET ACTIVE ELEMENT " + element);
 
             if (this.activeElement && this.activeElement !== element)
