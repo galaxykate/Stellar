@@ -55,7 +55,7 @@ define(['modules/views/game_view', "modules/models/ui/popup", "modules/models/ui
 	    	var universeWidth = screenResolution.width;
 	    	var universeHeight =screenResolution.height;
 	    	
-	    	questScreen.addState("closed", 0, 360, 140, 30, 0.6);
+	    	questScreen.addState("closed", 0, 360, 160, 40, 1);
 	    	questScreen.addState("open", 20, 20, universeWidth-50, universeHeight-50, 1);
 	    	questScreen.addTransition("open", "closed", "click");
 	    	questScreen.addTransition("closed", "open", "click", false);
