@@ -305,6 +305,15 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
                 thickness : 250,
 
             });
+            
+            var savedSettingsPanel = createSlidePanel({
+                id : "saved_panel",
+                direction : "top",
+                rangeStart : 330,
+                rangeEnd : 430,
+                thickness : 250,
+
+            });
 
             var debugOutput = $('<div/>', {
                 id : "debug_output_pane",
@@ -321,6 +330,7 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
             setToDevPanel(debugOutputPanel);
             setToDevPanel(tuningPanel);
             setToDevPanel(optionsPanel);
+            setToDevPanel(savedSettingsPanel);
 
             debugOutputPanel.div.append(debugOutput);
             debugOutputPanel.div.append(touchOutput);
