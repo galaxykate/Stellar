@@ -96,6 +96,37 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
         });
 
     };
+    
+    var createButton = function(parent, name, onChange) {
+    	parent.html("");
+    	var holder = $("<div/>", {
+            id : name + "_button",
+            "class" : "save_button_holder"
+        });
+        
+        holder.html("");
+        parent.append(holder);
+
+        var button = $("<div/>", {
+            id : name + "_button",
+            "class" : "button",
+        });
+        button.html(name);
+
+        holder.append(button);
+		
+		button.button()
+					.click(onChange);
+
+        return button;
+        
+    };
+    
+    var addSave = function(key, parent, type, args){
+    	if(type === "button"){
+    		var button = createButton(parent, key, args);
+    	}
+    };
 
     var GameController = Class.extend({
         init : function() {
@@ -125,6 +156,9 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
             addTuning("juiceRefill", .1, .1, 5);
             addTuning("bubbleForce", .4, 0, 5);
             addTuning("containerForce", .3, .01, 5);
+            
+            addSave("resetLocalStorage", $("#saved_panel") , "button", stellarGame.saveManager.wipeLocalStorage);
+            //addSaveTEST("blahblah", .1, .1, 5);
             
             //================================================================
             //================================================================
@@ -179,7 +213,7 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
 
                 var panelDiv = $("#" + options.id);
                 if (panelDiv.size() === 0) {
-
+					//console.log("Making panel div " + options.id);
                     panelDiv = $('<div/>', {
                         id : options.id,
                         html : options.id,
@@ -187,6 +221,7 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
 
                     });
                 } else {
+                	//NOTE: Divs in this class already exist in index.html
                     panelDiv.addClass("slideout_panel");
                 }
 
@@ -279,6 +314,7 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
             //======================================================
             // Debug
 
+			// NOTE: Already exists in index.html
             var optionsPanel = createSlidePanel({
                 id : "options_panel",
                 direction : "top",
@@ -287,7 +323,8 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
                 thickness : 300,
 
             });
-
+            
+			// NOTE: Already exists in index.html
             var tuningPanel = createSlidePanel({
                 id : "tuning_panel",
                 direction : "top",
@@ -306,10 +343,11 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
 
             });
             
+            // NOTE: Already exists in index.html
             var savedSettingsPanel = createSlidePanel({
                 id : "saved_panel",
                 direction : "top",
-                rangeStart : 330,
+                rangeStart : 300,
                 rangeEnd : 430,
                 thickness : 250,
 

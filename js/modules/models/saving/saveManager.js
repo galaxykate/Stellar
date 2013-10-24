@@ -8,6 +8,8 @@ define(['modules/models/saving/save'], function(Save) {
 	return (function() {
 
         function init() {
+        	stellarGame.saveManager = this;
+        	
         	if(localStorage.stellarSave){ 
         		// Note: Gotta clear stellarSave when we want to load new data, 
         		// Or just check if individual pieces of data exist
@@ -15,11 +17,11 @@ define(['modules/models/saving/save'], function(Save) {
         		console.log("LOAD SAVE : " + localStorage.getItem("stellarSave"));
         	} else {
         		var id = Math.random();
-        		localStorage.setItem("stellarSave", "hello? " + id);
+        		localStorage.setItem("stellarSave", id);
         		console.log("SET SAVE: " + id);
         	}
         	
-        	testSave();
+        	//testSave();
         };
         
         // Unit test of saving/loading various string pairs
@@ -46,12 +48,26 @@ define(['modules/models/saving/save'], function(Save) {
     		save.safeSaveItem("hello", "BWAHAHAHA");
     		var str4 = save.objectToJSONStr(save.wrapIntoSaveObject(), true);
     		console.log("SAVED " + str4);
-    		
+        };
+        
+        function wipeLocalStorage(){
+        	console.log("!!! Reseting LocalStorage for StellarSave !!!");
+        	localStorage.removeItem("stellarSave");
+        	// Why not localStorage.clear()?
+        };
+        
+        function saveSettings(){
+        	
+        };
+        
+        function loadSettings(){
+        	
         };
         
 
         return {
             init : init,
+            wipeLocalStorage : wipeLocalStorage,
         };
 
     })();
