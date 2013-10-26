@@ -98,30 +98,29 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
     };
     
     var createButton = function(parent, name, onChange) {
-    	parent.html("");
     	var holder = $("<div/>", {
-            id : name + "_button",
+            id : name + "_buttonHolder",
             "class" : "save_button_holder"
         });
         
         holder.html("");
-        parent.append(holder);
 
         var button = $("<div/>", {
             id : name + "_button",
             "class" : "button",
         });
         button.html(name);
-
-        holder.append(button);
-		
 		button.button()
 					.click(onChange);
 
+		holder.append(button);
+		parent.append(holder);
+		
         return button;
         
     };
     
+    var saveHolder = $("#saved_panel");
     var addSave = function(key, parent, type, args){
     	if(type === "button"){
     		var button = createButton(parent, key, args);
@@ -157,9 +156,12 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
             addTuning("bubbleForce", .4, 0, 5);
             addTuning("containerForce", .3, .01, 5);
             
-            addSave("resetLocalStorage", $("#saved_panel") , "button", stellarGame.saveManager.wipeLocalStorage);
-            //addSaveTEST("blahblah", .1, .1, 5);
             
+            addSave("tutorialSettings", saveHolder , "button", settings.tutorialSettings());
+            addSave("unlockAllSettings", saveHolder , "button", settings.unlockAll());
+            
+            addSave("saveAll", saveHolder , "button", stellarGame.saveManager.saveAllAvailableItems);
+            addSave("resetLocalStorage", saveHolder , "button", stellarGame.saveManager.wipeLocalStorage);
             //================================================================
             //================================================================
             //================================================================

@@ -15,6 +15,10 @@ define(["inheritance"], function(Inheritance) {
                 this.name = "";
             },
             
+            getItemByName : function(name){
+            	return this.itemsToSave[this.itemIDs[name]].item;
+            },
+            
             // Pushes an object into this class's object holders as is
             // NOTE: IT IS DANGEROUS TO USE THIS ON ITS OWN!!!
             saveItem : function(name, item){
@@ -27,7 +31,8 @@ define(["inheritance"], function(Inheritance) {
             
             // Doesn't allow duplicates
             safeSaveItem : function(name, item){
-            	if(this.itemIDs[name] === -1){
+            	console.log("itemIDs[name]: " + this.itemIDs[name]);
+            	if(this.itemIDs[name] === -1 || this.itemIDs[name] === undefined){
             		this.saveItem(name, item);
             	} else {
             		var id = this.itemIDs[name];

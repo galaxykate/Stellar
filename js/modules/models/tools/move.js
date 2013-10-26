@@ -87,6 +87,7 @@ define(["modules/models/vector", "kcolor", "tool", "modules/models/elementSet", 
                     //
 
                     if (stellarGame.touch.pressed) {
+                    	debug.output("move?: " + settings.moveZoomToolUnlocked);
                         if (settings.moveZoomToolUnlocked) {
                             // Draw a spiral
                             g.stroke(1, 0, 1, .8);

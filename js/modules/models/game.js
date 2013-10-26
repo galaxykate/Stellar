@@ -14,8 +14,8 @@ define(['modules/views/game_view', 'modules/controllers/game_controller', 'modul
         //============================================================
         //============================================================
         //============================================================
-        SaveManager.init(); // Loads data for settings
         settings.init(); // initializes game unlock/state flags
+        SaveManager.init(); // Loads data for settings. MUST happen after settings.init() because it loads settings flags
         stellarGame.player = new Player();
 
         var universe = new Universe();
