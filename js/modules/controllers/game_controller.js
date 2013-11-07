@@ -157,8 +157,8 @@ define(['modules/controllers/universe_controller', 'modules/models/tools/move'],
             addTuning("containerForce", .3, .01, 5);
             
             
-            addSave("tutorialSettings", saveHolder , "button", settings.tutorialSettings());
-            addSave("unlockAllSettings", saveHolder , "button", settings.unlockAll());
+            addSave("tutorialSettings", saveHolder , "button", settings.tutorialSettings);
+            addSave("unlockAllSettings", saveHolder , "button", settings.unlockAll);
             
             addSave("saveAll", saveHolder , "button", stellarGame.saveManager.saveAllAvailableItems);
             addSave("resetLocalStorage", saveHolder , "button", stellarGame.saveManager.wipeLocalStorage);

@@ -24,6 +24,7 @@ var settings = {
     	settings.setSiphoningFromDustUnlocked(true);
     	settings.setTempToolUnlocked(true);
     	settings.setDensityToolUnlocked(true);
+    	settings.printSettings();
     },
     
     tutorialSettings : function(){
@@ -40,7 +41,21 @@ var settings = {
     	settings.setSiphoningFromDustUnlocked(true);
     	settings.setTempToolUnlocked(false);
     	settings.setDensityToolUnlocked(false);
+    	settings.printSettings();
     	
+    },
+    
+    printSettings : function(){
+    	console.log("Printing settings hydrogenUnlocked: " + settings.hydrogenUnlocked );
+    	console.log("Printing settings heliumUnlocked: " + settings.heliumUnlocked );
+    	//console.log("Printing settings x: " + settings.x );
+    	//console.log("Printing settings x: " + settings.x );
+    	//console.log("Printing settings x: " + settings.x );
+    	//console.log("Printing settings x: " + settings.x );
+    	//console.log("Printing settings x: " + settings.x );
+    	//console.log("Printing settings x: " + settings.x );
+    	//console.log("Printing settings x: " + settings.x );
+    	//console.log("Printing settings x: " + settings.x );
     },
   
 
